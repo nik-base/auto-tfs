@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { CommandRunner } from './core/command_runner';
+import { Tfs } from './core/tfs';
 
-var commandRunner = new CommandRunner();
+var commandRunner = new Tfs();
 
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('z-tf-checkout.checkout', () => {
