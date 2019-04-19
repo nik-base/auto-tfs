@@ -4,11 +4,11 @@ import { ProcessHandler } from "../../handler/process_handler";
 import { CheckoutProcessHandler } from "../../handler/impl/checkout_process_handler";
 
 export class CheckoutTfsCommand implements TfsCommand {
-    public getCommandAndArgs() : string[] {
-        return ["checkout",	vscode.window.activeTextEditor.document.uri.fsPath]
+    public getCommandAndArgs(): string[] {
+        return ["checkout", vscode.window.activeTextEditor.document.uri.fsPath]
     }
 
-    public getConsoleDataHandler() : ProcessHandler {
+    public getConsoleDataHandler(): ProcessHandler {
         return new CheckoutProcessHandler();
     }
 }

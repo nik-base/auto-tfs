@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { Tfs } from './core/tfs';
 
-var commandRunner = new Tfs();
+var tfs = new Tfs();
 
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('z-tf-checkout.checkout', () => {
-		commandRunner.checkOut();
+		tfs.checkOut();
 	});
 
 	context.subscriptions.push(disposable);

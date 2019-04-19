@@ -26,5 +26,4 @@ export class CheckoutProcessHandler extends AbstractProcessHandler implements Pr
         this.ioOperation.dispose();
         console.log("done");
     }
-
 }
