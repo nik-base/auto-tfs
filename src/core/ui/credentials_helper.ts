@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { Credentials } from '../credentials/credentials';
 
 export class CredentialsHelper {
-
     public async obtainCredentials(): Promise<Credentials> {
         let cred = new Credentials();
 

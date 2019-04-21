@@ -5,7 +5,7 @@ import { CheckoutProcessHandler } from "../../handler/impl/checkout_process_hand
 
 export class CheckoutTfsCommand implements TfsCommand {
     public getCommandAndArgs(): string[] {
-        return ["checkout", vscode.window.activeTextEditor.document.uri.fsPath]
+        return ["checkout", vscode.window.activeTextEditor.document.uri.fsPath];
     }
 
     public getConsoleDataHandler(): ProcessHandler {

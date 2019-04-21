@@ -8,9 +8,17 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
     protected process: Process;
     private credentialsHelper = new CredentialsHelper();
     private credentialsPromise: Promise<Credentials>;
+    private supressErrors : ["local echo", "Auth"];
 
-    abstract handleOutData(data: string): void;
-    abstract handleError(data: string): void;
+    public handleOutData(data: string): void {
+        this.handleAuthorize(data);
+    }
+
+    public handleError(data: string): void {
+        if (!this.isSuppressedError(data)) {
+            vscode.window.showErrorMessage("TF command error: " + data);
+        }
+    }
 
     public handleExit(exitCode: number): void {
         if (exitCode == 0) {
@@ -32,7 +40,7 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
 
     private handleUserNameAndObtainCredentials(processStdOut: string) {
         if (processStdOut.indexOf("Username") > -1) {
-            vscode.window.showErrorMessage("Please, provide your TFS credentials for proceeding");
+            vscode.window.showWarningMessage("Please, provide your TFS credentials for proceeding");
             this.credentialsPromise = this.credentialsHelper.obtainCredentials();
             this.credentialsPromise.then((credentials) => {
                 this.process.writeLn(credentials.getUserName());
@@ -46,5 +54,9 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
                 this.process.writeLn(credentials.getPassword());
             });
         }
+    }
+
+    private isSuppressedError(processStdOut: string) : boolean {
+        return this.supressErrors.some(item => processStdOut.indexOf(item) > -1);
     }
 }
