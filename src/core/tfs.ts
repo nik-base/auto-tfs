@@ -14,7 +14,7 @@ export class Tfs {
     private executeCommand(command: TfsCommand) {
         let processHandler = command.getConsoleDataHandler();
         var process = new Process();
-        processHandler.registerHandlers(process);
         process.spawn(this.tfPath, command.getCommandAndArgs());
+        processHandler.registerHandlers(process);
     }
 }

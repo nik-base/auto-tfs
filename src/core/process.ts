@@ -9,15 +9,11 @@ export class Process {
 
     public writeLn(input: string): void {
         this.write(input);
-        this.childProcess.stdin.write("\n");
+        this.write("\n");
     }
 
     public write(input: string): void {
         this.childProcess.stdin.write(input);
-    }
-
-    public dispose(): void {
-        this.childProcess.stdin.end();
     }
 
     public registerErrorHandler(func: (data: string) => void): void {

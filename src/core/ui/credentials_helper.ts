@@ -3,30 +3,17 @@ import { Credentials } from '../credentials/credentials';
 
 export class CredentialsHelper {
 
-    private credentials: Credentials = new Credentials();
+    public async obtainCredentials(): Promise<Credentials> {
+        let cred = new Credentials();
 
-    public obtainCredentials(): Credentials {
-        this.provideUserNameAndPasswor();
-        return this.credentials;
+        cred.setUserName(await this.getInputBoxValuePromise("Please, enter user name", false));
+        cred.setPassword(await this.getInputBoxValuePromise("Please, enter password", true));
+
+        return cred;
     }
 
-    private provideUserNameAndPasswor(): void {
-        let thenable = this.getInputBoxValueThenable("Please, enter user name", false);
-        thenable.then((userName) => {
-            this.credentials.setUserName(userName);
-            this.providePassword();
-        });
-    }
-
-    private providePassword(): void {
-        let thenable = this.getInputBoxValueThenable("Please, enter password", true);
-        thenable.then((password) => {
-            this.credentials.setPassword(password);
-        });
-    }
-
-    private getInputBoxValueThenable(initialInput: string, isPassword: boolean): Thenable<string> {
-        let userInput = vscode.window.showInputBox({
+    private async getInputBoxValuePromise(initialInput: string, isPassword: boolean): Promise<string> {
+        let userInput = await vscode.window.showInputBox({
             value: initialInput,
             password: isPassword,
             validateInput: function (input) {

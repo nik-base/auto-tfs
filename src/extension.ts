@@ -5,7 +5,12 @@ var tfs = new Tfs();
 
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('z-tf-checkout.checkout', () => {
-		tfs.checkOut();
+		
+		try {
+			tfs.checkOut();
+		} catch (e) {
+			console.log(e);
+		}
 	});
 
 	context.subscriptions.push(disposable);
