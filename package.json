@@ -14,8 +14,8 @@
     "activationEvents": [
         "onCommand:z-tf-util.checkout",
         "onCommand:z-tf-util.undo",
-        "onCommand:z-tf-util.rollback",
-        "onCommand:z-tf-util.add"
+        "onCommand:z-tf-util.add",
+        "onCommand:z-tf-util.delete"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -28,12 +28,12 @@
                 "title": "Z-TF Util: Undo changes for current file"
             },
             {
-                "command": "z-tf-util.rollback",
-                "title": "Z-TF Util: Rollback changes of current file"
-            },
-            {
                 "command": "z-tf-util.add",
                 "title": "Z-TF Util: Add current file to TFS"
+            },
+            {
+                "command": "z-tf-util.delete",
+                "title": "Z-TF Util: Delete current file"
             }
         ]
     },

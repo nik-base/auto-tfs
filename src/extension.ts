@@ -10,18 +10,18 @@ export function activate(context: vscode.ExtensionContext) {
     let undoCommand = vscode.commands.registerCommand('z-tf-util.undo', () => {
         tfs.undo();
     });
-    let rollbackCommand = vscode.commands.registerCommand('z-tf-util.rollback', () => {
-        tfs.rollback();
-    });
     let addCommand = vscode.commands.registerCommand('z-tf-util.add', () => {
         tfs.add();
+    });
+    let deleteCommand = vscode.commands.registerCommand('z-tf-util.delete', () => {
+        tfs.delete();
     });
 
     context.subscriptions.push(
         checkoutCommand,
         undoCommand,
-        rollbackCommand,
-        addCommand);
+        addCommand,
+        deleteCommand);
 }
 
 // this method is called when your extension is deactivated

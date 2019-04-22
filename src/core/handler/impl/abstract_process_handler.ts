@@ -8,7 +8,7 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
     protected process: Process;
     private credentialsHelper = new CredentialsHelper();
     private credentialsPromise: Promise<Credentials>;
-    private supressErrors : ["local echo", "Auth"];
+    private suppressedErrors: ["local echo", "Access denied"];
 
     public handleOutData(data: string): void {
         this.handleAuthorize(data);
@@ -33,13 +33,13 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         process.registerExitHandler(this.handleExit.bind(this));
     }
 
-    protected handleAuthorize(processStdOut: string) {
-        this.handleUserNameAndObtainCredentials(processStdOut);
-        this.handlePassword(processStdOut);
+    protected handleAuthorize(processStdOutData: string) {
+        this.handleUserNameAndObtainCredentials(processStdOutData);
+        this.handlePassword(processStdOutData);
     }
 
-    private handleUserNameAndObtainCredentials(processStdOut: string) {
-        if (processStdOut.indexOf("Username") > -1) {
+    private handleUserNameAndObtainCredentials(processStdOutData: string) {
+        if (processStdOutData.indexOf("Username") > -1) {
             vscode.window.showWarningMessage("Please, provide your TFS credentials for proceeding");
             this.credentialsPromise = this.credentialsHelper.obtainCredentials();
             this.credentialsPromise.then((credentials) => {
@@ -48,15 +48,15 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         }
     }
 
-    private handlePassword(processStdOut: string) {
-        if (processStdOut.indexOf("Password") > -1) {
+    private handlePassword(processStdOutData: string) {
+        if (processStdOutData.indexOf("Password") > -1) {
             this.credentialsPromise.then((credentials) => {
                 this.process.writeLn(credentials.getPassword());
             });
         }
     }
 
-    private isSuppressedError(processStdOut: string) : boolean {
-        return this.supressErrors.some(item => processStdOut.indexOf(item) > -1);
+    private isSuppressedError(processStdOutData: string): boolean {
+        return this.suppressedErrors.some(item => processStdOutData.indexOf(item) > -1);
     }
 }
