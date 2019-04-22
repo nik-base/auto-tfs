@@ -36,7 +36,8 @@ Another supported setting serves for logging information into Output. To enable 
 ## Usage
 1. Invoke the command bar (`Ctrl+Shift+P`)
 2. Start typing some of the command listed below or just Z-TF. The full names of commands:
-``` Z-TF Util: Checkout current file
+```
+Z-TF Util: Checkout current file
 Z-TF Util: Undo changes for current file
 Z-TF Util: Add current file to TFS
 Z-TF Util: Delete current file
