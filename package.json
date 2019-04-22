@@ -2,7 +2,7 @@
     "name": "z-tf-utils",
     "displayName": "Z-TF Utils",
     "description": "TF command utils for VS Code",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "publisher": "zoltor",
     "repository": "https://github.com/niberius/z-tf-utils",
     "homepage": "https://github.com/niberius/z-tf-utils",

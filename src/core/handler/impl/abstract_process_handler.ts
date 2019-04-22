@@ -54,11 +54,6 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         this.handlePassword(processStdOutData);
     }
 
-    protected abortProcess(abortMessage: string) {
-        this.message.error(abortMessage);
-        this.process.kill();
-    }
-
     private handleUserNameAndObtainCredentials(processStdOutData: string) {
         if (processStdOutData.indexOf("Username") > -1) {
             this.message.warning("Please, provide your TFS credentials for proceeding");
@@ -73,7 +68,6 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         if (processStdOutData.indexOf("Password") > -1) {
             this.credentialsPromise.then((credentials) => {
                 this.process.writeLn(credentials.getPassword());
-                this.abortProcess("Sorry, impossible to proceed without a password");
             });
         }
     }
