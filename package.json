@@ -2,9 +2,13 @@
     "name": "z-tf-utils",
     "displayName": "Z-TF Utils",
     "description": "TF command utils for VS Code",
-    "version": "0.0.1",
-    "publisher": "ZoLToR",
+    "version": "0.1.0",
+    "publisher": "zoltor",
     "repository": "https://github.com/niberius/z-tf-utils",
+    "homepage": "https://github.com/niberius/z-tf-utils",
+    "bugs": {
+        "url": "https://github.com/niberius/z-tf-utils/issues"
+    },
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -17,9 +21,11 @@
         "onCommand:z-tf-util.add",
         "onCommand:z-tf-util.delete"
     ],
+    "keywords": ["tfs", "team", "foundation", "server"],
     "main": "./out/extension.js",
     "contributes": {
-        "commands": [{
+        "commands": [
+            {
                 "command": "z-tf-util.checkout",
                 "title": "Z-TF Util: Checkout current file"
             },
@@ -35,7 +41,20 @@
                 "command": "z-tf-util.delete",
                 "title": "Z-TF Util: Delete current file"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "Z-TF Utils",
+            "properties": {
+                "z-tf-util.tf.path": {
+                    "type": "string",
+                    "description": "Full path to TF.EXE or TF.CMD"
+                },
+                "z-tf-util.debug": {
+                    "type": "boolean",
+                    "description": "Run the extension in debug mode. Commands output will be printed, if the setting is set to true"
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
