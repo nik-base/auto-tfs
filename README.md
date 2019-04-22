@@ -22,15 +22,24 @@ or
 A full path to TF tool should be spicified in Settings (**File > Preferences > Settings**).
 The following entry is needed:
 
-```javascript
+```
     "z-tf-util.tf.path": "<path-to-tf-command-line>"
 ```
 
 If you are going to use the `tf.exe` tool ebmbdded into Visual Studio IDE, the value to specify will be similar to `C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\Common7\\IDE\\TF.exe`. For TEE, it will be like this: `C:\\Program Files (x86)\\TeamExplorerEverywhere\\tf.cmd`
 
 Another supported setting serves for logging information into Output. To enable this, just add following option to VS Code Settings:
-```javascript
+```
     "z-tf-util.debug": true
+```
+
+## Usage
+1. Invoke the command bar (`Ctrl+Shift+P`)
+2. Start typing some of the command listed below or just Z-TF. The full names of commands:
+``` Z-TF Util: Checkout current file
+Z-TF Util: Undo changes for current file
+Z-TF Util: Add current file to TFS
+Z-TF Util: Delete current file
 ```
 
 ## Features
