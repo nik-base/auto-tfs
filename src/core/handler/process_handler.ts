@@ -1,8 +1,9 @@
 import { Process } from "../process";
 
 export interface ProcessHandler {
-    handleOutData(data: string): void;
-    handleError(data: string): void;
+    handleStdOutData(data: string): void;
+    handleStdErrData(data: string): void;
     handleExit(exitCode: number): void;
+    handleError(error: any): void;
     registerHandlers(processOperation: Process): void;
 }
