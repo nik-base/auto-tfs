@@ -1,7 +1,7 @@
 # VS Code extension for TFS for helping with some operations
 
 [![GitHub](https://img.shields.io/github/v/release/nik-base/auto-tfs?include_prereleases&style=flat-square)](https://github.com/nik-base/auto-tfs/releases)
-[![NodeJS with Webpack](https://github.com/nik-base/auto-tfs/actions/workflows/webpack.yml/badge.svg)](https://github.com/nik-base/auto-tfs/actions/workflows/webpack.yml)
+[![GitHub](https://img.shields.io/github/workflow/status/nik-base/auto-tfs/NodeJS%20with%20Webpack?style=flat-square)](https://github.com/nik-base/auto-tfs/actions/workflows/webpack.yml)
 [![David](https://img.shields.io/david/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs)
 [![David](https://img.shields.io/david/dev/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs?type=dev)
 
