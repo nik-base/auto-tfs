@@ -1,4 +1,10 @@
 # VS Code extension for TFS for helping with some operations
+
+[![GitHub](https://img.shields.io/github/v/release/nik-base/auto-tfs?include_prereleases&style=flat-square)](https://github.com/nik-base/auto-tfs/releases)
+[![NodeJS with Webpack](https://github.com/nik-base/auto-tfs/actions/workflows/webpack.yml/badge.svg)](https://github.com/nik-base/auto-tfs/actions/workflows/webpack.yml)
+[![David](https://img.shields.io/david/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs)
+[![David](https://img.shields.io/david/dev/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs?type=dev)
+
 ## Prerequisites
 This extension operates with TF API provided by Microsoft. So, you need either
 1. Have Visual Studion IDE installed
