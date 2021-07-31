@@ -3,7 +3,7 @@
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
     "version": "0.1.0",
-    "publisher": "nik-base",
+    "publisher": "nikhil-patil",
     "author": {
         "name": "Nikhil Patil",
         "url": "https://github.com/nik-base"
