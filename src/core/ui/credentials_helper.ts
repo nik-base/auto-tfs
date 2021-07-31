@@ -5,20 +5,21 @@ export class CredentialsHelper {
     public async obtainCredentials(): Promise<Credentials> {
         let cred = new Credentials();
 
-        cred.setUserName(await this.getInputBoxValuePromise("Please, enter user name", false));
-        cred.setPassword(await this.getInputBoxValuePromise("Please, enter password", true));
+        cred.setUserName(await this.getInputBoxValuePromise('Please, enter user name', false) || '');
+        cred.setPassword(await this.getInputBoxValuePromise('Please, enter password', true) || '');
 
         return cred;
     }
 
-    private async getInputBoxValuePromise(initialInput: string, isPassword: boolean): Promise<string> {
-        let userInput = await vscode.window.showInputBox({
+    private async getInputBoxValuePromise(initialInput: string, isPassword: boolean): Promise<string | undefined> {
+        const userInput = await vscode.window.showInputBox({
             value: initialInput,
             password: isPassword,
-            validateInput: function (input) {
+            validateInput: (input: string): string | undefined | null | Thenable<string | undefined | null> => {
                 if (input == initialInput || input.length == 0) {
                     return initialInput;
                 }
+                return null;
             }
         });
 

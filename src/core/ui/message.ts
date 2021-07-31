@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
 export class Message {
     public info(message: string, ...items: string[]): Thenable<string | undefined> {

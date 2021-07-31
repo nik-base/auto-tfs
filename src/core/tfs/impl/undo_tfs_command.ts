@@ -1,14 +1,12 @@
-import { TfsCommand } from "../tfs_command";
-import * as vscode from "vscode";
-import { UndoProcessHandler } from "../../handler/impl/undo_process_handler";
-import { ProcessHandler } from "../../handler/process_handler";
+import { ProcessHandler } from '../../handler/process_handler';
+import { UndoProcessHandler } from '../../handler/impl/undo_process_handler';
+import { TfsCommandBase } from './tfs_command_base';
 
-export class UndoTfsCommand implements TfsCommand {
-    public getCommandAndArgs(): string[] {
-        return ["undo", vscode.window.activeTextEditor.document.uri.fsPath];
-    }
+export class UndoTfsCommand extends TfsCommandBase {
+    
+    protected override readonly command = 'undo';
 
-    public getConsoleDataHandler(): ProcessHandler {
+    public override getConsoleDataHandler(): ProcessHandler {
         return new UndoProcessHandler();
     }
 }

@@ -1,8 +1,8 @@
 export class Credentials {
-    userName: string;
-    password: string;
+    public userName: string | undefined;
+    public password: string | undefined;
 
-    public getUserName(): string {
+    public getUserName(): string | undefined {
         return this.userName;
     }
 
@@ -10,7 +10,7 @@ export class Credentials {
         this.userName = userName;
     }
 
-    public getPassword(): string {
+    public getPassword(): string | undefined {
         return this.password;
     }
 

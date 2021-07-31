@@ -5,6 +5,6 @@ export class AddProcessHandler extends AbstractProcessHandler implements Process
     public handleStdErrData(data: string): void {
         this.logger.logDebugData(data);
         super.handleStdErrData(data);
-        this.message.error("Please, save the file first and check TFS workspace settings / mappings");
+        this.message.error('Please, save the file first and check TFS workspace settings / mappings');
     }
 }

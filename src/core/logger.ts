@@ -1,4 +1,4 @@
-import { Configuration } from "./configuration";
+import { Configuration } from './configuration';
 
 export class Logger {
     private configuration = new Configuration();
@@ -9,13 +9,14 @@ export class Logger {
         }
     }
 
-    public tryAndLogWithException<T>(func: () => T): T {
+    public tryAndLogWithException<T>(func: () => T): T | undefined {
         try {
             return func();
         } catch (e) {
             if (this.configuration.isDebugEnabled()) {
                 console.log(e);
             }
+            return;
         }
     }
 }

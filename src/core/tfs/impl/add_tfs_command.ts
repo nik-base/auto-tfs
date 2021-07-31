@@ -1,14 +1,12 @@
-import { TfsCommand } from "../tfs_command";
-import * as vscode from "vscode";
-import { ProcessHandler } from "../../handler/process_handler";
-import { AddProcessHandler } from "../../handler/impl/add_process_handler";
+import { ProcessHandler } from '../../handler/process_handler';
+import { AddProcessHandler } from '../../handler/impl/add_process_handler';
+import { TfsCommandBase } from './tfs_command_base';
 
-export class AddTfsCommand implements TfsCommand {
-    public getCommandAndArgs(): string[] {
-        return ["add", vscode.window.activeTextEditor.document.uri.fsPath];
-    }
+export class AddTfsCommand extends TfsCommandBase {
 
-    public getConsoleDataHandler(): ProcessHandler {
+    protected override readonly command = 'add';
+
+    public override getConsoleDataHandler(): ProcessHandler {
         return new AddProcessHandler();
     }
 }

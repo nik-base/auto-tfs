@@ -1,4 +1,4 @@
-import { Process } from "../process";
+import { Process } from '../process';
 
 export interface ProcessHandler {
     handleStdOutData(data: string): void;
