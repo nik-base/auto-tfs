@@ -4,7 +4,7 @@ import { TfsCommandBase } from './tfs_command_base';
 
 export class CheckoutTfsCommand extends TfsCommandBase {
 
-    protected override readonly command = 'checkout';
+    public override readonly command = 'checkout';
 
     public override getConsoleDataHandler(): ProcessHandler {
         return new CheckoutProcessHandler();

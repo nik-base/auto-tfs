@@ -4,7 +4,7 @@ import { TfsCommandBase } from './tfs_command_base';
 
 export class DeleteTfsCommand extends TfsCommandBase {
 
-    protected override readonly command = 'delete';
+    public override readonly command = 'delete';
 
     public override getConsoleDataHandler(): ProcessHandler {
         return new DeleteProcessHandler();

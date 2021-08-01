@@ -4,7 +4,7 @@ import { TfsCommandBase } from './tfs_command_base';
 
 export class AddTfsCommand extends TfsCommandBase {
 
-    protected override readonly command = 'add';
+    public override readonly command = 'add';
 
     public override getConsoleDataHandler(): ProcessHandler {
         return new AddProcessHandler();

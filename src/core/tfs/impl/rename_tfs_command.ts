@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 
 export class RenameTfsCommand extends TfsCommandBase {
 
-    protected override readonly command = 'rename';
+    public override readonly command = 'rename';
 
     public override getCommandAndArgsFile(uri: vscode.Uri, _data: any): string[] {
         const newUri = _data as vscode.Uri;

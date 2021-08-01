@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publisher": "nikhil-patil",
     "author": {
         "name": "Nikhil Patil",
@@ -21,10 +21,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:auto-tfs.checkout",
-        "onCommand:auto-tfs.undo",
-        "onCommand:auto-tfs.add",
-        "onCommand:auto-tfs.delete"
+        "*"
     ],
     "keywords": [
         "tfs",
@@ -55,8 +52,88 @@
             {
                 "command": "auto-tfs.delete",
                 "title": "Auto TFS: Delete current file"
+            },
+            {
+                "command": "auto-tfs.exp-checkout",
+                "title": "Auto TFS: Checkout selected file(s) or folder(s)"
+            },
+            {
+                "command": "auto-tfs.exp-undo",
+                "title": "Auto TFS: Undo selected file(s) or folder(s)"
+            },
+            {
+                "command": "auto-tfs.exp-add",
+                "title": "Auto TFS: Add selected file(s) or folder(s)"
+            },
+            {
+                "command": "auto-tfs.tile-checkout",
+                "title": "Auto TFS: Checkout current file"
+            },
+            {
+                "command": "auto-tfs.tile-undo",
+                "title": "Auto TFS: Undo current file"
+            },
+            {
+                "command": "auto-tfs.tile-add",
+                "title": "Auto TFS: Add current file"
+            },
+            {
+                "command": "auto-tfs.ide-checkout",
+                "title": "Auto TFS: Checkout current file"
+            },
+            {
+                "command": "auto-tfs.ide-undo",
+                "title": "Auto TFS: Undo current file"
+            },
+            {
+                "command": "auto-tfs.ide-add",
+                "title": "Auto TFS: Add current file"
             }
         ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "command": "auto-tfs.exp-checkout",
+                    "group": "Auto TFS"
+                },
+                {
+                    "command": "auto-tfs.exp-undo",
+                    "group": "Auto TFS"
+                },
+                {
+                    "command": "auto-tfs.exp-add",
+                    "group": "Auto TFS"
+                }
+            ],
+            "editor/title/context": [
+                {
+                    "command": "auto-tfs.tile-checkout",
+                    "group": "Auto TFS"
+                },
+                {
+                    "command": "auto-tfs.tile-undo",
+                    "group": "Auto TFS"
+                },
+                {
+                    "command": "auto-tfs.tile-add",
+                    "group": "Auto TFS"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "auto-tfs.ide-checkout",
+                    "group": "Auto TFS"
+                },
+                {
+                    "command": "auto-tfs.ide-undo",
+                    "group": "Auto TFS"
+                },
+                {
+                    "command": "auto-tfs.ide-add",
+                    "group": "Auto TFS"
+                }
+            ]
+        },
         "configuration": {
             "title": "Auto TFS",
             "properties": {

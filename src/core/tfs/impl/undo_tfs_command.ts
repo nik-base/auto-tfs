@@ -4,7 +4,7 @@ import { TfsCommandBase } from './tfs_command_base';
 
 export class UndoTfsCommand extends TfsCommandBase {
     
-    protected override readonly command = 'undo';
+    public override readonly command = 'undo';
 
     public override getConsoleDataHandler(): ProcessHandler {
         return new UndoProcessHandler();
