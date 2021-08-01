@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
