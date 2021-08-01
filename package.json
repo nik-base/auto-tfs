@@ -4,6 +4,7 @@
     "description": "TF command utils for VS Code",
     "version": "0.2.0",
     "publisher": "nikhil-patil",
+    "license": "MIT",
     "author": {
         "name": "Nikhil Patil",
         "url": "https://github.com/nik-base"
