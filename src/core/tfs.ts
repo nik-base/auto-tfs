@@ -1,17 +1,17 @@
-import { CheckoutTfsCommand } from './tfs/impl/checkout_tfs_command';
-import { TfsCommand } from './tfs/tfs_command';
+import { CheckoutTfsCommand } from './tfs/impl/checkout-tfs-command';
+import { TfsCommand } from './tfs/tfs-command';
 import { Process } from './process';
-import * as vscode from 'vscode';
-import { UndoTfsCommand } from './tfs/impl/undo_tfs_command';
-import { AddTfsCommand } from './tfs/impl/add_tfs_command';
-import { DeleteTfsCommand } from './tfs/impl/delete_tfs_command';
+import { Uri } from 'vscode';
+import { UndoTfsCommand } from './tfs/impl/undo-tfs-command';
+import { AddTfsCommand } from './tfs/impl/add-tfs-command';
+import { DeleteTfsCommand } from './tfs/impl/delete-tfs-command';
 import { Configuration } from './configuration';
 import { Message } from './ui/message';
 import { Logger } from './logger';
-import { RenameTfsCommand } from './tfs/impl/rename_tfs_command';
-import { OutputChannel } from './output_channel';
-import { InfoTfsCommand } from './tfs/impl/info_tfs_command';
-import { InfoProcessHandler } from './handler/impl/info_process_handler';
+import { RenameTfsCommand } from './tfs/impl/rename-tfs-command';
+import { OutputChannel } from './output-channel';
+import { InfoTfsCommand } from './tfs/impl/info-fs-command';
+import { InfoProcessHandler } from './handler/impl/info-process-handler';
 
 export class Tfs {
     private configuration = new Configuration();
@@ -22,19 +22,19 @@ export class Tfs {
         this.executeCommand(new CheckoutTfsCommand());
     }
 
-    public checkOutFile(uri: vscode.Uri): void {
+    public checkOutFile(uri: Uri): void {
         if (!this.checkAction(new CheckoutTfsCommand(), uri, null)) {
             return;
         }
-        this.confirmCheckout().then((selectedItem : string | undefined) => {
+        this.confirmCheckout().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 this.executeCommandFile(new CheckoutTfsCommand(), uri, null);
             }
         });
     }
 
-    public checkOutFiles(uriList: readonly vscode.Uri[]): void {
-        this.confirmCheckout().then((selectedItem : string | undefined) => {
+    public checkOutFiles(uriList: readonly Uri[]): void {
+        this.confirmCheckout().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 for (const uri of uriList) {
                     this.executeCommandFile(new CheckoutTfsCommand(), uri, null);
@@ -43,8 +43,8 @@ export class Tfs {
         });
     }
 
-    public renameFiles(files: ReadonlyArray<{ readonly oldUri: vscode.Uri, readonly newUri: vscode.Uri }>): Thenable<any> {
-        return new Promise<any>((_, reject) => this.confirmRename().then((selectedItem : string | undefined) => {
+    public renameFiles(files: ReadonlyArray<{ readonly oldUri: Uri, readonly newUri: Uri }>): Thenable<any> {
+        return new Promise<any>((_, reject) => this.confirmRename().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 for (const file of files) {
                     this.executeCommandFileSync(new RenameTfsCommand(), file.oldUri, file.newUri);
@@ -58,16 +58,16 @@ export class Tfs {
         this.executeCommand(new UndoTfsCommand());
     }
 
-    public undoFile(uri: vscode.Uri): void {
-        this.confirmUndo().then((selectedItem : string | undefined) => {
+    public undoFile(uri: Uri): void {
+        this.confirmUndo().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 this.executeCommandFile(new UndoTfsCommand(), uri, null);
             }
         });
     }
 
-    public undoFiles(uriList: readonly vscode.Uri[]): void {
-        this.confirmUndo().then((selectedItem : string | undefined) => {
+    public undoFiles(uriList: readonly Uri[]): void {
+        this.confirmUndo().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 for (const uri of uriList) {
                     this.executeCommandFile(new UndoTfsCommand(), uri, null);
@@ -80,16 +80,16 @@ export class Tfs {
         this.executeCommand(new AddTfsCommand());
     }
 
-    public addFile(uri: vscode.Uri): void {
-        this.confirmAdd().then((selectedItem : string | undefined) => {
+    public addFile(uri: Uri): void {
+        this.confirmAdd().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 this.executeCommandFile(new AddTfsCommand(), uri, null);
             }
         });
     }
 
-    public addFiles(uriList: readonly vscode.Uri[]): void {
-        this.confirmAdd().then((selectedItem : string | undefined) => {
+    public addFiles(uriList: readonly Uri[]): void {
+        this.confirmAdd().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 for (const uri of uriList) {
                     this.executeCommandFile(new AddTfsCommand(), uri, null);
@@ -99,14 +99,14 @@ export class Tfs {
     }
 
     public delete(): void {
-        this.confirmFileDelete().then((selectedItem : string | undefined) => {
+        this.confirmFileDelete().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 this.executeCommand(new DeleteTfsCommand());
             }
         });
     }
 
-    public deleteFile(uri: vscode.Uri): void {
+    public deleteFile(uri: Uri): void {
         this.confirmDelete().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 this.executeCommandFile(new DeleteTfsCommand(), uri, null);
@@ -115,7 +115,7 @@ export class Tfs {
     }
 
 
-    public deleteFiles(uriList: readonly vscode.Uri[]): void {
+    public deleteFiles(uriList: readonly Uri[]): void {
         this.confirmDelete().then((selectedItem: string | undefined) => {
             if (this.confirmed(selectedItem)) {
                 for (const uri of uriList) {
@@ -125,7 +125,7 @@ export class Tfs {
         });
     }
 
-    private checkAction(command: TfsCommand, uri: vscode.Uri, data: any): boolean {
+    private checkAction(command: TfsCommand, uri: Uri, data: any): boolean {
         const tfPath = this.getTfPath();
         if (!tfPath) {
             return false;
@@ -187,7 +187,7 @@ export class Tfs {
         });
     }
 
-    private executeCommandFile(command: TfsCommand, uri: vscode.Uri, data: any) {
+    private executeCommandFile(command: TfsCommand, uri: Uri, data: any) {
         this.logger.tryAndLogWithException(() => {
             const process = this.getProcess(command, uri, data);
             if (!process) {
@@ -197,7 +197,7 @@ export class Tfs {
         });
     }
 
-    private executeCommandFileSync(command: TfsCommand, uri: vscode.Uri, data: any) {
+    private executeCommandFileSync(command: TfsCommand, uri: Uri, data: any) {
         this.logger.tryAndLogWithException(() => {
             this.triggerProcessSync(command, uri, data);
         });
@@ -206,7 +206,7 @@ export class Tfs {
     private getTfPath(): string | null {
         const tfPath = this.configuration.getTfPath();
         if (!tfPath) {
-            const message = 'The path to TF command is not configured. Please, check the property auto-tfs.tf.path in VS Code settings';            
+            const message = 'The path to TF command is not configured. Please, check the property auto-tfs.tf.path in VS Code settings';
             this.message.error(message);
             OutputChannel.log(message);
             return null;
@@ -214,7 +214,7 @@ export class Tfs {
         return tfPath;
     }
 
-    private getProcess(command: TfsCommand, uri: vscode.Uri | undefined, data: any): Process | null {
+    private getProcess(command: TfsCommand, uri: Uri | undefined, data: any): Process | null {
         const tfPath = this.getTfPath();
         if (!tfPath) {
             return null;
@@ -232,15 +232,15 @@ export class Tfs {
         return process;
     }
 
-    private triggerProcessSync(command: TfsCommand, uri: vscode.Uri | undefined, data: any): string | null {
+    private triggerProcessSync(command: TfsCommand, uri: Uri | undefined, data: any): string | null {
         const tfPath = this.getTfPath();
         if (!tfPath) {
             return null;
         }
         if (uri) {
-            const result = this.checkInfo(tfPath, command, uri, data);
-            if (!result.proceed) {
-                OutputChannel.log(result.msg);
+            const change = this.checkInfo(tfPath, command, uri, data);
+            if (!change.proceed) {
+                OutputChannel.log(change.msg);
                 return null;
             }
         }
@@ -252,7 +252,7 @@ export class Tfs {
         return result;
     }
 
-    private checkInfo(tfPath: string, tfs: TfsCommand, uri: vscode.Uri | undefined, data: any): { proceed: boolean, msg: string } {
+    private checkInfo(tfPath: string, tfs: TfsCommand, uri: Uri | undefined, data: any): { proceed: boolean, msg: string } {
         if (tfs.command !== 'checkout') {
             return { proceed: true, msg: '' };
         }
@@ -264,11 +264,11 @@ export class Tfs {
         OutputChannel.log(message);
         const result = process.spawnSync(tfPath!, args);
         const processHandler = infoCommand.getConsoleDataHandler() as InfoProcessHandler;
-        const changeType = processHandler.getData(result);        
+        const changeType = processHandler.getData(result);
         return this.handleCheckout(changeType, uri!);
     }
 
-    private handleCheckout(change: string | null, uri: vscode.Uri): { proceed: boolean, msg: string } {
+    private handleCheckout(change: string | null, uri: Uri): { proceed: boolean, msg: string } {
         if (change === 'edit') {
             return { proceed: false, msg: `File ${uri.fsPath} already checked out` };
         }

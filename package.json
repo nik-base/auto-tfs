@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
@@ -149,7 +149,11 @@
                 "auto-tfs.tf.autoCheckout": {
                     "type": "string",
                     "default": "Never",
-                    "enum": ["Never", "On Save", "On Change"],
+                    "enum": [
+                        "Never",
+                        "On Save",
+                        "On Change"
+                    ],
                     "enumDescriptions": [
                         "Don't checkout file(s)",
                         "Checkout file(s) on save",
@@ -180,13 +184,14 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
+        "lint": "node --max_old_space_size=16384 ./node_modules/tslint/bin/tslint --project src/tsconfig.json src/**/*.ts -t verbose",
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
         "@types/node": "^16.4.8",
+        "codelyzer": "^6.0.2",
         "tslint": "^6.1.3",
         "typescript": "^4.3.5",
         "vscode": "^1.1.37"
-    },
-    "dependencies": {}
+    }
 }

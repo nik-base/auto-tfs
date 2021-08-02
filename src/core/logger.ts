@@ -1,5 +1,5 @@
 import { Configuration } from './configuration';
-import { OutputChannel } from './output_channel';
+import { OutputChannel } from './output-channel';
 
 export class Logger {
     private configuration = new Configuration();

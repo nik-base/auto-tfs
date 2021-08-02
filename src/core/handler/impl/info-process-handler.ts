@@ -1,6 +1,6 @@
-import { OutputChannel } from '../../output_channel';
-import { ProcessHandler } from '../process_handler';
-import { AbstractProcessHandler } from './abstract_process_handler';
+import { OutputChannel } from '../../output-channel';
+import { ProcessHandler } from '../process-handler';
+import { AbstractProcessHandler } from './abstract-process-handler';
 
 export class InfoProcessHandler extends AbstractProcessHandler implements ProcessHandler {
     public override showMessageOnUI = false;
@@ -14,7 +14,7 @@ export class InfoProcessHandler extends AbstractProcessHandler implements Proces
             const result = this.getChangeType(data);
             OutputChannel.log(result!);
             return result;
-        } catch(e) {
+        } catch (e) {
             OutputChannel.log(e);
             return null;
         }

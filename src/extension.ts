@@ -1,122 +1,124 @@
-import * as vscode from 'vscode';
+import { ExtensionContext, commands, workspace, Uri
+    , TextDocumentChangeEvent, TextDocument, FileWillRenameEvent, FileCreateEvent, FileDeleteEvent } from 'vscode';
 import { Configuration } from './core/configuration';
-import { OutputChannel } from './core/output_channel';
+import { OutputChannel } from './core/output-channel';
 import { Tfs } from './core/tfs';
-import * as fs from 'fs';
+import { existsSync, lstatSync } from 'fs';
 
 const tfs = new Tfs();
 OutputChannel.init();
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
+
     OutputChannel.log('Auto TFS started');
-    
-    const checkoutCommand = vscode.commands.registerCommand('auto-tfs.checkout', () => {
+
+    const checkoutCommand = commands.registerCommand('auto-tfs.checkout', () => {
         tfs.checkOut();
     });
-    const undoCommand = vscode.commands.registerCommand('auto-tfs.undo', () => {
+    const undoCommand = commands.registerCommand('auto-tfs.undo', () => {
         tfs.undo();
     });
-    const addCommand = vscode.commands.registerCommand('auto-tfs.add', () => {
+    const addCommand = commands.registerCommand('auto-tfs.add', () => {
         tfs.add();
     });
-    const deleteCommand = vscode.commands.registerCommand('auto-tfs.delete', () => {
+    const deleteCommand = commands.registerCommand('auto-tfs.delete', () => {
         tfs.delete();
     });
-    
-    const checkoutExpCommand = vscode.commands.registerCommand('auto-tfs.exp-checkout'
-    , async (clickedFile: vscode.Uri, selectedFiles: vscode.Uri[]) => {
+
+    const checkoutExpCommand = commands.registerCommand('auto-tfs.exp-checkout'
+    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
         const uris = await getRecursiveUris(selectedFiles || [clickedFile]);
         tfs.checkOutFiles(uris);
     });
 
-    const undoExpCommand = vscode.commands.registerCommand('auto-tfs.exp-undo'
-    , async (clickedFile: vscode.Uri, selectedFiles: vscode.Uri[]) => {
+    const undoExpCommand = commands.registerCommand('auto-tfs.exp-undo'
+    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
         const uris = await getRecursiveUris(selectedFiles || [clickedFile]);
         tfs.undoFiles(uris);
     });
 
-    const addExpCommand = vscode.commands.registerCommand('auto-tfs.exp-add'
-    , async (clickedFile: vscode.Uri, selectedFiles: vscode.Uri[]) => {
+    const addExpCommand = commands.registerCommand('auto-tfs.exp-add'
+    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
         const uris = await getRecursiveUris(selectedFiles || [clickedFile]);
         tfs.addFiles(uris);
     });
 
-    const checkoutTileCommand = vscode.commands.registerCommand('auto-tfs.tile-checkout'
-    , (clickedFile: vscode.Uri) => {
+    const checkoutTileCommand = commands.registerCommand('auto-tfs.tile-checkout'
+    , (clickedFile: Uri) => {
         tfs.checkOutFile(clickedFile);
     });
 
-    const undoTileCommand = vscode.commands.registerCommand('auto-tfs.tile-undo'
-    , (clickedFile: vscode.Uri) => {
+    const undoTileCommand = commands.registerCommand('auto-tfs.tile-undo'
+    , (clickedFile: Uri) => {
         tfs.undoFile(clickedFile);
     });
 
-    const addTileCommand = vscode.commands.registerCommand('auto-tfs.tile-add'
-    , (clickedFile: vscode.Uri) => {
+    const addTileCommand = commands.registerCommand('auto-tfs.tile-add'
+    , (clickedFile: Uri) => {
         tfs.addFile(clickedFile);
     });
 
-    const checkoutIdeCommand = vscode.commands.registerCommand('auto-tfs.ide-checkout'
-    , (clickedFile: vscode.Uri) => {
+    const checkoutIdeCommand = commands.registerCommand('auto-tfs.ide-checkout'
+    , (clickedFile: Uri) => {
         tfs.checkOutFile(clickedFile);
     });
 
-    const undoIdeCommand = vscode.commands.registerCommand('auto-tfs.ide-undo'
-    , (clickedFile: vscode.Uri) => {
+    const undoIdeCommand = commands.registerCommand('auto-tfs.ide-undo'
+    , (clickedFile: Uri) => {
         tfs.undoFile(clickedFile);
     });
 
-    const addIdeCommand = vscode.commands.registerCommand('auto-tfs.ide-add'
-    , (clickedFile: vscode.Uri) => {
+    const addIdeCommand = commands.registerCommand('auto-tfs.ide-add'
+    , (clickedFile: Uri) => {
         tfs.addFile(clickedFile);
     });
 
-    const onChange = vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
+    const onChange = workspace.onDidChangeTextDocument((event: TextDocumentChangeEvent) => {
         const configuration = new Configuration();
         const autoCheckout = configuration.tfAutoCheckout();
         if (autoCheckout !== 'On Change') {
             return;
-        }   
+        }
         tfs.checkOutFile(event.document.uri);
-	});
+    });
 
-    const onSave = vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+    const onSave = workspace.onDidSaveTextDocument((document: TextDocument) => {
         const configuration = new Configuration();
         const autoCheckout = configuration.tfAutoCheckout();
         if (autoCheckout !== 'On Save') {
             return;
         }
-		tfs.checkOutFile(document.uri);    
-	});
+        tfs.checkOutFile(document.uri);
+    });
 
-    const onRename = vscode.workspace.onWillRenameFiles((event: vscode.FileWillRenameEvent) => {
+    const onRename = workspace.onWillRenameFiles((event: FileWillRenameEvent) => {
         return event.waitUntil(tryRenameFiles(event));
-	});
+    });
 
-    const onCreate = vscode.workspace.onDidCreateFiles((event: vscode.FileCreateEvent) => {
+    const onCreate = workspace.onDidCreateFiles((event: FileCreateEvent) => {
         const configuration = new Configuration();
         const autoAdd = configuration.isTfAutoAdd();
         if (!autoAdd) {
             return;
         }
         tfs.addFiles(event.files);
-	});
+    });
 
-    const onDelete = vscode.workspace.onDidDeleteFiles((event: vscode.FileDeleteEvent) => {
+    const onDelete = workspace.onDidDeleteFiles((event: FileDeleteEvent) => {
         const configuration = new Configuration();
         const autoDelete = configuration.isTfAutoDelete();
         if (!autoDelete) {
             return;
         }
         tfs.deleteFiles(event.files);
-	});
+    });
 
-    const getRecursiveUris = async (uris: vscode.Uri[]) => {
-        let outputUris: vscode.Uri[] = [];
+    const getRecursiveUris = async (uris: Uri[]) => {
+        let outputUris: Uri[] = [];
         for (let i = 0; i < uris.length; i++) {
-            if (fs.existsSync(uris[i].fsPath)) {
-                if (fs.lstatSync(uris[i].fsPath).isDirectory()) {
-                    outputUris = [...outputUris, ...await vscode.workspace.findFiles({
+            if (existsSync(uris[i].fsPath)) {
+                if (lstatSync(uris[i].fsPath).isDirectory()) {
+                    outputUris = [...outputUris, ...await workspace.findFiles({
                         base: uris[i].path,
                         pattern: '**/*'
                     })];
@@ -129,7 +131,7 @@ export function activate(context: vscode.ExtensionContext) {
         return outputUris;
     };
 
-    const tryRenameFiles = (event: vscode.FileWillRenameEvent): Thenable<any> => {
+    const tryRenameFiles = (event: FileWillRenameEvent): Thenable<any> => {
         try {
             const configuration = new Configuration();
             const autoRename = configuration.isTfAutoRename();

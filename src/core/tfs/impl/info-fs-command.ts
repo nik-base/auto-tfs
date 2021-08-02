@@ -1,6 +1,6 @@
-import { ProcessHandler } from '../../handler/process_handler';
-import { InfoProcessHandler } from '../../handler/impl/info_process_handler';
-import { TfsCommandBase } from './tfs_command_base';
+import { ProcessHandler } from '../../handler/process-handler';
+import { InfoProcessHandler } from '../../handler/impl/info-process-handler';
+import { TfsCommandBase } from './tfs-command-base';
 
 export class InfoTfsCommand extends TfsCommandBase {
 

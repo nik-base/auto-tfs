@@ -1,8 +1,8 @@
-import { TfsCommand } from '../tfs_command';
-import * as vscode from 'vscode';
-import { ProcessHandler } from '../../handler/process_handler';
+import { TfsCommand } from '../tfs-command';
+import { window, Uri } from 'vscode';
+import { ProcessHandler } from '../../handler/process-handler';
 import { Message } from '../../ui/message';
-import { OutputChannel } from '../../output_channel';
+import { OutputChannel } from '../../output-channel';
 
 export abstract class TfsCommandBase implements TfsCommand {
 
@@ -11,16 +11,16 @@ export abstract class TfsCommandBase implements TfsCommand {
     public abstract readonly command: string;
 
     public getCommandAndArgs(): string[] {
-        if (!vscode.window.activeTextEditor) {
+        if (!window.activeTextEditor) {
             const message = 'No active document.';
             this.message.info(message);
             OutputChannel.log(message);
         }
-        const activeEditor = vscode.window.activeTextEditor!;
+        const activeEditor = window.activeTextEditor!;
         return this.getCommandAndArgsFile(activeEditor.document.uri, null);
     }
 
-    public getCommandAndArgsFile(uri: vscode.Uri, _data: any): string[] {
+    public getCommandAndArgsFile(uri: Uri, _data: any): string[] {
         return [this.command, uri.fsPath];
     }
 

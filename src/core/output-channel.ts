@@ -1,11 +1,11 @@
-import * as vscode from 'vscode'
+import { window, OutputChannel as vscodeOutputChannel } from 'vscode';
 
 export class OutputChannel {
 
-    private static outputChannel: vscode.OutputChannel;
+    private static outputChannel: vscodeOutputChannel;
 
     public static init() {
-        this.outputChannel = vscode.window.createOutputChannel('Auto TFS');
+        this.outputChannel = window.createOutputChannel('Auto TFS');
     }
 
     public static log(message: string): void {
