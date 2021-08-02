@@ -184,14 +184,13 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "lint": "node --max_old_space_size=16384 ./node_modules/tslint/bin/tslint --project src/tsconfig.json src/**/*.ts -t verbose",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "lint": "node --max_old_space_size=16384 ./node_modules/tslint/bin/tslint --project src/tsconfig.json src/**/*.ts -t verbose"
     },
     "devDependencies": {
         "@types/node": "^16.4.8",
+        "@types/vscode": "^1.58.1",
         "codelyzer": "^6.0.2",
         "tslint": "^6.1.3",
-        "typescript": "^4.3.5",
-        "vscode": "^1.1.37"
+        "typescript": "^4.3.5"
     }
 }
