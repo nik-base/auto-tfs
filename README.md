@@ -8,12 +8,16 @@
 
 ## Prerequisites
 This extension operates with TF API provided by Microsoft. So, you need either
-1. Have Visual Studion IDE installed
+1. Have Visual Studio IDE installed
 or
 2. TeamExplorerEverywhere installed (https://github.com/Microsoft/team-explorer-everywhere)
-> **Note:** Possibly, some other 3rd party tools are also would be work, if they provide the same output and receives the same commands / args
+> **Note:** Possibly, some other 3rd party tools would also work, if they provide the same output and receives the same commands / args
 
 > **Note (for TeamExplorerEverywhere):** Possibly, works under Linux-based systems and MacOS, but I have no ability to test it
+
+## Additional Prerequisites
+- Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).  
+- Visual Studio Code - Minimum version requried for extension is 1.58.2.  
 
 ## Installation
 
@@ -26,14 +30,14 @@ or
 
 ## Configuration
 
-A full path to TF tool should be spicified in Settings (**File > Preferences > Settings**).
+A full path to TF tool should be specified in Settings (**File > Preferences > Settings**). (Recommended to configure in Workspace settings)  
 The following entry is needed:
 
 ```
     "auto-tfs.tf.path": "<path-to-tf-command-line>"
 ```
 
-If you are going to use the `tf.exe` tool ebmbdded into Visual Studio IDE, the value to specify will be similar to `C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\Common7\\IDE\\TF.exe`.  
+If you are going to use the `tf.exe` tool embedded into Visual Studio IDE, the value to specify will be similar to `C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\Common7\\IDE\\TF.exe`.  
 Recent versions of Visual Studio has changed this path, here is a sample of Visual Studio 2019 (Professional) - `C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer\\TF.exe`.  
 For TEE, it will be like this: `C:\\Program Files (x86)\\TeamExplorerEverywhere\\tf.cmd`  
 
@@ -51,6 +55,18 @@ Auto TFS: Undo changes for current file
 Auto TFS: Add current file to TFS
 Auto TFS: Delete current file
 ```
+
+Additionally, for ease of use you can configure the extension to support below functionalities –
+- Configurable Automatic operations.
+- Configurable confirmation of automatic operations.
+- Auto Checkout on Save
+- Auto Checkout on Change
+- Auto Add to source control on Add
+- Auto Delete from source control on Delete
+- Auto Rename on source control on Rename (Experimental - works but throws exception)
+- Add, Checkout and Undo operation can be performed via context menu in Explorer (multiple), Editor and Editor Tile.
+
+![Auto TFS Settings](https://github.com/nik-base/auto-tfs/blob/master/assets/auto-tfs-settings.PNG?raw=true)
 
 ## Features
 
