@@ -1,7 +1,7 @@
 import { CheckoutTfsCommand } from './tfs/impl/checkout-tfs-command';
 import { TfsCommand } from './tfs/tfs-command';
 import { Process } from './process';
-import { commands, Uri } from 'vscode';
+import { Uri } from 'vscode';
 import { UndoTfsCommand } from './tfs/impl/undo-tfs-command';
 import { AddTfsCommand } from './tfs/impl/add-tfs-command';
 import { DeleteTfsCommand } from './tfs/impl/delete-tfs-command';
@@ -54,8 +54,8 @@ export class Tfs {
 
     public codeDiff(uri: Uri): void {
         const command = new ViewTfsCommand();
-        const tempFileName = pathParse(uri.fsPath).base;
-        this.executeCommand(command, [uri], { tempPath: tempFileName });
+        const parsedTemp = pathParse(uri.fsPath);
+        this.executeCommand(command, [uri], { temp: parsedTemp });
     }
 
     private exec(command: TfsCommand, uriList: readonly Uri[], confirm: () => Thenable<string | undefined>): void {
