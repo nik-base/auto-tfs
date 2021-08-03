@@ -273,7 +273,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "lint": "node ./node_modules/tslint/bin/tslint --project src/tsconfig.json src/**/*.ts -t verbose"
+        "lint": "node ./node_modules/tslint/bin/tslint --project tsconfig.json src/**/*.ts -t verbose"
     },
     "devDependencies": {
         "@types/node": "^16.4.8",
