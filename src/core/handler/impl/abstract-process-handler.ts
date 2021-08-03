@@ -64,8 +64,8 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
     public registerHandlers(process: Process) {
         this.process = process;
         process.registerStdOutDataHandler(this.handleStdOutData.bind(this));
-        process.registerStdErrDataHandler(this.handleStdErrData.bind(this));
         process.registerExitHandler(this.handleExit.bind(this));
+        process.registerStdErrDataHandler(this.handleStdErrData.bind(this));
         process.registerErrorHandler(this.handleError.bind(this));
     }
 

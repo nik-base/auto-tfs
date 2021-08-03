@@ -1,4 +1,4 @@
-import { spawn, spawnSync, ChildProcess } from 'child_process';
+import { spawn, spawnSync, ChildProcess, SpawnOptions } from 'child_process';
 import { OutputChannel } from './output-channel';
 
 export class Process {
@@ -10,9 +10,18 @@ export class Process {
         this.childProcess = spawn(executablePath, args);
     }
 
+    public spawnShell(executablePath: string, args: string[]): void {
+        this.commandName = args[0]; // The first arg is always a command
+        const options = <SpawnOptions>{
+            detached: true,
+            shell: true
+        };
+        this.childProcess = spawn(`"${executablePath}"`, args, options);
+    }
+
     public spawnSync(executablePath: string, args: string[]): string {
         this.commandName = args[0]; // The first arg is always a command
-        const result = spawnSync(executablePath, args);
+        const result =  spawnSync(executablePath, args);
         const stdOut = result.stdout;
         OutputChannel.log(stdOut);
         const info = `TF command '${this.getCommandName()}' is successfully done`;

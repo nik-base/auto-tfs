@@ -71,8 +71,6 @@ Additionally, for ease of use you can configure the extension to support below f
 - Auto Rename on source control on Rename (Known issue - works but throws exception)
 - Add, Checkout and Undo operation can be performed via context menu in Explorer (multiple), Editor and Editor Tile.
 
-![Auto TFS Settings](https://github.com/nik-base/auto-tfs/blob/master/assets/auto-tfs-settings.PNG?raw=true)
-
 ## Features
 
 * Authorization process, if needed. This is performed by command bar. In case of the necessivity, you will be prompted to enter the credentials from your TFS account, where the current file is mapped to. Otherwise, a command will be executed silently.

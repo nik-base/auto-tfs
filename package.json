@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
@@ -33,7 +33,10 @@
         "tfvc",
         "vsts",
         "azure",
-        "microsoft"
+        "microsoft",
+        "auto",
+        "auto-tfs",
+        "checkout"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -55,83 +58,169 @@
                 "title": "Auto TFS: Delete current file"
             },
             {
+                "command": "auto-tfs.vsdiff",
+                "title": "Auto TFS: Compare current file in Visual Studio"
+            },
+            {
+                "command": "auto-tfs.codediff",
+                "title": "Auto TFS: Compare current file Here"
+            },
+            {
                 "command": "auto-tfs.exp-checkout",
-                "title": "Auto TFS: Checkout selected file(s) or folder(s)"
+                "title": "Checkout"
             },
             {
                 "command": "auto-tfs.exp-undo",
-                "title": "Auto TFS: Undo selected file(s) or folder(s)"
+                "title": "Undo"
             },
             {
                 "command": "auto-tfs.exp-add",
-                "title": "Auto TFS: Add selected file(s) or folder(s)"
+                "title": "Add"
             },
             {
                 "command": "auto-tfs.tile-checkout",
-                "title": "Auto TFS: Checkout current file"
+                "title": "Checkout"
             },
             {
                 "command": "auto-tfs.tile-undo",
-                "title": "Auto TFS: Undo current file"
+                "title": "Undo"
             },
             {
                 "command": "auto-tfs.tile-add",
-                "title": "Auto TFS: Add current file"
+                "title": "Add"
             },
             {
                 "command": "auto-tfs.ide-checkout",
-                "title": "Auto TFS: Checkout current file"
+                "title": "Checkout"
             },
             {
                 "command": "auto-tfs.ide-undo",
-                "title": "Auto TFS: Undo current file"
+                "title": "Undo"
             },
             {
                 "command": "auto-tfs.ide-add",
-                "title": "Auto TFS: Add current file"
+                "title": "Add"
+            },
+            {
+                "command": "auto-tfs.get",
+                "title": "Auto TFS: Get Latest of current file"
+            },
+            {
+                "command": "auto-tfs.exp-get",
+                "title": "Get Latest"
+            },
+            {
+                "command": "auto-tfs.tile-get",
+                "title": "Get Latest"
+            },
+            {
+                "command": "auto-tfs.ide-get",
+                "title": "Get Latest"
+            },
+            {
+                "command": "auto-tfs.exp-delete",
+                "title": "Delete"
+            },
+            {
+                "command": "auto-tfs.tile-delete",
+                "title": "Delete"
+            },
+            {
+                "command": "auto-tfs.ide-delete",
+                "title": "Delete"
+            },
+            {
+                "command": "auto-tfs.exp-vsdiff",
+                "title": "In Visual Studio"
+            },
+            {
+                "command": "auto-tfs.tile-vsdiff",
+                "title": "In Visual Studio"
+            },
+            {
+                "command": "auto-tfs.ide-vsdiff",
+                "title": "In Visual Studio"
+            },
+            {
+                "command": "auto-tfs.exp-codediff",
+                "title": "Here"
+            },
+            {
+                "command": "auto-tfs.tile-codediff",
+                "title": "Here"
+            },
+            {
+                "command": "auto-tfs.ide-codediff",
+                "title": "Here"
+            }
+        ],
+        "submenus": [
+            {
+                "id": "auto-tfs/action",
+                "label": "Auto TFS"
+            },
+            {
+                "id": "auto-tfs/action/compare",
+                "when": "!explorerResourceIsFolder && !listMultiSelection",
+                "label": "Compare"
             }
         ],
         "menus": {
-            "explorer/context": [
+            "auto-tfs/action": [
+                {
+                    "command": "auto-tfs.exp-get",
+                    "group": "1_autotfs@1"
+                },
                 {
                     "command": "auto-tfs.exp-checkout",
-                    "group": "Auto TFS"
+                    "group": "1_autotfs@2"
                 },
                 {
                     "command": "auto-tfs.exp-undo",
-                    "group": "Auto TFS"
+                    "group": "1_autotfs@3"
                 },
                 {
                     "command": "auto-tfs.exp-add",
-                    "group": "Auto TFS"
+                    "group": "1_autotfs@4"
+                },
+                {
+                    "command": "auto-tfs.exp-delete",
+                    "group": "1_autotfs@5"
+                },
+                {
+                    "submenu": "auto-tfs/action/compare",
+                    "when": "!explorerResourceIsFolder && !listMultiSelection",
+                    "group": "1_autotfs@6"
+                }
+            ],
+            "auto-tfs/action/compare": [
+                {
+                    "when": "!explorerResourceIsFolder && !listMultiSelection",
+                    "command": "auto-tfs.exp-codediff",
+                    "group": "1_AutoTFS@1"
+                },
+                {
+                    "when": "!explorerResourceIsFolder && !listMultiSelection",
+                    "command": "auto-tfs.exp-vsdiff",
+                    "group": "1_AutoTFS@2"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "submenu": "auto-tfs/action",
+                    "group": "4_autotfs@0"
                 }
             ],
             "editor/title/context": [
                 {
-                    "command": "auto-tfs.tile-checkout",
-                    "group": "Auto TFS"
-                },
-                {
-                    "command": "auto-tfs.tile-undo",
-                    "group": "Auto TFS"
-                },
-                {
-                    "command": "auto-tfs.tile-add",
-                    "group": "Auto TFS"
+                    "submenu": "auto-tfs/action",
+                    "group": "4_autotfs@0"
                 }
             ],
             "editor/context": [
                 {
-                    "command": "auto-tfs.ide-checkout",
-                    "group": "Auto TFS"
-                },
-                {
-                    "command": "auto-tfs.ide-undo",
-                    "group": "Auto TFS"
-                },
-                {
-                    "command": "auto-tfs.ide-add",
-                    "group": "Auto TFS"
+                    "submenu": "auto-tfs/action",
+                    "group": "4_autotfs@0"
                 }
             ]
         },
@@ -184,7 +273,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "lint": "node --max_old_space_size=16384 ./node_modules/tslint/bin/tslint --project src/tsconfig.json src/**/*.ts -t verbose"
+        "lint": "node ./node_modules/tslint/bin/tslint --project src/tsconfig.json src/**/*.ts -t verbose"
     },
     "devDependencies": {
         "@types/node": "^16.4.8",
