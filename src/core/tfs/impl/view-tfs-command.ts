@@ -13,6 +13,8 @@ export class ViewTfsCommand extends TfsCommandBase {
     private tempPath!: string;
     private uri!: Uri;
 
+    public override displayName = () => 'compare';
+
     public override getCommandAndArgs(uriList: readonly Uri[], _data: any): string[] {
         if (uriList.length < 1 || !_data) {
             return [];

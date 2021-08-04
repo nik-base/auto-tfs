@@ -55,7 +55,7 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         this.logger.logDebugData(`Error: ${error}`);
         OutputChannel.logJson(error);
         if (error.code === 'ENOENT') {
-            const message = 'The TF command can\'t be found. Please, check the property auto-tfs.tf.path in VS Code settings';
+            const message = 'TF command can\'t be found. Please, check the property auto-tfs.tf.path in VS Code settings';
             this.message.error(message);
             OutputChannel.log(message);
         }

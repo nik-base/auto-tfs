@@ -1,9 +1,15 @@
 import { spawn, spawnSync, ChildProcess, SpawnOptions } from 'child_process';
 import { OutputChannel } from './output-channel';
+import { TfsCommand } from './tfs/tfs-command';
 
 export class Process {
     private childProcess!: ChildProcess;
     private commandName!: string;
+    private command?: TfsCommand;
+
+    constructor(command?: TfsCommand) {
+        this.command = command;
+    }
 
     public spawn(executablePath: string, args: string[]): void {
         this.commandName = args[0]; // The first arg is always a command
@@ -20,6 +26,8 @@ export class Process {
     }
 
     public spawnSync(executablePath: string, args: string[]): string {
+        const message = `TF command '${this.getCommandName()}' is in progress...`;
+        OutputChannel.log(message);
         this.commandName = args[0]; // The first arg is always a command
         const result =  spawnSync(executablePath, args);
         const stdOut = result.stdout;
@@ -42,7 +50,7 @@ export class Process {
     }
 
     public getCommandName(): string {
-        return this.commandName!;
+        return this.command?.displayName() ?? this.commandName!;
     }
 
     public kill(): void {

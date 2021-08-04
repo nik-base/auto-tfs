@@ -7,6 +7,8 @@ export abstract class TfsCommandBase implements TfsCommand {
 
     public abstract readonly command: string;
 
+    public displayName = () => this.command;
+
     public getCommandAndArgs(uriList: readonly Uri[], _data: any): string[] {
         const paths = uriList.map(m => m.fsPath);
         return [this.command, '/recursive', ...paths];

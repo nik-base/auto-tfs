@@ -174,7 +174,7 @@ export class Tfs {
             return null;
         }
         const args = command.getCommandAndArgs(uriList, data);
-        const process = new Process();
+        const process = new Process(command);
         if (command.command === 'diff') {
             process.spawnShell(tfPath!, args);
         } else {
@@ -191,9 +191,7 @@ export class Tfs {
         if (!uriList.length) {
             return null;
         }
-        const process = new Process();
-        const message = `The TF command '${command.command}' is in progress...`;
-        OutputChannel.log(message);
+        const process = new Process(command);
         const args = command.getCommandAndArgs(uriList, data);
         const result = process.spawnSync(tfPath!, args);
         return result;
@@ -206,9 +204,7 @@ export class Tfs {
         OutputChannel.log(`Getting info on ${uri?.fsPath} from source control`);
         const infoCommand = new InfoTfsCommand();
         const args = infoCommand.getCommandAndArgs([uri], null);
-        const process = new Process();
-        const message = `The TF command '${infoCommand.command}' is in progress...`;
-        OutputChannel.log(message);
+        const process = new Process(infoCommand);
         const result = process.spawnSync(tfPath!, args);
         const processHandler = infoCommand.getConsoleDataHandler() as InfoProcessHandler;
         const changeType = processHandler.getData(result);
@@ -226,7 +222,7 @@ export class Tfs {
     }
 
     private handleProcess(process: Process, command: TfsCommand): void {
-        const message = `The TF command '${process.getCommandName()}' is in progress...`;
+        const message = `TF command '${process.getCommandName()}' is in progress...`;
         this.message.info(message);
         OutputChannel.log(message);
         const processHandler = command.getConsoleDataHandler();

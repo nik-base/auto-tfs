@@ -8,26 +8,26 @@ export class Configuration {
     }
 
     public isTfConfirm(): boolean {
-        return workspace.getConfiguration(this.extension).get('tf.confirm') ?? false;
+        return workspace.getConfiguration(this.extension).get('tfs.confirm') ?? false;
     }
 
     public tfAutoCheckout(): string {
-        return workspace.getConfiguration(this.extension).get('tf.autoCheckout') || 'Never';
+        return workspace.getConfiguration(this.extension).get('tfs.autoCheckout') || 'Never';
     }
 
     public isTfAutoAdd(): boolean {
-        return workspace.getConfiguration(this.extension).get('tf.autoAdd') ?? false;
+        return workspace.getConfiguration(this.extension).get('tfs.autoAdd') ?? false;
     }
 
     public isTfAutoDelete(): boolean {
-        return workspace.getConfiguration(this.extension).get('tf.autoDelete') ?? false;
+        return workspace.getConfiguration(this.extension).get('tfs.autoDelete') ?? false;
     }
 
     public isTfAutoRename(): boolean {
-        return workspace.getConfiguration(this.extension).get('tf.autoRename') ?? false;
+        return workspace.getConfiguration(this.extension).get('tfs.autoRename') ?? false;
     }
 
     public isDebugEnabled(): boolean {
-        return workspace.getConfiguration(this.extension).get('debug') ?? false;
+        return workspace.getConfiguration(this.extension).get('tfs.debug') ?? false;
     }
 }

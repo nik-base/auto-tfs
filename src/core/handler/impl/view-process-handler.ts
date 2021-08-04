@@ -3,6 +3,7 @@ import { commands, Uri } from 'vscode';
 import { ProcessHandler } from '../process-handler';
 import { AbstractProcessHandler } from './abstract-process-handler';
 import { ParsedPath } from 'path';
+import { fstat, unlink } from 'fs';
 
 export class ViewProcessHandler extends AbstractProcessHandler implements ProcessHandler {
 
@@ -19,8 +20,11 @@ export class ViewProcessHandler extends AbstractProcessHandler implements Proces
 
     private openDiff(): void {
         commands.executeCommand('vscode.diff', Uri.file(this.tempPath), this.uri, `Compare: ${this.parsedTemp.base}`)
-        .then(() => {})
+        .then(() => {
+            unlink(this.tempPath, () => {});
+        })
         .then(undefined, err => {
+            unlink(this.tempPath, () => {});
             console.log(err);
             OutputChannel.log(err);
         });
