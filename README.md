@@ -59,9 +59,13 @@ Auto TFS: Checkout current file
 Auto TFS: Undo changes for current file
 Auto TFS: Add current file to TFS
 Auto TFS: Delete current file
+Auto TFS: Compare current file here
+Auto TFS: Compare current file in Visual Studio
 ```
 
 Additionally, for ease of use you can configure the extension to support below functionalities –
+- Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
+- Get latest of one or more files or folders (Recursive).
 - Configurable Automatic operations.
 - Configurable confirmation of automatic operations.
 - Auto Checkout on Save
@@ -86,6 +90,8 @@ Additionally, for ease of use you can configure the extension to support below f
 
 This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils). The changes are:
 
+- Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
+- Get latest of one or more files or folders (Recursive).
 - Configurable Automatic operations.
 - Configurable confirmation of automatic operations.
 - Auto Checkout on Save
