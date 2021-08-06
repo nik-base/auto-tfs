@@ -12,165 +12,60 @@ export function activate(context: ExtensionContext) {
 
     OutputChannel.log('Auto TFS started');
 
-    const checkoutCommand = commands.registerCommand('auto-tfs.checkout', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const checkoutCommand = commands.registerCommand('auto-tfs.checkout', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.checkOut([editor.document.uri]);
+        tfs.checkOut(files);
     });
 
-    const undoCommand = commands.registerCommand('auto-tfs.undo', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const undoCommand = commands.registerCommand('auto-tfs.undo', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.undo([editor.document.uri]);
+        tfs.undo(files);
     });
 
-    const addCommand = commands.registerCommand('auto-tfs.add', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const addCommand = commands.registerCommand('auto-tfs.add', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.add([editor.document.uri]);
+        tfs.add(files);
     });
 
-    const deleteCommand = commands.registerCommand('auto-tfs.delete', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const deleteCommand = commands.registerCommand('auto-tfs.delete', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.delete([editor.document.uri]);
+        tfs.delete(files);
     });
 
-    const getCommand = commands.registerCommand('auto-tfs.get', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const getCommand = commands.registerCommand('auto-tfs.get', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.get([editor.document.uri]);
+        tfs.get(files);
     });
 
-    const checkoutExpCommand = commands.registerCommand('auto-tfs.exp-checkout'
-    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
-        tfs.checkOut([clickedFile, ...selectedFiles]);
-    });
-
-    const undoExpCommand = commands.registerCommand('auto-tfs.exp-undo'
-    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
-        tfs.undo([clickedFile, ...selectedFiles]);
-    });
-
-    const addExpCommand = commands.registerCommand('auto-tfs.exp-add'
-    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
-        tfs.add([clickedFile, ...selectedFiles]);
-    });
-
-    const checkoutTileCommand = commands.registerCommand('auto-tfs.tile-checkout'
-    , async (clickedFile: Uri) => {
-        tfs.checkOut([clickedFile]);
-    });
-
-    const undoTileCommand = commands.registerCommand('auto-tfs.tile-undo'
-    , async (clickedFile: Uri) => {
-        tfs.undo([clickedFile]);
-    });
-
-    const addTileCommand = commands.registerCommand('auto-tfs.tile-add'
-    , async (clickedFile: Uri) => {
-        tfs.add([clickedFile]);
-    });
-
-    const checkoutIdeCommand = commands.registerCommand('auto-tfs.ide-checkout'
-    , async (clickedFile: Uri) => {
-        tfs.checkOut([clickedFile]);
-    });
-
-    const undoIdeCommand = commands.registerCommand('auto-tfs.ide-undo'
-    , async (clickedFile: Uri) => {
-        tfs.undo([clickedFile]);
-    });
-
-    const addIdeCommand = commands.registerCommand('auto-tfs.ide-add'
-    , async (clickedFile: Uri) => {
-        tfs.add([clickedFile]);
-    });
-
-    const deleteExpCommand = commands.registerCommand('auto-tfs.exp-delete'
-    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
-        tfs.delete([clickedFile, ...selectedFiles]);
-    });
-
-    const deleteTileCommand = commands.registerCommand('auto-tfs.tile-delete'
-    , async (clickedFile: Uri) => {
-        tfs.delete([clickedFile]);
-    });
-
-    const deleteIdeCommand = commands.registerCommand('auto-tfs.ide-delete'
-    , async (clickedFile: Uri) => {
-        tfs.delete([clickedFile]);
-    });
-
-    const getExpCommand = commands.registerCommand('auto-tfs.exp-get'
-    , async (clickedFile: Uri, selectedFiles: Uri[]) => {
-        tfs.get([clickedFile, ...selectedFiles]);
-    });
-
-    const getTileCommand = commands.registerCommand('auto-tfs.tile-get'
-    , async (clickedFile: Uri) => {
-        tfs.get([clickedFile]);
-    });
-
-    const getIdeCommand = commands.registerCommand('auto-tfs.ide-get'
-    , async (clickedFile: Uri) => {
-        tfs.get([clickedFile]);
-    });
-
-    const vsDiffExpCommand = commands.registerCommand('auto-tfs.exp-vsdiff'
-    , async (clickedFile: Uri, _selectedFiles: Uri[]) => {
-        tfs.vsDiff(clickedFile);
-    });
-
-    const vsDiffTileCommand = commands.registerCommand('auto-tfs.tile-vsdiff'
-    , async (clickedFile: Uri) => {
-        tfs.vsDiff(clickedFile);
-    });
-
-    const vsDiffIdeCommand = commands.registerCommand('auto-tfs.ide-vsdiff'
-    , async (clickedFile: Uri) => {
-        tfs.vsDiff(clickedFile);
-    });
-
-    const codeDiffExpCommand = commands.registerCommand('auto-tfs.exp-codediff'
-    , async (clickedFile: Uri, _selectedFiles: Uri[]) => {
-        tfs.codeDiff(clickedFile);
-    });
-
-    const codeDiffTileCommand = commands.registerCommand('auto-tfs.tile-codediff'
-    , async (clickedFile: Uri) => {
-        tfs.codeDiff(clickedFile);
-    });
-
-    const codeDiffIdeCommand = commands.registerCommand('auto-tfs.ide-codediff'
-    , async (clickedFile: Uri) => {
-        tfs.codeDiff(clickedFile);
-    });
-
-    const vsDiffCommand = commands.registerCommand('auto-tfs.vsdiff', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const vsDiffCommand = commands.registerCommand('auto-tfs.vsdiff', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.vsDiff(editor.document.uri);
+        tfs.vsDiff(files[0]);
     });
 
-    const codeDiffCommand = commands.registerCommand('auto-tfs.codediff', async () => {
-        const editor = getActiveEditor();
-        if (!editor) {
+    const codeDiffCommand = commands.registerCommand('auto-tfs.codediff', async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files = getFiles(clickedFile, selectedFiles);
+        if (!files?.length) {
             return;
         }
-        tfs.codeDiff(editor.document.uri);
+        tfs.codeDiff(files[0]);
     });
 
     const onChange = workspace.onDidChangeTextDocument( async (event: TextDocumentChangeEvent) => {
@@ -226,6 +121,24 @@ export function activate(context: ExtensionContext) {
         }
     };
 
+    const getFiles = (clickedFile: Uri, selectedFiles: Uri[]): Uri[] => {
+        const files: Uri[] = [];
+        if (selectedFiles?.length) {
+            files.push(...selectedFiles);
+        }
+        if (clickedFile) {
+            files.push(clickedFile);
+        }
+        if (files.length) {
+            return files;
+        }
+        const editor = getActiveEditor();
+        if (!editor) {
+            return [];
+        }
+        return [editor.document.uri];
+    };
+
     const getActiveEditor = (): TextEditor | null => {
         if (!window.activeTextEditor) {
             const message = 'No active document.';
@@ -242,34 +155,13 @@ export function activate(context: ExtensionContext) {
         addCommand,
         deleteCommand,
         getCommand,
+        vsDiffCommand,
+        codeDiffCommand,
         onChange,
         onRename,
         onSave,
         onCreate,
-        onDelete,
-        checkoutExpCommand,
-        checkoutTileCommand,
-        checkoutIdeCommand,
-        undoExpCommand,
-        undoTileCommand,
-        undoIdeCommand,
-        addExpCommand,
-        addTileCommand,
-        addIdeCommand,
-        deleteExpCommand,
-        deleteTileCommand,
-        deleteIdeCommand,
-        getExpCommand,
-        getTileCommand,
-        getIdeCommand,
-        vsDiffExpCommand,
-        vsDiffTileCommand,
-        vsDiffIdeCommand,
-        codeDiffExpCommand,
-        codeDiffTileCommand,
-        codeDiffIdeCommand,
-        vsDiffCommand,
-        codeDiffCommand);
+        onDelete);
 }
 
 // this method is called when your extension is deactivated
