@@ -48,24 +48,36 @@ For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf
 
 Another supported setting serves for logging information into Output. To enable this, just add following option to VS Code Settings:
 ```
-    "auto-tfs.debug": true
+    "auto-tfs.tf.debug": true
 ```
 
 ## Usage
 1. Invoke the command bar (`Ctrl+Shift+P`)
 2. Start typing some of the command listed below or just Auto TFS. The full names of commands:
 ```
-Auto TFS: Checkout current file
-Auto TFS: Undo changes for current file
-Auto TFS: Add current file to TFS
-Auto TFS: Delete current file
-Auto TFS: Compare current file here
-Auto TFS: Compare current file in Visual Studio
+Auto TFS: Checkout
+Auto TFS: Undo
+Auto TFS: Add
+Auto TFS: Delete
+Auto TFS: Here (Compare)
+Auto TFS: In Visual Studio (Compare)
+Auto TFS: Get Latest
+Auto TFS: Get All Latest
+Auto TFS: Sync
+Auto TFS: Open on server
 ```
 
 Additionally, for ease of use you can configure the extension to support below functionalities –
 - Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
-- Get latest of one or more files or folders (Recursive).
+- Sync workspace to get color coded changes with bades (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- View changes in source control with badges
+- Open file on server (browser).
+- Compare, View, Revert, Open on server directly from Source Control Manager.
+- Get Changes Count on SCM View
+- Revert All / Get All on SCM
+- Status with Get All and Sync buttons
+- Editor title icons for Compare (in code it self), get latest and open on server.
+- Get latest of one or more files or folders (Recursive) or entire workspace.
 - Configurable Automatic operations.
 - Configurable confirmation of automatic operations.
 - Auto Checkout on Save
@@ -85,12 +97,26 @@ Additionally, for ease of use you can configure the extension to support below f
 * Checkout
 * Undo
 * Delete
+* Get Latest
+* Get All Latest
+* Sync
+* Open on server
+* Compare in Visual Studio
+* Compare in Code
 
 ## About the fork
 
 This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils). The changes are:
 
 - Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
+- Sync workspace to get color coded changes with bades (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- View changes in source control with badges
+- Open file on server (browser).
+- Compare, View, Revert, Open on server directly from Source Control Manager.
+- Get Changes Count on SCM View
+- Revert All / Get All on SCM
+- Status with Get All and Sync buttons
+- Editor title icons for Compare (in code it self), get latest and open on server.
 - Get latest of one or more files or folders (Recursive).
 - Configurable Automatic operations.
 - Configurable confirmation of automatic operations.
@@ -104,3 +130,4 @@ This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
 ## Links
 
 - [AutoTFS extension on Github](https://github.com/nik-base/auto-tfs)
+- [MIT Licence](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)

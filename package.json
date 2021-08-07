@@ -2,23 +2,29 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
         "name": "Nikhil Patil",
         "url": "https://github.com/nik-base"
     },
-    "repository": "https://github.com/nik-base/auto-tfs",
+    "repository": {
+        "url": "https://github.com/nik-base/auto-tfs",
+        "type": "git"
+    },
     "homepage": "https://github.com/nik-base/auto-tfs#readme",
     "bugs": {
-        "url": "https://github.com/nik-base/auto-tfs/issues"
+        "url": "https://github.com/nik-base/auto-tfs/issues",
+        "email": "nikhil.patil.3632@gmail.com"
     },
     "readmeFilename": "README.md",
     "engines": {
         "vscode": "^1.58.2"
     },
+    "enableProposedApi": true,
     "categories": [
+        "SCM Providers",
         "Other"
     ],
     "activationEvents": [
@@ -40,6 +46,53 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "colors": [
+            {
+                "id": "tfsStatus.added",
+                "description": "Color of item added to source control",
+                "defaults": {
+                    "light": "#587c0c",
+                    "dark": "#81b88b",
+                    "highContrast": "#1b5225"
+                }
+            },
+            {
+                "id": "tfsStatus.modified",
+                "description": "Color of item modified on source control",
+                "defaults": {
+                    "light": "#895503",
+                    "dark": "#E2C08D",
+                    "highContrast": "#E2C08D"
+                }
+            },
+            {
+                "id": "tfsStatus.deleted",
+                "description": "Color of item deleted from source control",
+                "defaults": {
+                    "light": "#ad0707",
+                    "dark": "#c74e39",
+                    "highContrast": "#c74e39"
+                }
+            },
+            {
+                "id": "tfsStatus.renamed",
+                "description": "Color of item renamed on source control",
+                "defaults": {
+                    "light": "#1a3c97",
+                    "dark": "#8488c0",
+                    "highContrast": "#5c64db"
+                }
+            },
+            {
+                "id": "tfsStatus.renamedModified",
+                "description": "Color of item renamed and modified on source control",
+                "defaults": {
+                    "light": "#127f8d",
+                    "dark": "#37d0db",
+                    "highContrast": "#37d0db"
+                }
+            }
+        ],
         "commands": [
             {
                 "command": "auto-tfs.checkout",
@@ -75,7 +128,7 @@
                 "category": "Auto TFS",
                 "shortTitle": "Get",
                 "enablement": "config.auto-tfs.tf.path",
-                "icon": "$(sync)"
+                "icon": "$(cloud-download)"
             },
             {
                 "command": "auto-tfs.vsdiff",
@@ -91,6 +144,67 @@
                 "shortTitle": "Compare",
                 "enablement": "config.auto-tfs.tf.path",
                 "icon": "$(compare-changes)"
+            },
+            {
+                "command": "auto-tfs.sync",
+                "title": "Sync",
+                "category": "Auto TFS",
+                "shortTitle": "Sync",
+                "enablement": "config.auto-tfs.tf.path"
+            },
+            {
+                "command": "auto-tfs.getall",
+                "title": "Get All Latest",
+                "category": "Auto TFS",
+                "shortTitle": "Get All",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(cloud-download)"
+            },
+            {
+                "command": "auto-tfs.scmopen",
+                "title": "Open Change",
+                "category": "Auto TFS",
+                "shortTitle": "Open",
+                "enablement": "config.auto-tfs.tf.path && activeViewlet == 'workbench.view.scm'"
+            },
+            {
+                "command": "auto-tfs.scmview",
+                "title": "View",
+                "category": "Auto TFS",
+                "shortTitle": "View",
+                "enablement": "config.auto-tfs.tf.path && activeViewlet == 'workbench.view.scm'",
+                "icon": "$(go-to-file)"
+            },
+            {
+                "command": "auto-tfs.revert",
+                "title": "Revert",
+                "category": "Auto TFS",
+                "shortTitle": "Revert",
+                "enablement": "config.auto-tfs.tf.path && activeViewlet == 'workbench.view.scm'",
+                "icon": "$(discard)"
+            },
+            {
+                "command": "auto-tfs.revertselected",
+                "title": "Revert",
+                "category": "Auto TFS",
+                "shortTitle": "Revert",
+                "enablement": "config.auto-tfs.tf.path && activeViewlet == 'workbench.view.scm'"
+            },
+            {
+                "command": "auto-tfs.revertall",
+                "title": "Revert All",
+                "category": "Auto TFS",
+                "shortTitle": "Revert",
+                "enablement": "config.auto-tfs.tf.path && activeViewlet == 'workbench.view.scm'",
+                "icon": "$(discard)"
+            },
+            {
+                "command": "auto-tfs.openonserver",
+                "title": "Open on server",
+                "category": "Auto TFS",
+                "shortTitle": "Open",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(globe)"
             }
         ],
         "submenus": [
@@ -107,7 +221,7 @@
             "auto-tfs/action": [
                 {
                     "command": "auto-tfs.get",
-                    "group": "1_autotfs@1"             
+                    "group": "1_autotfs@1"
                 },
                 {
                     "command": "auto-tfs.checkout",
@@ -129,6 +243,10 @@
                     "submenu": "auto-tfs/action/compare",
                     "group": "1_autotfs@6",
                     "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder && !listMultiSelection"
+                },
+                {
+                    "command": "auto-tfs.openonserver",
+                    "when": "config.auto-tfs.tf.path && !listMultiSelection"
                 }
             ],
             "auto-tfs/action/compare": [
@@ -172,6 +290,45 @@
                     "command": "auto-tfs.get",
                     "group": "navigation",
                     "when": "config.auto-tfs.tf.path"
+                },
+                {
+                    "command": "auto-tfs.openonserver",
+                    "group": "navigation",
+                    "when": "config.auto-tfs.tf.path"
+                }
+            ],
+            "scm/resourceGroup/context": [
+                {
+                    "command": "auto-tfs.getall",
+                    "when": "config.auto-tfs.tf.path",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "auto-tfs.revertall",
+                    "when": "config.auto-tfs.tf.path",
+                    "group": "inline@2"
+                }
+            ],
+            "scm/resourceState/context": [
+                {
+                    "command": "auto-tfs.openonserver",
+                    "when": "config.auto-tfs.tf.path",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "auto-tfs.scmview",
+                    "when": "config.auto-tfs.tf.path",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "auto-tfs.revert",
+                    "when": "config.auto-tfs.tf.path",
+                    "group": "inline@3"
+                },
+                {
+                    "command": "auto-tfs.revertselected",
+                    "when": "config.auto-tfs.tf.path",
+                    "group": "navigation"
                 }
             ]
         },
@@ -216,6 +373,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Rename file on source control on renaming file(s)"
+                },
+                "auto-tfs.tfs.autoSync": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Auto Sync changes (only changes badges, color, etc. Does not get latest)"
                 },
                 "auto-tfs.tfs.debug": {
                     "type": "boolean",

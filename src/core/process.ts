@@ -4,7 +4,7 @@ import { TfsCommand } from './tfs/tfs-command';
 
 export class Process {
     private childProcess!: ChildProcess;
-    private commandName!: string;
+    public commandName!: string;
     private command?: TfsCommand;
 
     constructor(command?: TfsCommand) {

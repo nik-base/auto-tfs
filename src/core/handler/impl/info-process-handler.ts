@@ -4,6 +4,7 @@ import { AbstractProcessHandler } from './abstract-process-handler';
 
 export class InfoProcessHandler extends AbstractProcessHandler implements ProcessHandler {
     public override showMessageOnUI = false;
+    public item: string | undefined;
     public override handleStdOutData(data: string): void {
         this.data = this.getData(data);
         super.handleStdOutData(data);
@@ -18,6 +19,22 @@ export class InfoProcessHandler extends AbstractProcessHandler implements Proces
             OutputChannel.log(e);
             return null;
         }
+    }
+
+    public getItem(data: string): string | null {
+        if (this.item === 'sourceitem') {
+            return this.getSourceItem(data);
+        }
+        return this.getChangeType(data);
+    }
+
+    public getSourceItem(data: string): string | null {
+        const regex = /[\n\r]*Source item *: *(.*)[\n\r]/i;
+        const match = data?.toString()?.match(regex)!;
+        if (match?.length >= 2) {
+            return match[1];
+        }
+        return null;
     }
 
     public getChangeType(data: string): string | null {

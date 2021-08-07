@@ -1,7 +1,7 @@
 import { CheckoutTfsCommand } from './tfs/impl/checkout-tfs-command';
 import { TfsCommand } from './tfs/tfs-command';
 import { Process } from './process';
-import { Uri } from 'vscode';
+import { Uri, workspace } from 'vscode';
 import { UndoTfsCommand } from './tfs/impl/undo-tfs-command';
 import { AddTfsCommand } from './tfs/impl/add-tfs-command';
 import { DeleteTfsCommand } from './tfs/impl/delete-tfs-command';
@@ -16,6 +16,12 @@ import { GetTfsCommand } from './tfs/impl/get-tfs-command';
 import { DiffTfsCommand } from './tfs/impl/diff-tfs-command';
 import { ViewTfsCommand } from './tfs/impl/view-tfs-command';
 import { parse as pathParse } from 'path';
+import { SCMChange, SCMChangeType } from './scm';
+import { StatusBar } from './ui/status-bar';
+import { StatusTfsCommand } from './tfs/impl/status-tfs-command';
+import { StatusProcessHandler } from './handler/impl/status-process-handler';
+import { ViewProcessHandler } from './handler/impl/view-process-handler';
+import { OpenOnServer } from './ui/open-on-server';
 
 export class Tfs {
     private configuration = new Configuration();
@@ -47,6 +53,34 @@ export class Tfs {
         this.exec(command, uriList, this.confirmGet.bind(this));
     }
 
+    public getAll(): void {
+        const root = this.getRootUri();
+        if (!root) {
+            return;
+        }
+        StatusBar.startGetAll();
+        const command = new GetTfsCommand();
+        this.executeCommandSync(command, [root], this.confirmGet.bind(this));
+        StatusBar.stopGetAll();
+    }
+
+    public undoAll(): void {
+        const root = this.getRootUri();
+        if (!root) {
+            return;
+        }
+        this.undo([root]);
+    }
+
+    private getRootUri(): Uri | null {
+        const workspaceFolders = workspace.workspaceFolders;
+        if (!workspaceFolders?.length) {
+            return null;
+        }
+        const root = workspaceFolders[0].uri;
+        return root;
+    }
+
     public vsDiff(uri: Uri): void {
         const command = new DiffTfsCommand();
         this.executeCommand(command, [uri], null);
@@ -56,6 +90,63 @@ export class Tfs {
         const command = new ViewTfsCommand();
         const parsedTemp = pathParse(uri.fsPath);
         this.executeCommand(command, [uri], { temp: parsedTemp });
+    }
+
+    public openOnServer(uri: Uri): void {
+        new OpenOnServer().open(uri);
+    }
+
+    public async scmOpen(uri: Uri, change: SCMChange): Promise<void> {
+        if (change.type === SCMChangeType.Deleted) {
+            this.openDeletedFile(uri);
+            return;
+        }
+        if (change.type === SCMChangeType.Added)  {
+            await new ViewProcessHandler().openFile(uri);
+            return;
+        }
+        if (change.type === SCMChangeType.Renamed || SCMChangeType.RenamedModified) {
+            const sourceItem = this.getSourceItem(uri);
+            const command = new ViewTfsCommand();
+            const parsedTemp = pathParse(uri.fsPath);
+            this.executeCommand(command, [uri], { temp: parsedTemp, sourceItem: sourceItem });
+            return;
+        }
+        this.codeDiff(uri);
+    }
+
+    public async scmView(uri: Uri, change: SCMChange): Promise<void> {
+        if (change.type === SCMChangeType.Deleted) {
+            this.openDeletedFile(uri);
+            return;
+        }
+        await new ViewProcessHandler().openFile(uri);
+    }
+
+    private openDeletedFile(uri: Uri): void {
+        const sourceItem = this.getSourceItem(uri);
+        const command = new ViewTfsCommand();
+        const parsedTemp = pathParse(uri.fsPath);
+        this.executeCommand(command, [uri], { temp: parsedTemp, sourceItem: sourceItem, nodiff: true });
+    }
+
+    private getSourceItem(uri: Uri): string | null {
+        const command = new InfoTfsCommand();
+        const result = this.executeCommandSync(command, [uri], { item: 'sourceitem' });
+        const sourceItem = new InfoProcessHandler().getSourceItem(result!.toString());
+        return sourceItem;
+    }
+
+    public async sync(): Promise<void> {
+        const command = new StatusTfsCommand();
+        if (!workspace.workspaceFolders) {
+            return;
+        }
+        StatusBar.startSync();
+        const uri = workspace.workspaceFolders[0].uri;
+        const result = this.executeCommandSync(command, [uri], null);
+        await new StatusProcessHandler().processData(result!.toString());
+        StatusBar.stopSync();
     }
 
     private exec(command: TfsCommand, uriList: readonly Uri[], confirm: () => Thenable<string | undefined>): void {
@@ -72,6 +163,13 @@ export class Tfs {
         });
     }
 
+    public autoSync(): void {
+        if (!this.configuration.getTfPath() || !this.configuration.isTfAutoSync()) {
+            return;
+        }
+        this.sync();
+    }
+
     public rename(files: ReadonlyArray<{ readonly oldUri: Uri, readonly newUri: Uri }>): Promise<void> {
         if (!files.length) {
             return Promise.resolve();
@@ -85,6 +183,7 @@ export class Tfs {
                 for (const file of files) {
                     this.executeCommandSync(command, [file.oldUri, file.newUri], null);
                 }
+                this.autoSync();
             }
             return reject();
         }));
@@ -124,7 +223,7 @@ export class Tfs {
     }
 
     private confirmUndo(): Thenable<string | undefined> {
-        return this.confirm('Do you want to undo changes to the file(s)?');
+        return this.message.warning('Do you want to undo changes to the file(s)?', 'Yes', 'No');
     }
 
     private confirm(message: string): Thenable<string | undefined> {
@@ -148,10 +247,16 @@ export class Tfs {
         });
     }
 
-    private executeCommandSync(command: TfsCommand, uriList: readonly Uri[], data: any) {
-        this.logger.tryAndLogWithException(() => {
-            this.triggerProcessSync(command, uriList, data);
-        });
+    private executeCommandSync(command: TfsCommand, uriList: readonly Uri[], data: any): string | null {
+        try {
+            return this.triggerProcessSync(command, uriList, data);
+        } catch (e) {
+            if (this.configuration.isDebugEnabled()) {
+                console.log(e);
+                OutputChannel.logJson(e);
+            }
+            throw Error;
+        }
     }
 
     private getTfPath(): string | null {
@@ -212,6 +317,9 @@ export class Tfs {
     }
 
     private handleCheckout(change: string | null, uri: Uri): { proceed: boolean, msg: string } {
+        if (!change) {
+            return { proceed: true, msg: '' };
+        }
         if (change!.includes('edit')) {
             return { proceed: false, msg: `File ${uri.fsPath} already checked out` };
         }
@@ -222,10 +330,8 @@ export class Tfs {
     }
 
     private handleProcess(process: Process, command: TfsCommand): void {
-        const message = `TF command '${process.getCommandName()}' is in progress...`;
-        this.message.info(message);
-        OutputChannel.log(message);
         const processHandler = command.getConsoleDataHandler();
+        processHandler.showProgressMessage(process);
         processHandler.registerHandlers(process);
     }
 }

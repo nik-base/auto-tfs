@@ -27,6 +27,10 @@ export class Configuration {
         return workspace.getConfiguration(this.extension).get('tfs.autoRename') ?? false;
     }
 
+    public isTfAutoSync(): boolean {
+        return workspace.getConfiguration(this.extension).get('tfs.autoSync') ?? false;
+    }
+
     public isDebugEnabled(): boolean {
         return workspace.getConfiguration(this.extension).get('tfs.debug') ?? false;
     }

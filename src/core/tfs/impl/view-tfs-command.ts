@@ -11,6 +11,7 @@ export class ViewTfsCommand extends TfsCommandBase {
 
     private parsedTemp!: ParsedPath;
     private tempPath!: string;
+    private nodiff = false;
     private uri!: Uri;
 
     public override displayName = () => 'compare';
@@ -28,6 +29,10 @@ export class ViewTfsCommand extends TfsCommandBase {
         this.parsedTemp = _data.temp as ParsedPath;
         const tempPath = `${tempFolder}\\auto-tfs-diff.temp${this.parsedTemp.ext}`;
         this.tempPath = tempPath;
+        this.nodiff = _data.nodiff ?? false;
+        if (_data.sourceItem) {
+            return [this.command, _data.sourceItem, `/output:${tempPath}`];
+        }
         return [this.command, uri.fsPath, `/output:${tempPath}`];
     }
 
@@ -36,6 +41,8 @@ export class ViewTfsCommand extends TfsCommandBase {
         handler.parsedTemp = this.parsedTemp;
         handler.uri = this.uri;
         handler.tempPath = this.tempPath;
+        handler.nodiff = this.nodiff;
+        handler.showMessageOnUI = !this.nodiff;
         return handler;
     }
 }

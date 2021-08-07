@@ -3,6 +3,7 @@ import { ProcessHandler } from '../process-handler';
 import { AbstractProcessHandler } from './abstract-process-handler';
 
 export class AddProcessHandler extends AbstractProcessHandler implements ProcessHandler {
+
     public override handleStdErrData(data: string): void {
         this.logger.logDebugData(data);
         OutputChannel.log(data);

@@ -4,8 +4,9 @@ export class OutputChannel {
 
     private static outputChannel: vscodeOutputChannel;
 
-    public static init() {
+    public static init(): vscodeOutputChannel {
         this.outputChannel = window.createOutputChannel('Auto TFS');
+        return this.outputChannel;
     }
 
     public static log(message: string): void {

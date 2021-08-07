@@ -8,4 +8,5 @@ export interface ProcessHandler {
     handleExit(exitCode: number): void;
     handleError(error: any): void;
     registerHandlers(processOperation: Process): void;
+    showProgressMessage(process: Process): void;
 }

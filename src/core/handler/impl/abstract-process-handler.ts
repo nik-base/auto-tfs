@@ -6,6 +6,7 @@ import { Message } from '../../ui/message';
 import { Configuration } from '../../configuration';
 import { Logger } from '../../logger';
 import { OutputChannel } from '../../output-channel';
+import { Tfs } from '../../tfs';
 
 export abstract class AbstractProcessHandler implements ProcessHandler {
     public data: any;
@@ -17,6 +18,7 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
     private credentialsHelper = new CredentialsHelper();
     private suppressedErrors = ['local echo', 'Access denied'];
     private credentialsPromise!: Promise<Credentials>;
+    private autoSyncCommands = ['add', 'checkout', 'undo', 'delete', 'rename'];
 
     public handleStdOutData(data: string): void {
         const message = `StdOut: ${data}`;
@@ -40,6 +42,7 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
     }
 
     public handleExit(exitCode: number): void {
+        this.autoSync();
         const message = `Exit code: ${exitCode}`;
         this.logger.logDebugData(message);
         if (exitCode === 0) {
@@ -49,6 +52,13 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
             }
             OutputChannel.log(info);
         }
+    }
+
+    private autoSync(): void {
+        if (!this.autoSyncCommands.includes(this.process.commandName)) {
+            return;
+        }
+        new Tfs().autoSync();
     }
 
     public handleError(error: any): void {
@@ -67,6 +77,14 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         process.registerExitHandler(this.handleExit.bind(this));
         process.registerStdErrDataHandler(this.handleStdErrData.bind(this));
         process.registerErrorHandler(this.handleError.bind(this));
+    }
+
+    public showProgressMessage(process: Process): void {
+        const message = `TF command '${process.getCommandName()}' is in progress...`;
+        if (this.showMessageOnUI) {
+            this.message.info(message);
+        }
+        OutputChannel.log(message);
     }
 
     protected handleAuthorize(processStdOutData: string) {
