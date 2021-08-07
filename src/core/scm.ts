@@ -1,8 +1,8 @@
-import path = require('path');
 import { Command, FileDecoration, scm, SourceControl
     , SourceControlResourceGroup, SourceControlResourceState, ThemeColor, Uri } from 'vscode';
 import { Configuration } from './configuration';
 import { TfsFileDecorator } from './ui/tfs-file-decorator';
+import { join as pathJoin, dirname as dirname } from 'path';
 
 export class SCMChange {
     public path!: string;
@@ -18,10 +18,10 @@ export enum SCMChangeType {
     RenamedModified = 5
 }
 
-const iconsRootPath = path.join(path.dirname(__dirname), 'resources', 'icons');
+const iconsRootPath = pathJoin(dirname(__dirname), 'resources', 'icons');
 
 function getIconUri(iconName: string, theme: string): Uri {
-    return Uri.file(path.join(iconsRootPath, theme, `${iconName}.svg`));
+    return Uri.file(pathJoin(iconsRootPath, theme, `${iconName}.svg`));
 }
 
 export class SCM {
