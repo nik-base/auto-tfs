@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TF command utils for VS Code",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
@@ -131,14 +131,15 @@
             },
             {
                 "command": "auto-tfs.vsdiff",
-                "title": "In Visual Studio",
+                "title": "Compare in Visual Studio",
                 "category": "Auto TFS",
                 "shortTitle": "Compare",
-                "enablement": "config.auto-tfs.tf.path"
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(compare-changes)"
             },
             {
                 "command": "auto-tfs.codediff",
-                "title": "Here",
+                "title": "Compare Here",
                 "category": "Auto TFS",
                 "shortTitle": "Compare",
                 "enablement": "config.auto-tfs.tf.path",
@@ -149,7 +150,8 @@
                 "title": "Sync",
                 "category": "Auto TFS",
                 "shortTitle": "Sync",
-                "enablement": "config.auto-tfs.tf.path"
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(sync)"
             },
             {
                 "command": "auto-tfs.getall",
@@ -164,7 +166,8 @@
                 "title": "Open Change",
                 "category": "Auto TFS",
                 "shortTitle": "Open",
-                "enablement": "config.auto-tfs.tf.path"
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(compare-changes)"
             },
             {
                 "command": "auto-tfs.scmview",
@@ -183,11 +186,12 @@
                 "icon": "$(discard)"
             },
             {
-                "command": "auto-tfs.revertselected",
-                "title": "Revert",
+                "command": "auto-tfs.revertgroup",
+                "title": "Revert Group",
                 "category": "Auto TFS",
                 "shortTitle": "Revert",
-                "enablement": "config.auto-tfs.tf.path"
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(discard)"
             },
             {
                 "command": "auto-tfs.revertall",
@@ -204,6 +208,54 @@
                 "shortTitle": "Open",
                 "enablement": "config.auto-tfs.tf.path",
                 "icon": "$(globe)"
+            },
+            {
+                "command": "auto-tfs.exclude",
+                "title": "Exclude",
+                "category": "Auto TFS",
+                "shortTitle": "Exclude",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(log-out)"
+            },
+            {
+                "command": "auto-tfs.include",
+                "title": "Include",
+                "category": "Auto TFS",
+                "shortTitle": "Include",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(log-in)"
+            },
+            {
+                "command": "auto-tfs.excludeall",
+                "title": "Exclude All",
+                "category": "Auto TFS",
+                "shortTitle": "Exclude",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(log-out)"
+            },
+            {
+                "command": "auto-tfs.includeall",
+                "title": "Include All",
+                "category": "Auto TFS",
+                "shortTitle": "Include",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(log-in)"
+            },
+            {
+                "command": "auto-tfs.shelve",
+                "title": "Shelve",
+                "category": "Auto TFS",
+                "shortTitle": "Shelve",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(save)"
+            },
+            {
+                "command": "auto-tfs.checkin",
+                "title": "Check In",
+                "category": "Auto TFS",
+                "shortTitle": "Checkin",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(repo-push)"
             }
         ],
         "submenus": [
@@ -217,6 +269,52 @@
             }
         ],
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "auto-tfs.scmopen",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.scmview",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.revert",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.revertgroup",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.revertall",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.exclude",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.include",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.excludeall",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.includeall",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.shelve",
+                    "when": "false"
+                },
+                {
+                    "command": "auto-tfs.checkin",
+                    "when": "false"
+                }
+            ],
             "auto-tfs/action": [
                 {
                     "command": "auto-tfs.get",
@@ -296,38 +394,102 @@
                     "when": "config.auto-tfs.tf.path"
                 }
             ],
+            "scm/title": [
+                {
+                    "command": "auto-tfs.revertall",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "autotfs@1"
+                }
+            ],
             "scm/resourceGroup/context": [
                 {
-                    "command": "auto-tfs.getall",
-                    "when": "config.auto-tfs.tf.path",
+                    "command": "auto-tfs.revertgroup",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
                     "group": "inline@1"
                 },
                 {
-                    "command": "auto-tfs.revertall",
-                    "when": "config.auto-tfs.tf.path",
+                    "command": "auto-tfs.excludeall",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'included'",
                     "group": "inline@2"
+                },
+                {
+                    "command": "auto-tfs.includeall",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'excluded'",
+                    "group": "inline@2"
+                }
+            ],
+            "scm/resourceFolder/context": [
+                {
+                    "command": "auto-tfs.revert",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "auto-tfs.revert",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "auto-tfs.exclude",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'included'",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "auto-tfs.exclude",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'included'",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "auto-tfs.include",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'excluded'",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "auto-tfs.include",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'excluded'",
+                    "group": "navigation@1"
                 }
             ],
             "scm/resourceState/context": [
                 {
-                    "command": "auto-tfs.openonserver",
-                    "when": "config.auto-tfs.tf.path",
+                    "command": "auto-tfs.scmopen",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
                     "group": "inline@1"
                 },
                 {
-                    "command": "auto-tfs.scmview",
-                    "when": "config.auto-tfs.tf.path",
+                    "command": "auto-tfs.revert",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
                     "group": "inline@2"
                 },
                 {
-                    "command": "auto-tfs.revert",
-                    "when": "config.auto-tfs.tf.path",
+                    "command": "auto-tfs.exclude",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'included'",
                     "group": "inline@3"
                 },
                 {
-                    "command": "auto-tfs.revertselected",
-                    "when": "config.auto-tfs.tf.path",
-                    "group": "navigation"
+                    "command": "auto-tfs.include",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'excluded'",
+                    "group": "inline@3"
+                },
+                {
+                    "command": "auto-tfs.exclude",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'included'",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "auto-tfs.include",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs' && scmResourceGroup == 'excluded'",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "auto-tfs.revert",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "auto-tfs.openonserver",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "navigation@3"
                 }
             ]
         },
@@ -377,6 +539,21 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Auto Sync changes (only changes badges, color, etc. Does not get latest)"
+                },
+                "auto-tfs.tfs.checkin": {
+                    "type": "string",
+                    "default": "Disabled",
+                    "enum": [
+                        "Disabled",
+                        "With Prompt",
+                        "Without Prompt"
+                    ],
+                    "enumDescriptions": [
+                        "Disable checkin",
+                        "Checkin allowed with Visual Studio Checkin Prompt",
+                        "Checkout allowed without Visual Studio Checkin Prompt"
+                    ],
+                    "description": "Specifies checkin mode (Warning: Doesn't support code review)"
                 },
                 "auto-tfs.tfs.debug": {
                     "type": "boolean",

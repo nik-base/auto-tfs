@@ -1,4 +1,4 @@
-import { StatusBarAlignment, StatusBarItem, window } from 'vscode';
+import { Command, StatusBarAlignment, StatusBarItem, window } from 'vscode';
 import { Configuration } from '../configuration';
 
 export class StatusBar {
@@ -8,46 +8,82 @@ export class StatusBar {
     private static getAll: StatusBarItem;
 
     public static initSync(): StatusBarItem {
-        if (!new Configuration().getTfPath()) {
-            return this.sync;
-        }
-        this.sync = window.createStatusBarItem('auto-tfs-sync', StatusBarAlignment.Left, 10);
-        this.sync.text = `$(sync)`;
-        this.sync.tooltip = `Auto TFS: Sync Changes`;
-        this.sync.command = 'auto-tfs.sync';
-        this.sync.show();
+        this.sync = this.init(this.sync, 'auto-tfs-sync', StatusBarAlignment.Left, 10, this.getSyncCommand.bind(this));
         return this.sync;
     }
 
-    public static initGetAll(): StatusBarItem {
+    private static init(statusBar: StatusBarItem, name: string, alignment: StatusBarAlignment
+        , priority: number,  commandFunction: () => Command): StatusBarItem {
         if (!new Configuration().getTfPath()) {
-            return this.getAll;
+            return statusBar;
         }
-        this.getAll = window.createStatusBarItem('auto-tfs-getall', StatusBarAlignment.Left, 11);
-        this.getAll.text = `$(cloud-download)`;
-        this.getAll.tooltip = `Auto TFS: Get All Latest`;
-        this.getAll.command = 'auto-tfs.getall';
-        this.getAll.show();
+        statusBar = window.createStatusBarItem(name, alignment, priority);
+        const command = commandFunction();
+        statusBar.text = command.title;
+        statusBar.tooltip = command.tooltip;
+        statusBar.command = command.command;
+        statusBar.show();
+        return statusBar;
+    }
+
+    public static getSyncCommand(): Command {
+        return this.getCommand('auto-tfs.sync', '$(sync)', 'Sync');
+    }
+
+    public static getGetAllCommand(): Command {
+        return this.getCommand('auto-tfs.getall', '$(cloud-download)', 'Get All Latest');
+    }
+
+    private static getCommand(command: string, title: string, tooltip: string): Command {
+        return <Command> {
+            command: command,
+            title: title,
+            tooltip: tooltip
+        };
+    }
+
+    public static getSpinningSyncCommand(): Command {
+        return this.getCommand('', '$(sync~spin)', 'Syncing...');
+    }
+
+    public static getSpinningGetAllCommand(): Command {
+        return this.getCommand('', '$(loading~spin)', 'Getting...');
+    }
+
+    public static initGetAll(): StatusBarItem {
+        this.getAll = this.init(this.getAll, 'auto-tfs-getall', StatusBarAlignment.Left, 11, this.getGetAllCommand.bind(this));
         return this.getAll;
     }
 
     public static startSync(): void {
-        this.sync.text = `$(sync~spin)`;
+        return this.spin(this.sync, this.getSpinningSyncCommand.bind(this));
+    }
+
+    private static spin(statusBar: StatusBarItem, spinCommandFunction: () => Command): void {
+        const command = spinCommandFunction();
+        statusBar.text = command.title;
+        statusBar.tooltip = command.tooltip;
+        statusBar.command = command.command;
     }
 
     public static stopSync(): void {
-        setTimeout(() => {
-        this.sync.text = `$(sync)`;
-        }, 700);
+        this.stopSpin(this.sync, this.getSyncCommand.bind(this));
     }
 
     public static startGetAll(): void {
-        this.getAll.text = `$(loading~spin)`;
+        return this.spin(this.getAll, this.getSpinningGetAllCommand.bind(this));
     }
 
     public static stopGetAll(): void {
+        this.stopSpin(this.getAll, this.getGetAllCommand.bind(this));
+    }
+
+    private static stopSpin(statusBar: StatusBarItem, commandFunction: () => Command): void {
+        const command = commandFunction();
         setTimeout(() => {
-            this.getAll.text = `$(cloud-download)`;
+            statusBar.text = command.title;
+            statusBar.tooltip = command.tooltip;
+            statusBar.command = command.command;
             }, 700);
     }
 }

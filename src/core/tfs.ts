@@ -1,7 +1,7 @@
 import { CheckoutTfsCommand } from './tfs/impl/checkout-tfs-command';
 import { TfsCommand } from './tfs/tfs-command';
 import { Process } from './process';
-import { Uri, workspace } from 'vscode';
+import { SourceControl, SourceControlResourceGroup, SourceControlResourceState, Uri, workspace } from 'vscode';
 import { UndoTfsCommand } from './tfs/impl/undo-tfs-command';
 import { AddTfsCommand } from './tfs/impl/add-tfs-command';
 import { DeleteTfsCommand } from './tfs/impl/delete-tfs-command';
@@ -16,12 +16,14 @@ import { GetTfsCommand } from './tfs/impl/get-tfs-command';
 import { DiffTfsCommand } from './tfs/impl/diff-tfs-command';
 import { ViewTfsCommand } from './tfs/impl/view-tfs-command';
 import { parse as pathParse } from 'path';
-import { SCMChange, SCMChangeType } from './scm';
+import { SCM, SCMChange, SCMChangeType } from './scm';
 import { StatusBar } from './ui/status-bar';
 import { StatusTfsCommand } from './tfs/impl/status-tfs-command';
 import { StatusProcessHandler } from './handler/impl/status-process-handler';
 import { ViewProcessHandler } from './handler/impl/view-process-handler';
 import { OpenOnServer } from './ui/open-on-server';
+import { ShelveTfsCommand } from './tfs/impl/shelve-tfs-command';
+import { CheckinTfsCommand } from './tfs/impl/checkin-tfs-command';
 
 export class Tfs {
     private configuration = new Configuration();
@@ -53,23 +55,66 @@ export class Tfs {
         this.exec(command, uriList, this.confirmGet.bind(this));
     }
 
+    public shelve(sourceControl: SourceControl): void {
+        const uriList = this.getIncludedChanges();
+        const shelveName = sourceControl?.inputBox?.value;
+        if (!shelveName) {
+            this.message.error('Please provide a name for this shelve');
+            return;
+        }
+        const command = new ShelveTfsCommand();
+        this.execWithoutConfirm(command, uriList, { name: shelveName, sourceControl: sourceControl });
+    }
+
+    private getIncludedChanges(): Uri[] {
+        const changes = SCM.getIncludedChanges();
+        const uriList = changes.map(m => m.resourceUri);
+        return uriList;
+    }
+
+    public replaceShelve(sourceControl: SourceControl): void {
+        const uriList = this.getIncludedChanges();
+        const shelveName = sourceControl.inputBox.value;
+        const command = new ShelveTfsCommand();
+        this.execWithoutConfirm(command, uriList, { name: shelveName, replace: true });
+    }
+
+    public checkin(sourceControl: SourceControl): void {
+        if (!this.configuration.tfCheckin() || this.configuration.tfCheckin() === 'Disabled') {
+            return;
+        }
+        const uriList = this.getIncludedChanges();
+        const comment = sourceControl?.inputBox?.value;
+        if (!comment) {
+            this.message.error('Please provide a comment for this checkin');
+            return;
+        }
+        const command = new CheckinTfsCommand();
+        this.execWithData(command, uriList, { comment: comment }, this.confirmCheckin.bind(this));
+    }
+
     public getAll(): void {
         const root = this.getRootUri();
         if (!root) {
             return;
         }
         StatusBar.startGetAll();
+        SCM.startGetAll();
         const command = new GetTfsCommand();
         this.executeCommandSync(command, [root], this.confirmGet.bind(this));
         StatusBar.stopGetAll();
+        SCM.stopGetAll();
     }
 
     public undoAll(): void {
-        const root = this.getRootUri();
-        if (!root) {
+        const included = SCM.getIncludedChanges();
+        const excluded = SCM.getExcludedChanges();
+        const allChanges = [...included, ...excluded];
+        if (!allChanges?.length) {
             return;
         }
-        this.undo([root]);
+        const uriList = allChanges.map(m => m.resourceUri);
+        this.undo(uriList);
     }
 
     private getRootUri(): Uri | null {
@@ -143,10 +188,22 @@ export class Tfs {
             return;
         }
         StatusBar.startSync();
+        SCM.startSync();
         const uri = workspace.workspaceFolders[0].uri;
         const result = this.executeCommandSync(command, [uri], null);
         await new StatusProcessHandler().processData(result!.toString());
         StatusBar.stopSync();
+        SCM.stopSync();
+    }
+
+    private execWithoutConfirm(command: TfsCommand, uriList: readonly Uri[], data: any): void {
+        if (!uriList.length) {
+            return;
+        }
+        if (uriList.length === 1 && !this.checkAction(command, uriList[0])) {
+            return;
+        }
+        this.executeCommand(command, uriList, data);
     }
 
     private exec(command: TfsCommand, uriList: readonly Uri[], confirm: () => Thenable<string | undefined>): void {
@@ -161,6 +218,41 @@ export class Tfs {
                 this.executeCommand(command, uriList, null);
             }
         });
+    }
+
+    private execWithData(command: TfsCommand, uriList: readonly Uri[], data: any, confirm: () => Thenable<string | undefined>): void {
+        if (!uriList.length) {
+            return;
+        }
+        if (uriList.length === 1 && !this.checkAction(command, uriList[0])) {
+            return;
+        }
+        confirm().then((selectedItem: string | undefined) => {
+            if (this.confirmed(selectedItem)) {
+                this.executeCommand(command, uriList, data);
+            }
+        });
+    }
+
+    public undoGroup(resourceGroup: SourceControlResourceGroup): void {
+        const uriList = resourceGroup.resourceStates.map(m => m.resourceUri);
+        this.undo(uriList);
+    }
+
+    public exclude(...resources: SourceControlResourceState[]): void {
+        SCM.exclude(...resources);
+    }
+
+    public excludeAll(): void {
+        SCM.excludeAll();
+    }
+
+    public include(...resources: SourceControlResourceState[]): void {
+        SCM.include(...resources);
+    }
+
+    public includeAll(): void {
+        SCM.includeAll();
     }
 
     public autoSync(): void {
@@ -222,8 +314,16 @@ export class Tfs {
         return this.confirm('Do you want to checkout file(s) on source control?');
     }
 
+    private confirmCheckin(): Thenable<string | undefined> {
+        return this.confirm('Do you want to checkin file(s) on source control?');
+    }
+
     private confirmUndo(): Thenable<string | undefined> {
         return this.message.warning('Do you want to undo changes to the file(s)?', 'Yes', 'No');
+    }
+
+    public confirmShelveReplace(shelve: string): Thenable<string | undefined> {
+        return this.message.warning(`Shelve '${shelve}' already exists. Do you want to replace it?`, 'Yes', 'No');
     }
 
     private confirm(message: string): Thenable<string | undefined> {
@@ -280,7 +380,7 @@ export class Tfs {
         }
         const args = command.getCommandAndArgs(uriList, data);
         const process = new Process(command);
-        if (command.command === 'diff') {
+        if (command.command === 'diff' ||  (command.command === 'checkin' && this.configuration.tfCheckin() === 'With Prompt')) {
             process.spawnShell(tfPath!, args);
         } else {
             process.spawn(tfPath!, args);

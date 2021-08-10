@@ -70,6 +70,10 @@ Auto TFS: Open on server
 Additionally, for ease of use you can configure the extension to support below functionalities –
 - Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
 - Sync workspace to get color coded changes with bades (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- Checkin files with or without Visual Studio prompt (Warning: Code review not supported)
+- Quick Diff - In line diff in open editor
+- Shelve / Replace shelve
+- Include / Exclude during shelve and checkin
 - View changes in source control with badges
 - Open file on server (browser).
 - Compare, View, Revert, Open on server directly from Source Control Manager.
@@ -110,6 +114,10 @@ This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
 
 - Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
 - Sync workspace to get color coded changes with bades (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- Checkin files with or without Visual Studio prompt (Warning: Code review not supported)
+- Quick Diff - In line diff in open editor
+- Shelve / Replace shelve
+- Include / Exclude during shelve and checkin
 - View changes in source control with badges
 - Open file on server (browser).
 - Compare, View, Revert, Open on server directly from Source Control Manager.

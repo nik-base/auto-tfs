@@ -1,6 +1,7 @@
 import { Message } from './core/ui/message';
 import { ExtensionContext, commands, workspace, Uri, window, TextEditor
-    , TextDocumentChangeEvent, TextDocument, FileWillRenameEvent, FileCreateEvent, FileDeleteEvent, SourceControlResourceState } from 'vscode';
+    , TextDocumentChangeEvent, TextDocument, FileWillRenameEvent, FileCreateEvent, FileDeleteEvent
+    , SourceControlResourceState, SourceControlResourceGroup, SourceControl } from 'vscode';
 import { Configuration } from './core/configuration';
 import { OutputChannel } from './core/output-channel';
 import { Tfs } from './core/tfs';
@@ -15,7 +16,7 @@ export function activate(context: ExtensionContext) {
     OutputChannel.log('Auto TFS started');
     const syncStatus = StatusBar.initSync();
     const getAllStatus = StatusBar.initGetAll();
-    const sc = SCM.init();
+    const sc = SCM.init(context);
 
     const checkoutCommand = commands.registerCommand('auto-tfs.checkout', async (clickedFile: Uri, selectedFiles: Uri[]) => {
         const files = getFiles(clickedFile, selectedFiles);
@@ -97,14 +98,14 @@ export function activate(context: ExtensionContext) {
         tfs.getAll();
     });
 
-    const scmOpenCommand = commands.registerCommand('auto-tfs.scmopen', async (clickedFile: Uri, change: SCMChange) => {
+    const scmOpenCommand = commands.registerCommand('auto-tfs.scmview', async (clickedFile: Uri, change: SCMChange) => {
         if (!clickedFile) {
             return;
         }
-        await tfs.scmOpen(clickedFile, change);
+        await tfs.scmView(clickedFile, change);
     });
 
-    const scmViewCommand = commands.registerCommand('auto-tfs.scmview', async (resourceState: SourceControlResourceState) => {
+    const scmViewCommand = commands.registerCommand('auto-tfs.scmopen', async (resourceState: SourceControlResourceState) => {
         const uri = resourceState?.resourceUri;
         const args = resourceState?.command?.arguments;
         if (!uri || !args || args.length < 2) {
@@ -114,17 +115,14 @@ export function activate(context: ExtensionContext) {
         if (!change) {
             return;
         }
-        await tfs.scmView(uri, change);
+        await tfs.scmOpen(uri, change);
     });
 
-    const revertCommand = commands.registerCommand('auto-tfs.revert', async (resourceState: SourceControlResourceState) => {
-        if (!resourceState?.resourceUri) {
-            return;
-        }
-        tfs.undo([resourceState.resourceUri]);
+    const revertGroupCommand = commands.registerCommand('auto-tfs.revertgroup', async (resourceGroup: SourceControlResourceGroup) => {
+        tfs.undoGroup(resourceGroup);
     });
 
-    const revertSelectedCommand = commands.registerCommand('auto-tfs.revertselected', async (...resourceStates: SourceControlResourceState[]) => {
+    const revertSelectedCommand = commands.registerCommand('auto-tfs.revert', async (...resourceStates: SourceControlResourceState[]) => {
         if (!resourceStates.length) {
             return;
         }
@@ -134,6 +132,45 @@ export function activate(context: ExtensionContext) {
 
     const revertAllCommand = commands.registerCommand('auto-tfs.revertall', async () => {
         tfs.undoAll();
+    });
+
+    const excludeCommand = commands.registerCommand('auto-tfs.exclude', async (...resourceStates: SourceControlResourceState[]) => {
+        if (!resourceStates?.length) {
+            return;
+        }
+        tfs.exclude(...resourceStates);
+    });
+
+    const excludeAllCommand = commands.registerCommand('auto-tfs.excludeall', async () => {
+        tfs.excludeAll();
+    });
+
+    const includeCommand = commands.registerCommand('auto-tfs.include', async (...resourceStates: SourceControlResourceState[]) => {
+        if (!resourceStates?.length) {
+            return;
+        }
+        tfs.include(...resourceStates);
+    });
+
+    const includeAllCommand = commands.registerCommand('auto-tfs.includeall', async () => {
+        tfs.includeAll();
+    });
+
+    const shelveCommand = commands.registerCommand('auto-tfs.shelve', async (sourceControl: SourceControl) => {
+        if (!sourceControl) {
+            return;
+        }
+        tfs.shelve(sourceControl);
+    });
+
+    const checkinCommand = commands.registerCommand('auto-tfs.checkin', async (sourceControl: SourceControl) => {
+        if (!sourceControl) {
+            return;
+        }
+        if (!new Configuration().tfCheckin() || new Configuration().tfCheckin() === 'Disabled') {
+            return;
+        }
+        tfs.checkin(sourceControl);
     });
 
     const onChange = workspace.onDidChangeTextDocument( async (event: TextDocumentChangeEvent) => {
@@ -238,13 +275,20 @@ export function activate(context: ExtensionContext) {
         getAllStatus,
         outputChannel,
         sc.sourceControl,
-        sc.sourceControlGroup,
+        sc.changes,
+        sc.excluded,
         scmOpenCommand,
         scmViewCommand,
-        revertCommand,
+        revertGroupCommand,
         revertSelectedCommand,
         revertAllCommand,
-        openOnServerCommand);
+        openOnServerCommand,
+        excludeAllCommand,
+        excludeCommand,
+        includeAllCommand,
+        includeCommand,
+        shelveCommand,
+        checkinCommand);
 }
 
 // this method is called when your extension is deactivated
