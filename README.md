@@ -18,7 +18,7 @@ or
 
 ## Additional Prerequisites
 - Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).  
-- Visual Studio Code - Minimum version requried for extension is 1.58.2.  
+- Visual Studio Code - Minimum version required for extension is 1.58.2.  
 
 ## Installation
 
@@ -31,7 +31,8 @@ or
 
 ## Configuration
 
-A full path to TF tool should be specified in Settings (**File > Preferences > Settings**). (Recommended to configure in Workspace settings)  
+A full path to TF tool should be specified in Settings (**File > Preferences > Settings**).  
+(Recommended configuring in Workspace settings if only used for limited workspaces to avoid conflicts with git workspaces)  
 The following entry is needed:
 
 ```
@@ -46,31 +47,11 @@ Recent versions of Visual Studio has changed this path, here is a sample of Visu
 
 For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf.cmd`  
 
-Another supported setting serves for logging information into Output. To enable this, just add following option to VS Code Settings:
-```
-    "auto-tfs.tf.debug": true
-```
+## Features
 
-## Usage
-1. Invoke the command bar (`Ctrl+Shift+P`)
-2. Start typing some of the command listed below or just Auto TFS. The full names of commands:
-```
-Auto TFS: Checkout
-Auto TFS: Undo
-Auto TFS: Add
-Auto TFS: Delete
-Auto TFS: Here (Compare)
-Auto TFS: In Visual Studio (Compare)
-Auto TFS: Get Latest
-Auto TFS: Get All Latest
-Auto TFS: Sync
-Auto TFS: Open on server
-```
-
-Additionally, for ease of use you can configure the extension to support below functionalities –
-- Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
-- Sync workspace to get color coded changes with bades (for modified, renamed, deleted, added, renamed & modified) as you get it Git
-- Checkin files with or without Visual Studio prompt (Warning: Code review not supported)
+- Compare file with the latest server version either in Visual Studio Code itself or in Visual Studio.
+- Sync workspace to get color coded changes with badges (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- Check-In files with or without Visual Studio prompt (Warning: Code review not supported)
 - Quick Diff - In line diff in open editor
 - Shelve / Replace shelve
 - Include / Exclude during shelve and checkin
@@ -80,7 +61,7 @@ Additionally, for ease of use you can configure the extension to support below f
 - Get Changes Count on SCM View
 - Revert All / Get All on SCM
 - Status with Get All and Sync buttons
-- Editor title icons for Compare (in code it self), get latest and open on server.
+- Editor title icons for Compare (in code itself), get latest and open on server.
 - Get latest of one or more files or folders (Recursive) or entire workspace.
 - Configurable Automatic operations.
 - Configurable confirmation of automatic operations.
@@ -91,9 +72,10 @@ Additionally, for ease of use you can configure the extension to support below f
 - Auto Rename on source control on Rename (Known issue - works but throws exception)
 - Add, Checkout and Undo operation can be performed via context menu in Explorer (multiple), Editor and Editor Tile.
 
-## Features
 
-* Authorization process, if needed. This is performed by command bar. In case of the necessivity, you will be prompted to enter the credentials from your TFS account, where the current file is mapped to. Otherwise, a command will be executed silently.
+## Authorization
+
+* Authorization process, if needed. This is performed by command bar. If necessary, you will be prompted to enter the credentials for your TFS account, where the current workspace is mapped to. Otherwise, a command will be executed silently.
 
 ## Available commands
 
@@ -112,8 +94,8 @@ Additionally, for ease of use you can configure the extension to support below f
 
 This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils). The changes are:
 
-- Compare file with latest server version either in Visual Studio code itself or in Visual Studio.
-- Sync workspace to get color coded changes with bades (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- Compare file with the latest server version, either in Visual Studio Code itself or in Visual Studio.
+- Sync workspace to get color coded changes with badges (for modified, renamed, deleted, added, renamed & modified) as you get it Git
 - Checkin files with or without Visual Studio prompt (Warning: Code review not supported)
 - Quick Diff - In line diff in open editor
 - Shelve / Replace shelve
@@ -124,7 +106,7 @@ This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
 - Get Changes Count on SCM View
 - Revert All / Get All on SCM
 - Status with Get All and Sync buttons
-- Editor title icons for Compare (in code it self), get latest and open on server.
+- Editor title icons for Compare (in code itself), get latest and open on server.
 - Get latest of one or more files or folders (Recursive).
 - Configurable Automatic operations.
 - Configurable confirmation of automatic operations.
@@ -137,5 +119,5 @@ This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
 
 ## Links
 
-- [AutoTFS extension on Github](https://github.com/nik-base/auto-tfs)
-- [MIT Licence](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
+- [AutoTFS extension on GitHub](https://github.com/nik-base/auto-tfs)
+- [MIT License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
