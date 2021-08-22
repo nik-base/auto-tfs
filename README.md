@@ -49,7 +49,7 @@ Apart from above configuration, the extension also allows configuarations such a
 
 ## Features
 
-- Configurable automatically checkout, add, delete, rename files on source control.
+- Configurable automatic checkout, add, delete, rename files on source control.
 - Ability to checkout, add, delete, rename files on source control via context menu available in Explorer, Editor, Editor Title.
 - Get latest of entire workspace, one or more items from context menus, status bar and SCM view.
 - Compare files with latest server version (In Visual Studio Code or Visual Studio)
