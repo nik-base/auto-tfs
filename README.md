@@ -1,4 +1,4 @@
-# VS Code extension for TFS for helping with some operations
+# TFS integration for Visual Studio Code
 
 [![GitHub](https://img.shields.io/github/v/release/nik-base/auto-tfs?include_prereleases&style=flat-square)](https://github.com/nik-base/auto-tfs/releases)
 [![GitHub](https://img.shields.io/github/license/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
@@ -8,17 +8,14 @@
 [![David](https://img.shields.io/david/dev/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs?type=dev)
 
 ## Prerequisites
-This extension operates with TF API provided by Microsoft. So, you need either
-1. Have Visual Studio IDE installed with TFS capabilities (i.e. TF.exe installed).  
-or
-2. TeamExplorerEverywhere installed (https://github.com/Microsoft/team-explorer-everywhere)
-> **Note:** Possibly, some other 3rd party tools would also work, if they provide the same output and receives the same commands / args
-
-> **Note (for TeamExplorerEverywhere):** Possibly, works under Linux-based systems and MacOS, but I have no ability to test it
-
-## Additional Prerequisites
-- Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).  
-- Visual Studio Code - Minimum version required for extension is 1.58.2.  
+1. This extension operates with TF API provided by Microsoft. So, you need either  
+    a. Have Visual Studio IDE installed with TFS capabilities (i.e. TF.exe installed).  
+              OR  
+    b. TeamExplorerEverywhere installed (https://github.com/Microsoft/team-explorer-everywhere)
+    > **Note:** Possibly, some other 3rd party tools would also work, if they provide the same output and receives the same commands / args  
+    > **Note (for TeamExplorerEverywhere):** Possibly, works under Linux-based systems and MacOS, but I have no ability to test it
+2. Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).  
+3. Visual Studio Code - Minimum version required for extension is 1.58.2.  
 
 ## Installation
 
@@ -47,31 +44,22 @@ Recent versions of Visual Studio has changed this path, here is a sample of Visu
 
 For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf.cmd`  
 
+Above TF path is mandatory for the extension to function.
+Apart from above configuration, the extension also allows configuarations such as automatic checkout/add/delete/rename, confirmation prompts, etc.
+
 ## Features
 
-- Compare file with the latest server version either in Visual Studio Code itself or in Visual Studio.
-- Sync workspace to get color coded changes with badges (for modified, renamed, deleted, added, renamed & modified) as you get it Git
+- Configurable automatically checkout, add, delete, rename files on source control.
+- Ability to checkout, add, delete, rename files on source control via context menu available in Explorer, Editor, Editor Title.
+- Get latest of entire workspace, one or more items from context menus, status bar and SCM view.
+- Compare files with latest server version (In Visual Studio Code or Visual Studio)
+- In file Quick diff of a checked out file
 - Check-In files with or without Visual Studio prompt (Warning: Code review not supported)
-- Quick Diff - In line diff in open editor
-- Shelve / Replace shelve
-- Include / Exclude during shelve and checkin
+- Shelve / Replace shelvesets
+- Color coded (along with badges) visualization from changes to a workspace (Same as provided in Git) and also ability to automatically / manually sync (refresh) these changes.
+- View all changes in SCM View of Code, with ability to compare, revert, shelve (and much more..) changes along with option to include and exclude items.
 - View changes in source control with badges
 - Open file on server (browser).
-- Compare, View, Revert, Open on server directly from Source Control Manager.
-- Get Changes Count on SCM View
-- Revert All / Get All on SCM
-- Status with Get All and Sync buttons
-- Editor title icons for Compare (in code itself), get latest and open on server.
-- Get latest of one or more files or folders (Recursive) or entire workspace.
-- Configurable Automatic operations.
-- Configurable confirmation of automatic operations.
-- Auto Checkout on Save
-- Auto Checkout on Change
-- Auto Add to source control on Add
-- Auto Delete from source control on Delete
-- Auto Rename on source control on Rename (Known issue - works but throws exception)
-- Add, Checkout and Undo operation can be performed via context menu in Explorer (multiple), Editor and Editor Tile.
-
 
 ## Authorization
 
@@ -94,28 +82,7 @@ For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf
 
 This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils). The changes are:
 
-- Compare file with the latest server version, either in Visual Studio Code itself or in Visual Studio.
-- Sync workspace to get color coded changes with badges (for modified, renamed, deleted, added, renamed & modified) as you get it Git
-- Checkin files with or without Visual Studio prompt (Warning: Code review not supported)
-- Quick Diff - In line diff in open editor
-- Shelve / Replace shelve
-- Include / Exclude during shelve and checkin
-- View changes in source control with badges
-- Open file on server (browser).
-- Compare, View, Revert, Open on server directly from Source Control Manager.
-- Get Changes Count on SCM View
-- Revert All / Get All on SCM
-- Status with Get All and Sync buttons
-- Editor title icons for Compare (in code itself), get latest and open on server.
-- Get latest of one or more files or folders (Recursive).
-- Configurable Automatic operations.
-- Configurable confirmation of automatic operations.
-- Auto Checkout on Save
-- Auto Checkout on Change
-- Auto Add to source control on Add
-- Auto Delete from source control on Delete
-- Auto Rename on source control on Rename (Throw error cannot find file since already renamed - Known issue)
-- Add, Checkout and Undo operation can be performed via context menu in Explorer (multiple), Editor and Editor Tile.
+- Refer Features sections for all the changes.
 
 ## Links
 
