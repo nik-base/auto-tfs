@@ -18,7 +18,7 @@
         "url": "https://github.com/nik-base/auto-tfs/issues",
         "email": "nikhil.patil.3632@gmail.com"
     },
-    "icon": "ressources/icons/auto-tfs.png",
+    "icon": "resources/icons/auto-tfs.png",
     "galleryBanner": {
         "color": "#000000",
         "theme": "dark"
