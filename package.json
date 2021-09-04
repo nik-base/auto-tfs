@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TFS integration for Visual Studio Code",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
@@ -323,23 +323,28 @@
             "auto-tfs/action": [
                 {
                     "command": "auto-tfs.get",
-                    "group": "1_autotfs@1"
+                    "group": "1_autotfs@1",
+                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
                     "command": "auto-tfs.checkout",
-                    "group": "1_autotfs@2"
+                    "group": "1_autotfs@2",
+                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
                     "command": "auto-tfs.undo",
-                    "group": "1_autotfs@3"
+                    "group": "1_autotfs@3",
+                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
                     "command": "auto-tfs.add",
-                    "group": "1_autotfs@4"
+                    "group": "1_autotfs@4",
+                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
                     "command": "auto-tfs.delete",
-                    "group": "1_autotfs@5"
+                    "group": "1_autotfs@5",
+                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
                     "submenu": "auto-tfs/action/compare",

@@ -95,7 +95,7 @@ export function activate(context: ExtensionContext) {
     });
 
     const getAllCommand = commands.registerCommand('auto-tfs.getall', async () => {
-        tfs.getAll();
+        await tfs.getAll();
     });
 
     const scmOpenCommand = commands.registerCommand('auto-tfs.scmview', async (clickedFile: Uri, change: SCMChange) => {
@@ -226,12 +226,17 @@ export function activate(context: ExtensionContext) {
         }
     };
 
-    const getFiles = (clickedFile: Uri, selectedFiles: Uri[]): Uri[] => {
+    const getFiles = (clickedFile: Uri, selectedFiles: Uri[]): readonly Uri[] => {
+        const files = getSelectedFiles(clickedFile, selectedFiles);
+        return files;
+    };
+
+    const getSelectedFiles = (clickedFile: Uri, selectedFiles: Uri[]): readonly Uri[] => {
         const files: Uri[] = [];
         if (selectedFiles?.length) {
             files.push(...selectedFiles);
         }
-        if (clickedFile) {
+        if (clickedFile && !files.map(m => m.fsPath).includes(clickedFile.fsPath)) {
             files.push(clickedFile);
         }
         if (files.length) {

@@ -93,7 +93,7 @@ export class Tfs {
         this.execWithData(command, uriList, { comment: comment }, this.confirmCheckin.bind(this));
     }
 
-    public getAll(): void {
+    public async getAll(): Promise<void> {
         const root = this.getRootUri();
         if (!root) {
             return;
@@ -101,9 +101,10 @@ export class Tfs {
         StatusBar.startGetAll();
         SCM.startGetAll();
         const command = new GetTfsCommand();
-        this.executeCommandSync(command, [root], this.confirmGet.bind(this));
-        StatusBar.stopGetAll();
-        SCM.stopGetAll();
+        await this.executeCommandSyncWithConfirm(command, [root], null, this.confirmGet.bind(this)).then(() => {
+            StatusBar.stopGetAll();
+            SCM.stopGetAll();
+        });
     }
 
     public undoAll(): void {
@@ -357,6 +358,21 @@ export class Tfs {
             }
             throw Error;
         }
+    }
+
+    private async executeCommandSyncWithConfirm(command: TfsCommand, uriList: readonly Uri[]
+        , data: any, confirm: () => Thenable<string | undefined>): Promise<string | null> {
+        if (!uriList.length) {
+            return Promise.reject(null);
+        }
+        if (uriList.length === 1 && !this.checkAction(command, uriList[0])) {
+            return Promise.reject(null);
+        }
+        const selectedItem = await confirm();
+        if (this.confirmed(selectedItem)) {
+            return this.executeCommandSync(command, uriList, data);
+        }
+        return null;
     }
 
     private getTfPath(): string | null {
