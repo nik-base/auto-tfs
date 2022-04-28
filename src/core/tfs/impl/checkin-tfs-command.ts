@@ -18,11 +18,12 @@ export class CheckinTfsCommand extends TfsCommandBase {
         if (!_data?.comment) {
             return [];
         }
-        const paths = uriList.map(m => m.fsPath);
         if (new Configuration().tfCheckin() === 'Without Prompt') {
-            return [this.command, `/comment:"${_data.comment}"`, ...paths];
+            const escapedPath = uriList.map(m => decodeURI(m.fsPath));
+            return [this.command, `/comment:"${_data.comment}"`, '/noprompt', ...escapedPath];
         }
-        return [this.command, `/comment:"${_data.comment}"`, '/validate', ...paths];
+        const paths = uriList.map(m => `"${m.fsPath}"`);
+        return [this.command, `/comment:"${_data.comment}"`, ...paths];
     }
 
     public override getConsoleDataHandler(): ProcessHandler {
