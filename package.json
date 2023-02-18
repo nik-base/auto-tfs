@@ -592,7 +592,6 @@
         "@typescript-eslint/eslint-plugin": "^5.48.1",
         "@typescript-eslint/eslint-plugin-tslint": "^5.48.1",
         "@typescript-eslint/parser": "^5.48.1",
-        "codelyzer": "^6.0.2",
         "eslint": "^8.31.0",
         "eslint-config-prettier": "^8.6.0",
         "tslint": "^6.1.3",
