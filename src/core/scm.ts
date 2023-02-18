@@ -51,7 +51,9 @@ export class SCM {
         this.fileDecorators.clear();
         this.tfs = scm.createSourceControl('auto-tfs', 'TFS');
         this.tfs.statusBarCommands = this.getStatusBarCommands();
-        this.tfs.quickDiffProvider = this.quickDiffProvider();
+        if (new Configuration().isTfQuickDiff()) {
+            this.tfs.quickDiffProvider = this.quickDiffProvider();
+        }
         this.tfs.inputBox.placeholder = 'Check-in Comment / Shelve name';
         this.included = this.initGroup('included', 'Included');
         this.excluded = this.initGroup('excluded', 'Excluded');
@@ -66,6 +68,9 @@ export class SCM {
 
     private static getOriginalUri(uri: Uri): Thenable<Uri> {
         return new Promise<Uri>((resolve, reject) => {
+            if (!new Configuration().isTfQuickDiff()) {
+                reject();
+            }
             const parsedTemp = pathParse(uri.fsPath);
             const path = this.downloadFile([uri], { temp: parsedTemp, nodiff: true });
             if (!path) {

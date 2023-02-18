@@ -15,8 +15,12 @@ export class InfoProcessHandler extends AbstractProcessHandler implements Proces
             const result = this.getChangeType(data);
             OutputChannel.log(result!);
             return result;
-        } catch (e) {
-            OutputChannel.log(e);
+        } catch (e: any) {
+            if (typeof e === 'string') {
+                OutputChannel.log(e);
+            } else if (e instanceof Error) {
+                OutputChannel.log(e.message);
+            }
             return null;
         }
     }

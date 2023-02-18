@@ -550,6 +550,11 @@
                     "default": false,
                     "description": "Auto Sync changes (only changes badges, color, etc. Does not get latest)"
                 },
+                "auto-tfs.tfs.quickDiff": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "View quick diff in editor. Recommended to disable due to current issue of continous file download for quick diff."
+                },
                 "auto-tfs.tfs.checkin": {
                     "type": "string",
                     "default": "Disabled",
@@ -577,13 +582,20 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "lint": "node ./node_modules/tslint/bin/tslint --project tsconfig.json src/**/*.ts -t verbose"
+        "lint_old": "node ./node_modules/tslint/bin/tslint --project tsconfig.json src/**/*.ts -t verbose",
+        "lint": "eslint -c .eslintrc.js --ext .ts src/**/*.ts"
     },
     "devDependencies": {
-        "@types/node": "^16.4.8",
-        "@types/vscode": "^1.58.1",
+        "@angular-eslint/eslint-plugin": "^15.1.0",
+        "@types/node": "^18.11.18",
+        "@types/vscode": "^1.74.0",
+        "@typescript-eslint/eslint-plugin": "^5.48.1",
+        "@typescript-eslint/eslint-plugin-tslint": "^5.48.1",
+        "@typescript-eslint/parser": "^5.48.1",
         "codelyzer": "^6.0.2",
+        "eslint": "^8.31.0",
+        "eslint-config-prettier": "^8.6.0",
         "tslint": "^6.1.3",
-        "typescript": "^4.3.5"
+        "typescript": "^4.9.4"
     }
 }

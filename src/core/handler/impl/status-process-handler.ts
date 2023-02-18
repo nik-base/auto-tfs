@@ -17,8 +17,12 @@ export class StatusProcessHandler extends AbstractProcessHandler implements Proc
         try {
             const changes = this.getChanges(data);
             await SCM.sync(changes);
-        } catch (e) {
-            OutputChannel.log(e);
+        } catch (e: any) {
+            if (typeof e === 'string') {
+                OutputChannel.log(e);
+            } else if (e instanceof Error) {
+                OutputChannel.log(e.message);
+            }
         }
     }
 

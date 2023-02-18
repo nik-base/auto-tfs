@@ -31,6 +31,10 @@ export class Configuration {
         return workspace.getConfiguration(this.extension).get('tfs.autoSync') ?? false;
     }
 
+    public isTfQuickDiff(): boolean {
+        return workspace.getConfiguration(this.extension).get('tfs.quickDiff') ?? false;
+    }
+
     public tfCheckin(): string {
         return workspace.getConfiguration(this.extension).get('tfs.checkin') ?? 'Disabled';
     }

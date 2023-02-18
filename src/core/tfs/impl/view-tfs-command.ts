@@ -27,13 +27,18 @@ export class ViewTfsCommand extends TfsCommandBase {
         }
         const tempFolder = tmpdir();
         this.parsedTemp = _data.temp as ParsedPath;
-        const tempPath = `${tempFolder}\\auto-tfs-diff.temp${this.parsedTemp.ext}`;
+        const random = this.randomInteger(0, 100);
+        const tempPath = `${tempFolder}\\auto-tfs-diff_${random}.temp${this.parsedTemp.ext}`;
         this.tempPath = tempPath;
         this.nodiff = _data.nodiff ?? false;
         if (_data.sourceItem) {
             return [this.command, _data.sourceItem, `/output:${tempPath}`];
         }
         return [this.command, uri.fsPath, `/output:${tempPath}`];
+    }
+
+    private randomInteger(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
     }
 
     public override getConsoleDataHandler(): ProcessHandler {

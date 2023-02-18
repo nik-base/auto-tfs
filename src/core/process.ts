@@ -1,4 +1,4 @@
-import { spawn, spawnSync, ChildProcess, SpawnOptions } from 'child_process';
+import { spawn, spawnSync, ChildProcess, SpawnOptions, SpawnSyncOptionsWithStringEncoding } from 'child_process';
 import { OutputChannel } from './output-channel';
 import { TfsCommand } from './tfs/tfs-command';
 
@@ -29,8 +29,8 @@ export class Process {
         const message = `TF command '${this.getCommandName()}' is in progress...`;
         OutputChannel.log(message);
         this.commandName = args[0]; // The first arg is always a command
-        const result =  spawnSync(executablePath, args);
-        const stdOut = result.stdout;
+        const result =  spawnSync(executablePath, args, <SpawnSyncOptionsWithStringEncoding>{ encoding: 'utf8'});
+        const stdOut = result.stdout?.toString();
         OutputChannel.log(stdOut);
         const info = `TF command '${this.getCommandName()}' is successfully done`;
         OutputChannel.log(info);

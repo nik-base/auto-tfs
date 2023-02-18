@@ -30,12 +30,12 @@ export class ViewProcessHandler extends AbstractProcessHandler implements Proces
     private openDiff(): void {
         commands.executeCommand('vscode.diff', Uri.file(this.tempPath), this.uri, `Compare: ${this.parsedTemp.base}`)
         .then(() => {
-            unlink(this.tempPath, () => {});
+            unlink(this.tempPath, (err) => console.log(err));
         })
-        .then(undefined, err => {
-            unlink(this.tempPath, () => {});
-            console.log(err);
-            OutputChannel.log(err);
+        .then(undefined, error => {
+            unlink(this.tempPath, (err) => console.log(err));
+            console.log(error);
+            OutputChannel.log(error);
         });
     }
 
