@@ -3,11 +3,11 @@ import { SCM } from '../scm';
 
 export class TfsFileDecorator implements FileDecorationProvider {
 
-    private disposables: Disposable[] = [];
-
     public readonly onDidChangeDecorations = new EventEmitter<Uri[]>();
 
     public onDidChangeFileDecorations?: Event<undefined | Uri | Uri[]> = this.onDidChangeDecorations.event;
+
+    private disposables: Disposable[] = [];
 
     constructor() {
         this.disposables.push(window.registerFileDecorationProvider(this));
@@ -19,6 +19,6 @@ export class TfsFileDecorator implements FileDecorationProvider {
     }
 
     public dispose(): void {
-       this.disposables.forEach(d => d.dispose());
+        this.disposables.forEach(d => d.dispose());
     }
 }

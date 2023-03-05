@@ -19,26 +19,6 @@ export class ViewProcessHandler extends AbstractProcessHandler implements Proces
         super.handleExit(exitCode);
     }
 
-    private open(): void {
-        if (this.nodiff) {
-            this.openFile(Uri.file(this.tempPath));
-            return;
-        }
-        this.openDiff();
-    }
-
-    private openDiff(): void {
-        commands.executeCommand('vscode.diff', Uri.file(this.tempPath), this.uri, `Compare: ${this.parsedTemp.base}`)
-        .then(() => {
-            unlink(this.tempPath, (err) => console.log(err));
-        })
-        .then(undefined, error => {
-            unlink(this.tempPath, (err) => console.log(err));
-            console.log(error);
-            OutputChannel.log(error);
-        });
-    }
-
     public async openFile(uri: Uri): Promise<void> {
         const activeTextEditor = window.activeTextEditor;
         const opts: TextDocumentShowOptions = {
@@ -63,6 +43,26 @@ export class ViewProcessHandler extends AbstractProcessHandler implements Proces
         } else {
             await commands.executeCommand('vscode.open', uri, opts);
         }
+    }
+
+    private open(): void {
+        if (this.nodiff) {
+            this.openFile(Uri.file(this.tempPath));
+            return;
+        }
+        this.openDiff();
+    }
+
+    private openDiff(): void {
+        commands.executeCommand('vscode.diff', Uri.file(this.tempPath), this.uri, `Compare: ${this.parsedTemp.base}`)
+            .then(() => {
+                unlink(this.tempPath, (err) => console.log(err));
+            })
+            .then(undefined, error => {
+                unlink(this.tempPath, (err) => console.log(err));
+                console.log(error);
+                OutputChannel.log(error);
+            });
     }
 
     private async getTextDocument(uri: Uri, opts: TextDocumentShowOptions): Promise<TextDocument | null> {

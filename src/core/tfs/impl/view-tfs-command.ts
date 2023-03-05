@@ -37,10 +37,6 @@ export class ViewTfsCommand extends TfsCommandBase {
         return [this.command, uri.fsPath, `/output:${tempPath}`];
     }
 
-    private randomInteger(min: number, max: number): number {
-        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-    }
-
     public override getConsoleDataHandler(): ProcessHandler {
         const handler = new ViewProcessHandler();
         handler.parsedTemp = this.parsedTemp;
@@ -49,5 +45,9 @@ export class ViewTfsCommand extends TfsCommandBase {
         handler.nodiff = this.nodiff;
         handler.showMessageOnUI = !this.nodiff;
         return handler;
+    }
+
+    private randomInteger(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
     }
 }

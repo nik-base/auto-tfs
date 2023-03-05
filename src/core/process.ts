@@ -3,8 +3,11 @@ import { OutputChannel } from './output-channel';
 import { TfsCommand } from './tfs/tfs-command';
 
 export class Process {
-    private childProcess!: ChildProcess;
+
     public commandName!: string;
+
+    private childProcess!: ChildProcess;
+
     private command?: TfsCommand;
 
     constructor(command?: TfsCommand) {

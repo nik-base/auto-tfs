@@ -1,5 +1,5 @@
 import { Command, ExtensionContext, FileDecoration, QuickDiffProvider, scm, SourceControl
-    , SourceControlInputBox, SourceControlResourceGroup, SourceControlResourceState, ThemeColor, Uri } from 'vscode';
+    , SourceControlResourceGroup, SourceControlResourceState, ThemeColor, Uri } from 'vscode';
 import { Configuration } from './configuration';
 import { TfsFileDecorator } from './ui/tfs-file-decorator';
 import { join as pathJoin, dirname as dirname, parse as pathParse } from 'path';
@@ -30,6 +30,10 @@ function getIconUri(iconName: string, theme: string): Uri {
 
 export class SCM {
 
+    public static fileDecorators = new Map<string, FileDecoration>();
+
+    public static fileDecorationProvider = new TfsFileDecorator();
+
     private static tfs: SourceControl;
 
     private static extensionContext: ExtensionContext;
@@ -38,12 +42,12 @@ export class SCM {
 
     private static excluded: SourceControlResourceGroup;
 
-    public static fileDecorators = new Map<string, FileDecoration>();
-
-    public static fileDecorationProvider = new TfsFileDecorator();
-
     public static init(context: ExtensionContext):
-        { sourceControl: SourceControl, changes: SourceControlResourceGroup, excluded: SourceControlResourceGroup } {
+    {
+        sourceControl: SourceControl;
+        changes: SourceControlResourceGroup;
+        excluded: SourceControlResourceGroup;
+    } {
         this.extensionContext = context;
         if (!new Configuration().getTfPath()) {
             return  { sourceControl: this.tfs, changes: this.included, excluded: this.excluded };
@@ -58,6 +62,89 @@ export class SCM {
         this.included = this.initGroup('included', 'Included');
         this.excluded = this.initGroup('excluded', 'Excluded');
         return  { sourceControl: this.tfs, changes: this.included, excluded: this.excluded };
+    }
+
+    public static startSync(): void {
+        this.updateCommand(1, StatusBar.getSpinningSyncCommand.bind(StatusBar));
+    }
+
+    public static startGetAll(): void {
+        this.updateCommand(0, StatusBar.getSpinningGetAllCommand.bind(StatusBar));
+    }
+
+    public static stopSync(): void {
+        setTimeout(() => {
+            this.updateCommand(1, StatusBar.getSyncCommand.bind(StatusBar));
+        }, 700);
+    }
+
+    public static stopGetAll(): void {
+        setTimeout(() => {
+            this.updateCommand(0, StatusBar.getGetAllCommand.bind(StatusBar));
+        }, 700);
+    }
+
+    public static updateCommand(index: number, commandFunction: () => Command): void {
+        const existingCommands = this.getStatusBarCommands();
+        const existingCommand = existingCommands[index];
+        const command = commandFunction();
+        existingCommand.command = command.command;
+        existingCommand.title = command.title;
+        existingCommand.tooltip = command.tooltip;
+        this.tfs.statusBarCommands = existingCommands;
+    }
+
+    public static async sync(changeList: readonly SCMChange[]): Promise<void> {
+        this.fileDecorators.clear();
+        this.fileDecorationProvider.dispose();
+        this.fileDecorationProvider = new TfsFileDecorator();
+        const changes: SourceControlResourceState[] = [];
+        for (const change of changeList) {
+            SCM.processChange(change, changes);
+        }
+        this.updateChanges(changes);
+        this.updateCountBadge();
+        this.fileDecorationProvider.onDidChangeDecorations.fire(changeList.map(m => Uri.file(m.path)));
+    }
+
+    public static exclude(...resources: SourceControlResourceState[]): void {
+        const files = resources.map(m => m.resourceUri.fsPath);
+        this.excluded.resourceStates = this.excluded.resourceStates.concat(...resources);
+        const included = this.negativefilter(this.included.resourceStates, files);
+        this.included.resourceStates = [...included];
+        this.updateCountBadge();
+        this.updateWorkspaceExcluded();
+    }
+
+    public static excludeAll(): void {
+        this.excluded.resourceStates = this.excluded.resourceStates.concat(...this.included.resourceStates);
+        this.included.resourceStates = [];
+        this.updateCountBadge();
+        this.updateWorkspaceExcluded();
+    }
+
+    public static getIncludedChanges(): SourceControlResourceState[] {
+        return this.included.resourceStates;
+    }
+
+    public static getExcludedChanges(): SourceControlResourceState[] {
+        return this.excluded.resourceStates;
+    }
+
+    public static include(...resources: SourceControlResourceState[]): void {
+        const files = resources.map(m => m.resourceUri.fsPath);
+        this.included.resourceStates = this.included.resourceStates.concat(...resources);
+        const excluded = this.negativefilter(this.excluded.resourceStates, files);
+        this.excluded.resourceStates = [...excluded];
+        this.updateCountBadge();
+        this.updateWorkspaceExcluded();
+    }
+
+    public static includeAll(): void {
+        this.included.resourceStates = this.included.resourceStates.concat(...this.excluded.resourceStates);
+        this.excluded.resourceStates = [];
+        this.updateCountBadge();
+        this.updateWorkspaceExcluded();
     }
 
     private static quickDiffProvider(): QuickDiffProvider {
@@ -126,53 +213,10 @@ export class SCM {
         };
     }
 
-    public static startSync(): void {
-        this.updateCommand(1, StatusBar.getSpinningSyncCommand.bind(StatusBar));
-    }
-
-    public static startGetAll(): void {
-        this.updateCommand(0, StatusBar.getSpinningGetAllCommand.bind(StatusBar));
-    }
-
-    public static stopSync(): void {
-        setTimeout(() => {
-            this.updateCommand(1, StatusBar.getSyncCommand.bind(StatusBar));
-            }, 700);
-    }
-
-    public static stopGetAll(): void {
-        setTimeout(() => {
-            this.updateCommand(0, StatusBar.getGetAllCommand.bind(StatusBar));
-            }, 700);
-    }
-
-    public static updateCommand(index: number, commandFunction: () => Command): void {
-        const existingCommands = this.getStatusBarCommands();
-        const existingCommand = existingCommands[index];
-        const command = commandFunction();
-        existingCommand.command = command.command;
-        existingCommand.title = command.title;
-        existingCommand.tooltip = command.tooltip;
-        this.tfs.statusBarCommands = existingCommands;
-    }
-
     private static initGroup(name: string, title: string): SourceControlResourceGroup {
         const group = this.tfs.createResourceGroup(name, title);
         group.resourceStates = [];
         return group;
-    }
-
-    public static async sync(changeList: readonly SCMChange[]): Promise<void> {
-        this.fileDecorators.clear();
-        this.fileDecorationProvider.dispose();
-        this.fileDecorationProvider = new TfsFileDecorator();
-        const changes: SourceControlResourceState[] = [];
-        for (const change of changeList) {
-            SCM.processChange(change, changes);
-        }
-        this.updateChanges(changes);
-        this.updateCountBadge();
-        this.fileDecorationProvider.onDidChangeDecorations.fire(changeList.map(m => Uri.file(m.path)));
     }
 
     private static updateChanges(changes: SourceControlResourceState[]): void {
@@ -213,15 +257,6 @@ export class SCM {
         changes.push(resourceState);
     }
 
-    public static exclude(...resources: SourceControlResourceState[]): void {
-        const files = resources.map(m => m.resourceUri.fsPath);
-        this.excluded.resourceStates = this.excluded.resourceStates.concat(...resources);
-        const included = this.negativefilter(this.included.resourceStates, files);
-        this.included.resourceStates = [...included];
-        this.updateCountBadge();
-        this.updateWorkspaceExcluded();
-    }
-
     private static filter(resources: SourceControlResourceState[], files: string[]): SourceControlResourceState[] {
         return resources.filter(f => files.includes(f.resourceUri.fsPath));
     }
@@ -230,40 +265,9 @@ export class SCM {
         return resources.filter(f => !files.includes(f.resourceUri.fsPath));
     }
 
-    public static excludeAll(): void {
-        this.excluded.resourceStates = this.excluded.resourceStates.concat(...this.included.resourceStates);
-        this.included.resourceStates = [];
-        this.updateCountBadge();
-        this.updateWorkspaceExcluded();
-    }
-
     private static updateWorkspaceExcluded(): void {
         const excluded = this.excluded.resourceStates.map(m => m.resourceUri.fsPath);
         this.extensionContext.workspaceState.update('auto-tfs-excluded', excluded);
-    }
-
-    public static getIncludedChanges(): SourceControlResourceState[] {
-        return this.included.resourceStates;
-    }
-
-    public static getExcludedChanges(): SourceControlResourceState[] {
-        return this.excluded.resourceStates;
-    }
-
-    public static include(...resources: SourceControlResourceState[]): void {
-        const files = resources.map(m => m.resourceUri.fsPath);
-        this.included.resourceStates = this.included.resourceStates.concat(...resources);
-        const excluded = this.negativefilter(this.excluded.resourceStates, files);
-        this.excluded.resourceStates = [...excluded];
-        this.updateCountBadge();
-        this.updateWorkspaceExcluded();
-    }
-
-    public static includeAll(): void {
-        this.included.resourceStates = this.included.resourceStates.concat(...this.excluded.resourceStates);
-        this.excluded.resourceStates = [];
-        this.updateCountBadge();
-        this.updateWorkspaceExcluded();
     }
 
     private static getDecorator(type: SCMChangeType): FileDecoration | null {

@@ -54,13 +54,6 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
         }
     }
 
-    private autoSync(): void {
-        if (!this.autoSyncCommands.includes(this.process.commandName)) {
-            return;
-        }
-        new Tfs().autoSync();
-    }
-
     public handleError(error: any): void {
         this.logger.logDebugData(`Error: ${error}`);
         OutputChannel.logJson(error);
@@ -90,6 +83,13 @@ export abstract class AbstractProcessHandler implements ProcessHandler {
     protected handleAuthorize(processStdOutData: string) {
         this.handleUserNameAndObtainCredentials(processStdOutData);
         this.handlePassword(processStdOutData);
+    }
+
+    private autoSync(): void {
+        if (!this.autoSyncCommands.includes(this.process.commandName)) {
+            return;
+        }
+        new Tfs().autoSync();
     }
 
     private handleUserNameAndObtainCredentials(processStdOutData: string) {

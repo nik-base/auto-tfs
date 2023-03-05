@@ -67,12 +67,6 @@ export class Tfs {
         this.execWithoutConfirm(command, uriList, { name: shelveName, sourceControl: sourceControl });
     }
 
-    private getIncludedChanges(): Uri[] {
-        const changes = SCM.getIncludedChanges();
-        const uriList = changes.map(m => m.resourceUri);
-        return uriList;
-    }
-
     public replaceShelve(sourceControl: SourceControl): void {
         const uriList = this.getIncludedChanges();
         const shelveName = sourceControl.inputBox.value;
@@ -117,15 +111,6 @@ export class Tfs {
         }
         const uriList = allChanges.map(m => m.resourceUri);
         this.undo(uriList);
-    }
-
-    private getRootUri(): Uri | null {
-        const workspaceFolders = workspace.workspaceFolders;
-        if (!workspaceFolders?.length) {
-            return null;
-        }
-        const root = workspaceFolders[0].uri;
-        return root;
     }
 
     public vsDiff(uri: Uri): void {
@@ -175,20 +160,6 @@ export class Tfs {
         await new ViewProcessHandler().openFile(uri);
     }
 
-    private openDeletedFile(uri: Uri): void {
-        const sourceItem = this.getSourceItem(uri);
-        const command = new ViewTfsCommand();
-        const parsedTemp = pathParse(uri.fsPath);
-        this.executeCommand(command, [uri], { temp: parsedTemp, sourceItem: sourceItem, nodiff: true });
-    }
-
-    private getSourceItem(uri: Uri): string | null {
-        const command = new InfoTfsCommand();
-        const result = this.executeCommandSync(command, [uri], { item: 'sourceitem' });
-        const sourceItem = new InfoProcessHandler().getSourceItem(result!.toString());
-        return sourceItem;
-    }
-
     public async sync(): Promise<void> {
         const command = new StatusTfsCommand();
         if (!workspace.workspaceFolders) {
@@ -201,6 +172,86 @@ export class Tfs {
         await new StatusProcessHandler().processData(result!.toString());
         StatusBar.stopSync();
         SCM.stopSync();
+    }
+
+    public undoGroup(resourceGroup: SourceControlResourceGroup): void {
+        const uriList = resourceGroup.resourceStates.map(m => m.resourceUri);
+        this.undo(uriList);
+    }
+
+    public exclude(...resources: SourceControlResourceState[]): void {
+        SCM.exclude(...resources);
+    }
+
+    public excludeAll(): void {
+        SCM.excludeAll();
+    }
+
+    public include(...resources: SourceControlResourceState[]): void {
+        SCM.include(...resources);
+    }
+
+    public includeAll(): void {
+        SCM.includeAll();
+    }
+
+    public autoSync(): void {
+        if (!this.configuration.getTfPath() || !this.configuration.isTfAutoSync()) {
+            return;
+        }
+        this.sync();
+    }
+
+    public rename(files: ReadonlyArray<{ readonly oldUri: Uri; readonly newUri: Uri }>): Promise<void> {
+        if (!files.length) {
+            return Promise.resolve();
+        }
+        const command = new RenameTfsCommand();
+        if (files.length === 1 && !this.checkAction(command, files[0].oldUri)) {
+            return Promise.resolve();
+        }
+        return new Promise((_, reject) => this.confirmRename().then((selectedItem: string | undefined) => {
+            if (this.confirmed(selectedItem)) {
+                for (const file of files) {
+                    this.executeCommandSync(command, [file.oldUri, file.newUri], null);
+                }
+                this.autoSync();
+            }
+            return reject();
+        }));
+    }
+
+    public confirmShelveReplace(shelve: string): Thenable<string | undefined> {
+        return this.message.warning(`Shelve '${shelve}' already exists. Do you want to replace it?`, 'Yes', 'No');
+    }
+
+    private getIncludedChanges(): Uri[] {
+        const changes = SCM.getIncludedChanges();
+        const uriList = changes.map(m => m.resourceUri);
+        return uriList;
+    }
+
+    private getRootUri(): Uri | null {
+        const workspaceFolders = workspace.workspaceFolders;
+        if (!workspaceFolders?.length) {
+            return null;
+        }
+        const root = workspaceFolders[0].uri;
+        return root;
+    }
+
+    private openDeletedFile(uri: Uri): void {
+        const sourceItem = this.getSourceItem(uri);
+        const command = new ViewTfsCommand();
+        const parsedTemp = pathParse(uri.fsPath);
+        this.executeCommand(command, [uri], { temp: parsedTemp, sourceItem: sourceItem, nodiff: true });
+    }
+
+    private getSourceItem(uri: Uri): string | null {
+        const command = new InfoTfsCommand();
+        const result = this.executeCommandSync(command, [uri], { item: 'sourceitem' });
+        const sourceItem = new InfoProcessHandler().getSourceItem(result!.toString());
+        return sourceItem;
     }
 
     private execWithoutConfirm(command: TfsCommand, uriList: readonly Uri[], data: any): void {
@@ -239,53 +290,6 @@ export class Tfs {
                 this.executeCommand(command, uriList, data);
             }
         });
-    }
-
-    public undoGroup(resourceGroup: SourceControlResourceGroup): void {
-        const uriList = resourceGroup.resourceStates.map(m => m.resourceUri);
-        this.undo(uriList);
-    }
-
-    public exclude(...resources: SourceControlResourceState[]): void {
-        SCM.exclude(...resources);
-    }
-
-    public excludeAll(): void {
-        SCM.excludeAll();
-    }
-
-    public include(...resources: SourceControlResourceState[]): void {
-        SCM.include(...resources);
-    }
-
-    public includeAll(): void {
-        SCM.includeAll();
-    }
-
-    public autoSync(): void {
-        if (!this.configuration.getTfPath() || !this.configuration.isTfAutoSync()) {
-            return;
-        }
-        this.sync();
-    }
-
-    public rename(files: ReadonlyArray<{ readonly oldUri: Uri, readonly newUri: Uri }>): Promise<void> {
-        if (!files.length) {
-            return Promise.resolve();
-        }
-        const command = new RenameTfsCommand();
-        if (files.length === 1 && !this.checkAction(command, files[0].oldUri)) {
-            return Promise.resolve();
-        }
-        return new Promise((_, reject) => this.confirmRename().then((selectedItem: string | undefined) => {
-            if (this.confirmed(selectedItem)) {
-                for (const file of files) {
-                    this.executeCommandSync(command, [file.oldUri, file.newUri], null);
-                }
-                this.autoSync();
-            }
-            return reject();
-        }));
     }
 
     private checkAction(command: TfsCommand, uri: Uri): boolean {
@@ -327,10 +331,6 @@ export class Tfs {
 
     private confirmUndo(): Thenable<string | undefined> {
         return this.message.warning('Do you want to undo changes to the file(s)?', 'Yes', 'No');
-    }
-
-    public confirmShelveReplace(shelve: string): Thenable<string | undefined> {
-        return this.message.warning(`Shelve '${shelve}' already exists. Do you want to replace it?`, 'Yes', 'No');
     }
 
     private confirm(message: string): Thenable<string | undefined> {
@@ -437,7 +437,7 @@ export class Tfs {
         return result;
     }
 
-    private checkInfo(tfPath: string, tfs: TfsCommand, uri: Uri): { proceed: boolean, msg: string } {
+    private checkInfo(tfPath: string, tfs: TfsCommand, uri: Uri): { proceed: boolean; msg: string } {
         if (tfs.command !== 'checkout') {
             return { proceed: true, msg: '' };
         }
@@ -451,7 +451,7 @@ export class Tfs {
         return this.handleCheckout(changeType, uri!);
     }
 
-    private handleCheckout(change: string | null, uri: Uri): { proceed: boolean, msg: string } {
+    private handleCheckout(change: string | null, uri: Uri): { proceed: boolean; msg: string } {
         if (!change) {
             return { proceed: true, msg: '' };
         }

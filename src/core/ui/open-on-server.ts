@@ -30,7 +30,7 @@ export class OpenOnServer {
         return url;
     }
 
-    private parseData(data: string): { baseUrl: string | null, projectName: string | null, path: string | null } {
+    private parseData(data: string): { baseUrl: string | null; projectName: string | null; path: string | null } {
         const regex = /[\n\r]* *Collection*: *(.*)[\n\r]* *(\$\/(.*?)\/.*?):/i;
         const match = data?.toString()?.match(regex)!;
         if (match?.length >= 4) {
