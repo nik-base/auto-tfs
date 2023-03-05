@@ -90,6 +90,22 @@ export function activate(context: ExtensionContext) {
         tfs.openOnServer(uri);
     });
 
+    const historyCommand = commands.registerCommand('auto-tfs.history', async (item: Uri | SourceControlResourceState) => {
+        if (!item) {
+            return;
+        }
+        let uri: Uri | undefined;
+        if (item instanceof Uri) {
+            uri = item;
+        } else {
+            uri = item.resourceUri;
+        }
+        if (!uri)  {
+            return;
+        }
+        tfs.history(uri);
+    });
+
     const syncCommand = commands.registerCommand('auto-tfs.sync', async (): Promise<void> => {
         await tfs.sync();
     });

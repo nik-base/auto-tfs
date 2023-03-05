@@ -24,6 +24,7 @@ import { ViewProcessHandler } from './handler/impl/view-process-handler';
 import { OpenOnServer } from './ui/open-on-server';
 import { ShelveTfsCommand } from './tfs/impl/shelve-tfs-command';
 import { CheckinTfsCommand } from './tfs/impl/checkin-tfs-command';
+import { HistoryTfsCommand } from './tfs/impl/history-tfs-command';
 
 export class Tfs {
     private configuration = new Configuration();
@@ -140,6 +141,11 @@ export class Tfs {
 
     public openOnServer(uri: Uri): void {
         new OpenOnServer().open(uri);
+    }
+
+    public history(uri: Uri): void {
+        const command = new HistoryTfsCommand();
+        this.executeCommand(command, [uri], null);
     }
 
     public async scmOpen(uri: Uri, change: SCMChange): Promise<void> {
@@ -396,12 +402,25 @@ export class Tfs {
         }
         const args = command.getCommandAndArgs(uriList, data);
         const process = new Process(command);
-        if (command.command === 'diff' ||  (command.command === 'checkin' && this.configuration.tfCheckin() === 'With Prompt')) {
+        if (this.isShellRequired(command)) {
             process.spawnShell(tfPath!, args);
         } else {
             process.spawn(tfPath!, args);
         }
         return process;
+    }
+
+    private isShellRequired(command: TfsCommand): boolean {
+        if (command.command === 'diff') {
+            return true;
+        }
+        if (command.command === 'checkin' && this.configuration.tfCheckin() === 'With Prompt') {
+            return true;
+        }
+        if (command.command === 'history') {
+            return true;
+        }
+        return false;
     }
 
     private triggerProcessSync(command: TfsCommand, uriList: readonly Uri[], data: any): string | null {

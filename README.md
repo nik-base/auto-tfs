@@ -60,6 +60,7 @@ Apart from above configuration, the extension also allows configuarations such a
 - View all changes in SCM View of Code, with ability to compare, revert, shelve (and much more..) changes along with option to include and exclude items.
 - View changes in source control with badges
 - Open file on server (browser).
+- View history of a work item (Visual Studio Prompt).
 
 ## Authorization
 
@@ -77,12 +78,11 @@ Apart from above configuration, the extension also allows configuarations such a
 * Open on server
 * Compare in Visual Studio
 * Compare in Code
+* View History in Visual Studio Prompt
 
-## About the fork
+## About the repository
 
-This is a fork of [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils). The changes are:
-
-- Refer Features sections for all the changes.
+This repository is inspired from [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
 
 ## Links
 

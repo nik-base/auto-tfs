@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TFS integration for Visual Studio Code",
-    "version": "1.3.4",
+    "version": "1.3.5",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {
@@ -261,6 +261,14 @@
                 "shortTitle": "Checkin",
                 "enablement": "config.auto-tfs.tf.path",
                 "icon": "$(repo-push)"
+            },
+            {
+                "command": "auto-tfs.history",
+                "title": "View History",
+                "category": "Auto TFS",
+                "shortTitle": "History",
+                "enablement": "config.auto-tfs.tf.path",
+                "icon": "$(history)"
             }
         ],
         "submenus": [
@@ -318,6 +326,10 @@
                 {
                     "command": "auto-tfs.checkin",
                     "when": "false"
+                },
+                {
+                    "command": "auto-tfs.history",
+                    "when": "false"
                 }
             ],
             "auto-tfs/action": [
@@ -327,28 +339,33 @@
                     "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
-                    "command": "auto-tfs.checkout",
+                    "command": "auto-tfs.history",
                     "group": "1_autotfs@2",
-                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
+                    "when": "config.auto-tfs.tf.path && !listMultiSelection"
                 },
                 {
-                    "command": "auto-tfs.undo",
+                    "command": "auto-tfs.checkout",
                     "group": "1_autotfs@3",
                     "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
-                    "command": "auto-tfs.add",
+                    "command": "auto-tfs.undo",
                     "group": "1_autotfs@4",
                     "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
-                    "command": "auto-tfs.delete",
+                    "command": "auto-tfs.add",
                     "group": "1_autotfs@5",
                     "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
-                    "submenu": "auto-tfs/action/compare",
+                    "command": "auto-tfs.delete",
                     "group": "1_autotfs@6",
+                    "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder || config.auto-tfs.tf.path && explorerResourceIsFolder && !listMultiSelection"
+                },
+                {
+                    "submenu": "auto-tfs/action/compare",
+                    "group": "1_autotfs@7",
                     "when": "config.auto-tfs.tf.path && !explorerResourceIsFolder && !listMultiSelection"
                 },
                 {
@@ -395,6 +412,11 @@
                 },
                 {
                     "command": "auto-tfs.get",
+                    "group": "navigation",
+                    "when": "config.auto-tfs.tf.path"
+                },
+                {
+                    "command": "auto-tfs.history",
                     "group": "navigation",
                     "when": "config.auto-tfs.tf.path"
                 },
@@ -500,6 +522,16 @@
                     "command": "auto-tfs.openonserver",
                     "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
                     "group": "navigation@3"
+                },
+                {
+                    "command": "auto-tfs.history",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "navigation@4"
+                },
+                {
+                    "command": "auto-tfs.history",
+                    "when": "config.auto-tfs.tf.path && scmProvider == 'auto-tfs'",
+                    "group": "inline@4"
                 }
             ]
         },
@@ -588,7 +620,7 @@
     "devDependencies": {
         "@angular-eslint/eslint-plugin": "^15.1.0",
         "@types/node": "^18.11.18",
-        "@types/vscode": "^1.58.1",
+        "@types/vscode": "^1.58.2",
         "@typescript-eslint/eslint-plugin": "^5.48.1",
         "@typescript-eslint/eslint-plugin-tslint": "^5.48.1",
         "@typescript-eslint/parser": "^5.48.1",
