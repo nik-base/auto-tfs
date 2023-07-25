@@ -60,8 +60,8 @@ export class StatusProcessHandler extends AbstractProcessHandler implements Proc
         if (previousChangeType === SCMChangeType.Pristine) {
             return;
         }
-        const f = localItemMatch[1].toLocaleLowerCase();
-        const index = f.indexOf(root.toLocaleLowerCase());
+        const f = localItemMatch[1];
+        const index = f.toLocaleLowerCase().indexOf(root.toLocaleLowerCase());
         const path = f.substring(index);
         this.addChange(path, previousChangeType, changes);
     }
