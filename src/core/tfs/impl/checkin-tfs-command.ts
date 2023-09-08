@@ -20,7 +20,7 @@ export class CheckinTfsCommand extends TfsCommandBase {
         }
         if (new Configuration().tfCheckin() === 'Without Prompt') {
             const escapedPath = uriList.map(m => decodeURI(m.fsPath));
-            return [this.command, `/comment:"${_data.comment}"`, '/noprompt', ...escapedPath];
+            return [this.command, `/comment:'${_data.comment}'`, '/noprompt', ...escapedPath];
         }
         const paths = uriList.map(m => `"${m.fsPath}"`);
         return [this.command, `/comment:"${_data.comment}"`, ...paths];
