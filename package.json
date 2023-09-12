@@ -2,7 +2,7 @@
     "name": "auto-tfs",
     "displayName": "Auto TFS",
     "description": "TFS integration for Visual Studio Code",
-    "version": "1.3.6",
+    "version": "1.3.7",
     "publisher": "nikhil-patil",
     "license": "MIT",
     "author": {

@@ -85,7 +85,7 @@ export class Tfs {
             return;
         }
         const command = new CheckinTfsCommand();
-        this.execWithData(command, uriList, { comment: comment }, this.confirmCheckin.bind(this));
+        this.execWithData(command, uriList, { comment: comment, sourceControl: sourceControl }, this.confirmCheckin.bind(this));
     }
 
     public async getAll(): Promise<void> {

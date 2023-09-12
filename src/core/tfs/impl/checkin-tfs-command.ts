@@ -1,5 +1,5 @@
 import { TfsCommandBase } from './tfs-command-base';
-import { Uri } from 'vscode';
+import { SourceControl, Uri } from 'vscode';
 import { CheckinProcessHandler } from '../../handler/impl/checkin-process-handler';
 import { ProcessHandler } from '../../handler/process-handler';
 import { Configuration } from '../../configuration';
@@ -7,6 +7,8 @@ import { Configuration } from '../../configuration';
 export class CheckinTfsCommand extends TfsCommandBase {
 
     public override readonly command = 'checkin';
+
+    private sourceControl?: SourceControl;
 
     public override getCommandAndArgs(uriList: readonly Uri[], _data: any): string[] {
         if (!uriList?.length) {
@@ -18,15 +20,18 @@ export class CheckinTfsCommand extends TfsCommandBase {
         if (!_data?.comment) {
             return [];
         }
+        this.sourceControl = _data?.sourceControl;
         if (new Configuration().tfCheckin() === 'Without Prompt') {
             const escapedPath = uriList.map(m => decodeURI(m.fsPath));
-            return [this.command, `/comment:'${_data.comment}'`, '/noprompt', ...escapedPath];
+            return [this.command, `/comment:${_data.comment}`, '/noprompt', ...escapedPath];
         }
         const paths = uriList.map(m => `"${m.fsPath}"`);
         return [this.command, `/comment:"${_data.comment}"`, ...paths];
     }
 
     public override getConsoleDataHandler(): ProcessHandler {
-        return new CheckinProcessHandler();
+        const handler = new CheckinProcessHandler();
+        handler.sourceControl = this.sourceControl;
+        return handler;
     }
 }
