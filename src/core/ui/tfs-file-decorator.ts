@@ -14,7 +14,7 @@ export class TfsFileDecorator implements FileDecorationProvider {
     }
 
     public provideFileDecoration(uri: Uri): FileDecoration | undefined {
-        const decorator = SCM.fileDecorators.get(uri.fsPath);
+        const decorator = SCM.fileDecorators.get(uri.fsPath.toLowerCase());
         return decorator;
     }
 

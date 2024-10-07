@@ -448,6 +448,7 @@ export class Tfs {
         const result = process.spawnSync(tfPath!, args);
         const processHandler = infoCommand.getConsoleDataHandler() as InfoProcessHandler;
         const changeType = processHandler.getData(result);
+        this.autoSync();
         return this.handleCheckout(changeType, uri!);
     }
 

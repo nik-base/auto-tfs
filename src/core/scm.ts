@@ -253,7 +253,7 @@ export class SCM {
             },
             decorations: decoration
         };
-        this.fileDecorators.set(change.path.toString(), decoration);
+        this.fileDecorators.set(change.path.toString().toLowerCase(), decoration);
         changes.push(resourceState);
     }
 
