@@ -35,6 +35,14 @@ The following entry is needed:
 ```
     "auto-tfs.tf.path": "<path-to-tf-command-line>"
 ```
+If your installed language in TFS is other than English, Please set the installed language using below configuration
+
+```
+    "auto-tfs.tf.language": "<installed-tfs-language>"
+```
+> This is not the langauge of the extension, but language of the TFS itself, it is needed because this extension relies on TFS command output 
+
+> Current only English and Spanish is supported
 
 If you are going to use the `tf.exe` tool embedded into Visual Studio IDE, the value to specify will be similar to -  
 `C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\TF.exe`  

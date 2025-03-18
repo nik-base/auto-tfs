@@ -7,6 +7,10 @@ export class Configuration {
         return workspace.getConfiguration(this.extension).get('tf.path');
     }
 
+    public getTfLanguage(): string | undefined {
+        return workspace.getConfiguration(this.extension).get('tf.language');
+    }
+
     public isTfConfirm(): boolean {
         return workspace.getConfiguration(this.extension).get('tfs.confirm') ?? false;
     }

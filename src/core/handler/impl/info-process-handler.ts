@@ -1,10 +1,14 @@
 import { OutputChannel } from '../../output-channel';
+import { TfsLocaleConfiguration } from '../../tfs-locale-configuration';
 import { ProcessHandler } from '../process-handler';
 import { AbstractProcessHandler } from './abstract-process-handler';
 
 export class InfoProcessHandler extends AbstractProcessHandler implements ProcessHandler {
     public override showMessageOnUI = false;
     public item: string | undefined;
+
+    private readonly tfsLocaleConfiguration = new TfsLocaleConfiguration();
+
     public override handleStdOutData(data: string): void {
         this.data = this.getData(data);
         super.handleStdOutData(data);
@@ -33,7 +37,7 @@ export class InfoProcessHandler extends AbstractProcessHandler implements Proces
     }
 
     public getSourceItem(data: string): string | null {
-        const regex = /[\n\r]*Source item *: *(.*)[\n\r]/i;
+        const regex = new RegExp(`[\\n\\r]*${this.tfsLocaleConfiguration.sourceItemRegex} *: *(.*)[\\n\\r]`, 'i');
         const match = data?.toString()?.match(regex)!;
         if (match?.length >= 2) {
             return match[1];
@@ -42,7 +46,7 @@ export class InfoProcessHandler extends AbstractProcessHandler implements Proces
     }
 
     public getChangeType(data: string): string | null {
-        const regex = /[\n\r]*Change *: *(.*)[\n\r]/i;
+        const regex = new RegExp(`[\\n\\r]*${this.tfsLocaleConfiguration.changeRegex} *: *(.*)[\\n\\r]`, 'i');
         const match = data?.toString()?.match(regex)!;
         if (match?.length >= 2) {
             return match[1]?.toLocaleLowerCase();

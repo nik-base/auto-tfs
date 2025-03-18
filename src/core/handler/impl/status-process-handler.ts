@@ -3,10 +3,13 @@ import { OutputChannel } from '../../output-channel';
 import { SCM, SCMChange, SCMChangeType } from '../../scm';
 import { ProcessHandler } from '../process-handler';
 import { AbstractProcessHandler } from './abstract-process-handler';
+import { TfsLocaleConfiguration } from '../../tfs-locale-configuration';
 
 export class StatusProcessHandler extends AbstractProcessHandler implements ProcessHandler {
 
     public showMessageOnUI = false;
+
+    private readonly tfsLocaleConfiguration = new TfsLocaleConfiguration();
 
     public override handleStdOutData(data: string): void {
         this.processData(data);
@@ -47,7 +50,7 @@ export class StatusProcessHandler extends AbstractProcessHandler implements Proc
     }
 
     private tryProcessLocalItemLine(line: string, root: string, previousChangeType: SCMChangeType, changes: SCMChange[]): void {
-        const localItemRegex = / *Local item *: *(.*) */i;
+        const localItemRegex = new RegExp(` *${this.tfsLocaleConfiguration.localItemRegex} *: *(.*) *`, 'i');
         const localItemMatch = line.match(localItemRegex)!;
         if (!localItemMatch || localItemMatch.length < 2) {
             return;
@@ -74,7 +77,7 @@ export class StatusProcessHandler extends AbstractProcessHandler implements Proc
     }
 
     private tryProcessChangeLine(line: string): SCMChangeType | null {
-        const changeRegex = / *Change *: *(.*) */i;
+        const changeRegex = new RegExp(` *${this.tfsLocaleConfiguration.changeRegex} *: *(.*) *`, 'i');
         const changeMatch = line.match(changeRegex)!;
         if (!changeMatch || changeMatch.length < 2) {
             return null;
@@ -84,15 +87,15 @@ export class StatusProcessHandler extends AbstractProcessHandler implements Proc
 
     private processChangeLine(changeMatch: RegExpMatchArray): SCMChangeType {
         const change = changeMatch[1].toLocaleLowerCase();
-        if (change.includes('add')) {
+        if (change.includes(this.tfsLocaleConfiguration.addRegex)) {
             return SCMChangeType.Added;
-        } else if (change.includes('delete')) {
+        } else if (change.includes(this.tfsLocaleConfiguration.deleteRegex)) {
             return SCMChangeType.Deleted;
-        } else if (change.includes('rename') && change.includes('edit')) {
+        } else if (change.includes(this.tfsLocaleConfiguration.renameRegex) && change.includes(this.tfsLocaleConfiguration.editRegex)) {
             return SCMChangeType.RenamedModified;
-        } else if (change.includes('rename')) {
+        } else if (change.includes(this.tfsLocaleConfiguration.renameRegex)) {
             return SCMChangeType.Renamed;
-        } else if (change.includes('edit')) {
+        } else if (change.includes(this.tfsLocaleConfiguration.editRegex)) {
             return SCMChangeType.Modified;
         }
         return SCMChangeType.Pristine;

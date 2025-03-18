@@ -1,11 +1,14 @@
 import { env, Uri } from 'vscode';
 import { Configuration } from '../configuration';
 import { Process } from '../process';
+import { TfsLocaleConfiguration } from '../tfs-locale-configuration';
 
 
 export class OpenOnServer {
 
     private config = new Configuration();
+
+    private readonly tfsLocaleConfiguration = new TfsLocaleConfiguration();
 
     public open(uri: Uri): void {
         const tfPath = this.config.getTfPath();
@@ -31,7 +34,7 @@ export class OpenOnServer {
     }
 
     private parseData(data: string): { baseUrl: string | null; projectName: string | null; path: string | null } {
-        const regex = /[\n\r]* *Collection*: *(.*)[\n\r]* *(\$\/(.*?)\/.*?):/i;
+        const regex = new RegExp(`[\\n\\r]* *${this.tfsLocaleConfiguration.collectionRegex}*: *(.*)[\\n\\r]* *\\$\\/(.*?)\\/(.*?):`, 'i');
         const match = data?.toString()?.match(regex)!;
         if (match?.length >= 4) {
             return  { baseUrl: match[1], projectName: match[3], path: match[2] };
