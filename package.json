@@ -269,6 +269,11 @@
                 "shortTitle": "History",
                 "enablement": "config.auto-tfs.tf.path",
                 "icon": "$(history)"
+            },
+            {
+                "command": "auto-tfs.poc.getItemContent",
+                "title": "POC: Get Item Content",
+                "category": "Auto TFS (POC)"
             }
         ],
         "submenus": [
@@ -624,18 +629,27 @@
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "lint_old": "node ./node_modules/tslint/bin/tslint --project tsconfig.json src/**/*.ts -t verbose",
-        "lint": "eslint -c .eslintrc.js --ext .ts src/**/*.ts"
+        "lint": "eslint -c .eslintrc.js --ext .ts src/**/*.ts",
+        "test": "mocha --require ts-node/register test/**/*.ts"
     },
     "devDependencies": {
         "@angular-eslint/eslint-plugin": "^15.1.0",
+        "@types/chai": "^5.2.3",
+        "@types/mocha": "^10.0.10",
         "@types/node": "^18.11.18",
         "@types/vscode": "^1.58.2",
         "@typescript-eslint/eslint-plugin": "^5.48.1",
         "@typescript-eslint/eslint-plugin-tslint": "^5.48.1",
         "@typescript-eslint/parser": "^5.48.1",
+        "chai": "^6.2.1",
         "eslint": "^8.31.0",
         "eslint-config-prettier": "^8.6.0",
+        "mocha": "^11.7.5",
+        "ts-node": "^10.9.2",
         "tslint": "^6.1.3",
         "typescript": "^4.9.4"
+    },
+    "dependencies": {
+        "azure-devops-node-api": "^15.1.1"
     }
 }

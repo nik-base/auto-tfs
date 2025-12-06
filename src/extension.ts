@@ -7,6 +7,7 @@ import { OutputChannel } from './core/output-channel';
 import { Tfs } from './core/tfs';
 import { SCM, SCMChange } from './core/scm';
 import { StatusBar } from './core/ui/status-bar';
+import { getItemContent } from './poc';
 
 const tfs = new Tfs();
 const outputChannel = OutputChannel.init();
@@ -17,6 +18,8 @@ export function activate(context: ExtensionContext) {
     const syncStatus = StatusBar.initSync();
     const getAllStatus = StatusBar.initGetAll();
     const sc = SCM.init(context);
+
+    const pocCommand = commands.registerCommand('auto-tfs.poc.getItemContent', getItemContent);
 
     const checkoutCommand = commands.registerCommand('auto-tfs.checkout', async (clickedFile: Uri, selectedFiles: Uri[]) => {
         const files = getFiles(clickedFile, selectedFiles);
@@ -278,6 +281,7 @@ export function activate(context: ExtensionContext) {
     tfs.autoSync();
 
     context.subscriptions.push(
+        pocCommand,
         checkoutCommand,
         undoCommand,
         addCommand,

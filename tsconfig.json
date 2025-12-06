@@ -14,7 +14,8 @@
 		"strict": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUnusedParameters": true
+		"noUnusedParameters": true,
+		"esModuleInterop": true
 	},
 	"include": [
 		"src/**/*"
