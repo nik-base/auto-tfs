@@ -1,23 +1,34 @@
 {
 	"compilerOptions": {
-		"declaration": false,
-		"downlevelIteration": false,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"importHelpers": true,
+		"target": "ES2022",
 		"module": "commonjs",
-		"target": "ES2020",
-		"outDir": "out",
-		"lib": ["es6"],
+		"lib": ["ES2022"],
+		"outDir": "./out",
+		"rootDir": "./src",
 		"sourceMap": true,
-		"rootDir": "src",
+		"declaration": false,
+
 		"strict": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUnusedParameters": true
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+		"downlevelIteration": false
 	},
 	"include": [
 		"src/**/*"
-	  ],
-	"exclude": ["node_modules", ".vscode-test"]
+	],
+	"exclude": [
+		"node_modules",
+		".vscode-test"
+	]
 }
