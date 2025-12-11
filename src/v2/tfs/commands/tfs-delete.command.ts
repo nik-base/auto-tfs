@@ -1,10 +1,10 @@
 import { CommandContext } from '../../models';
 import { TFSCommandBase } from '../tfs-command-base';
 
-export class TFSCheckoutCommand extends TFSCommandBase {
-  readonly command = 'checkout';
+export class TFSDeleteCommand extends TFSCommandBase {
+  override readonly command = 'delete';
 
-  get context(): CommandContext {
+  override get context(): CommandContext {
     return { ...super.context, shouldNotify: true };
   }
 }

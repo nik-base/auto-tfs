@@ -44,21 +44,35 @@ export abstract class TFSCommandBase implements ITFSCommand {
     ctx: CommandContext
   ): Promise<void> {
     if (result.success) {
-      const successMessage = `AutoTFS command "${this.command}" is successful`;
-
-      AutoTFSLogger.log(successMessage);
+      AutoTFSLogger.log(`AutoTFS command "${this.command}" is successful`);
 
       if (ctx.shouldNotify) {
-        AutoTFSNotification.info(successMessage);
+        AutoTFSNotification.info(
+          `Auto TFS: Command "${this.command}" is successful`
+        );
       }
     } else {
-      const errorMessage = `AutoTFS command "${this.command} failed. Error: ${result.stderr}"`;
-
-      AutoTFSLogger.error(errorMessage);
+      AutoTFSLogger.error(
+        `AutoTFS command "${this.command} failed. Error: ${result.stderr}"`
+      );
 
       if (ctx.shouldNotify) {
-        AutoTFSNotification.error(errorMessage);
+        AutoTFSNotification.error(
+          `Auto TFS: Command "${this.command} failed. Error: ${result.stderr}"`
+        );
       }
     }
   }
+
+  onCommandOutput(): void {}
+
+  onCommandError(): void {}
+
+  onSuccess(): void {}
+
+  onError(): void {}
+
+  onStart(): void {}
+
+  onComplete(): void {}
 }

@@ -1,5 +1,9 @@
 import { Uri } from 'vscode';
-import { CommandContext, ProcessResult } from '../models';
+import {
+  CommandContext,
+  ProcessExecutionOptions,
+  ProcessResult,
+} from '../models';
 
 /**
  * Primary interface each TFS command service must implement
@@ -17,12 +21,7 @@ export interface ITFSCommand {
 
   readonly context?: CommandContext;
 
-  readonly executionOptions?: {
-    useShell?: boolean;
-    detached?: boolean; // if true, runner won't await completion
-    collectOutput?: boolean;
-    timeoutMs?: number;
-  };
+  readonly executionOptions?: ProcessExecutionOptions;
 
   /**
    * Build CLI arguments for TF executable
@@ -38,4 +37,22 @@ export interface ITFSCommand {
     files?: ReadonlyArray<Uri>,
     ctx?: CommandContext
   ): Promise<void>;
+
+  /** Called when stdout data is received */
+  onCommandOutput(data: string): void;
+
+  /** Called when stderr data is received */
+  onCommandError(data: string): void;
+
+  /** Called when the process exits */
+  onSuccess(exitCode: number): void;
+
+  /** Called when the process encounters an error */
+  onError(error: Error): void;
+
+  /** Called when execution starts */
+  onStart(): void;
+
+  /** Called when execution completes (success or failure) */
+  onComplete(): void;
 }

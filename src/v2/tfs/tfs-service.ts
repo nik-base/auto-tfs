@@ -1,37 +1,118 @@
 import { Uri } from 'vscode';
 import { TFSCommandExecutor } from './tfs-command-executor';
-import { ProcessExecutor } from '../process/process-executor';
-import { TFSHistoryCommand } from './commands/tfs-history';
-import { TFSCheckoutCommand } from './commands/tfs-checkout';
+import { TFSHistoryCommand } from './commands/tfs-history.command';
+import { TFSCheckoutCommand } from './commands/tfs-checkout.command';
+import { TFSAddCommand } from './commands/tfs-add.command';
+import { TFSDeleteCommand } from './commands/tfs-delete.command';
+import { TFSRenameCommand } from './commands/tfs-rename.command';
+import { TFSUndoCommand } from './commands/tfs-undo.command';
+import { TFSCheckinCommand } from './commands/tfs-checkin.command';
+import { TFSDiffCommand } from './commands/tfs-diff.command';
+import { TFSGetCommand } from './commands/tfs-get.command';
+import { TFSInfoCommand } from './commands/tfs-info.command';
+import { TFSShelveCommand } from './commands/tfs-shelve.command';
+import { TFSStatusCommand } from './commands/tfs-status.command';
+import { TFSViewCommand } from './commands/tfs-view.command';
 
-/**
- * Main service for all TFS operations
- * Provides high-level async API for extension commands
- * Replaces the old Tfs class with a cleaner, more testable design
- */
 export class TFSService {
   private readonly commandExecutor: TFSCommandExecutor;
 
-  constructor(
-    commandExecutor?: TFSCommandExecutor,
-    processExecutor?: ProcessExecutor
-  ) {
-    this.commandExecutor =
-      commandExecutor ??
-      new TFSCommandExecutor(processExecutor ?? new ProcessExecutor());
+  constructor(commandExecutor: TFSCommandExecutor) {
+    this.commandExecutor = commandExecutor;
   }
 
-  public async history(files: Uri): Promise<void> {
+  async history(file: Uri): Promise<void> {
     const command = new TFSHistoryCommand();
 
-    await this.commandExecutor.run(command, [files]);
+    await this.commandExecutor.run(command, [file]);
   }
 
-  public async checkout(files: ReadonlyArray<Uri>): Promise<void> {
+  async checkout(files: ReadonlyArray<Uri>): Promise<void> {
     const command = new TFSCheckoutCommand();
 
     await this.commandExecutor.run(command, files);
   }
+
+  async add(files: ReadonlyArray<Uri>): Promise<void> {
+    const command = new TFSAddCommand();
+
+    await this.commandExecutor.run(command, files);
+  }
+
+  async delete(files: ReadonlyArray<Uri>): Promise<void> {
+    const command = new TFSDeleteCommand();
+
+    await this.commandExecutor.run(command, files);
+  }
+
+  async rename(oldFile: Uri, newFile: Uri): Promise<void> {
+    const command = new TFSRenameCommand();
+
+    await this.commandExecutor.run(command, [oldFile, newFile]);
+  }
+
+  async undo(files: ReadonlyArray<Uri>): Promise<void> {
+    const command = new TFSUndoCommand();
+
+    await this.commandExecutor.run(command, files);
+  }
+
+  async checkin(
+    files: ReadonlyArray<Uri>,
+    checkinComment: string,
+    shouldCheckinWithoutPrompt: boolean
+  ): Promise<void> {
+    const command = new TFSCheckinCommand(
+      checkinComment,
+      shouldCheckinWithoutPrompt
+    );
+
+    await this.commandExecutor.run(command, files);
+  }
+
+  async diff(file: Uri): Promise<void> {
+    const command = new TFSDiffCommand();
+
+    await this.commandExecutor.run(command, [file]);
+  }
+
+  async get(files: ReadonlyArray<Uri>): Promise<void> {
+    const command = new TFSGetCommand();
+
+    await this.commandExecutor.run(command, files);
+  }
+
+  async info(file: Uri): Promise<void> {
+    const command = new TFSInfoCommand();
+
+    await this.commandExecutor.run(command, [file]);
+  }
+
+  async shelve(
+    files: ReadonlyArray<Uri>,
+    shelveName: string,
+    shouldReplaceShelve: boolean
+  ): Promise<void> {
+    const command = new TFSShelveCommand(shelveName, shouldReplaceShelve);
+
+    await this.commandExecutor.run(command, files);
+  }
+
+  async status(file: Uri, shouldFindSourceItemPath: boolean) {
+    const command = new TFSStatusCommand(shouldFindSourceItemPath);
+
+    await this.commandExecutor.run(command, [file]);
+  }
+
+  async view(file: Uri, sourceItemPath?: string): Promise<void> {
+    const command = new TFSViewCommand(sourceItemPath);
+
+    await this.commandExecutor.run(command, [file]);
+  }
+
+  // /**
+  //  * Execute a command with confirmation
+  //  */
 
   // async executeWithConfirmation(
   //     command: ITFSCommand,

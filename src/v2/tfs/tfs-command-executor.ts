@@ -12,8 +12,8 @@ import { AutoTFSNotification } from '../core/autotfs-notifcation';
 export class TFSCommandExecutor {
   private readonly processExecutor: ProcessExecutor;
 
-  constructor(processExecutor?: ProcessExecutor) {
-    this.processExecutor = processExecutor ?? new ProcessExecutor();
+  constructor(processExecutor: ProcessExecutor) {
+    this.processExecutor = processExecutor;
   }
 
   /**
@@ -26,93 +26,237 @@ export class TFSCommandExecutor {
   async run(
     command: ITFSCommand,
     files?: ReadonlyArray<Uri>,
-    commandContext?: CommandContext
+    context?: CommandContext
   ): Promise<ProcessResult | undefined> {
     const tfPath = AutoTFSConfiguration.tfPath;
     if (!tfPath) {
       const tfPathError =
         'Auto TFS: TF path is not configured (auto-tfs.tf.path)';
 
-      AutoTFSNotification.info(tfPathError);
+      AutoTFSLogger.error(tfPathError);
 
-      throw new Error(tfPathError);
+      AutoTFSNotification.error(tfPathError);
+
+      return;
     }
+
+    const commandContext: CommandContext = {
+      shouldNotify: false,
+      ...command.context,
+      ...context,
+    };
 
     const args = command.buildArgs(files, commandContext);
 
     if (args.length === 0) {
-      throw new Error(
-        `AutoTFS command "${command.command}". Command produced no arguments to execute`
-      );
+      const tfPathError = `AutoTFS command "${command.command}" produced no arguments to execute`;
+
+      AutoTFSLogger.error(tfPathError);
+
+      AutoTFSNotification.error(tfPathError);
+
+      return;
     }
 
     const execOpts = command.executionOptions ?? {};
 
     if (execOpts.detached) {
-      this.processExecutor.executeFireAndForget(tfPath, args, {
-        useShell: execOpts.useShell,
-        detached: execOpts.detached,
-        collectOutput: execOpts.collectOutput,
-        timeout: execOpts.timeoutMs,
-        handlers: {
-          onStart: () =>
-            AutoTFSLogger.debug(
-              `AutoTFS command "${command.command}" Started detached: ${args.join(' ')}`
-            ),
-          onError: (err: Error) =>
-            AutoTFSLogger.error(
-              `AutoTFS command "${command.command}" Detached process error: ${err.message}`
-            ),
-        },
-      });
+      try {
+        this.startDetachedProcess(
+          tfPath,
+          args,
+          execOpts,
+          command,
+          commandContext
+        );
 
-      return undefined;
+        return undefined;
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          AutoTFSLogger.error(
+            `AutoTFS command "${command.command}" Error in handleResult: ${e.message}`
+          );
+
+          if (e.cause === 'INVALID_CMD') {
+            this.notifyInvalidTFPathError(command);
+          }
+        } else {
+          AutoTFSLogger.error(
+            `AutoTFS command "${command.command}" Error in handleResult: ${String(e)}`
+          );
+        }
+      }
     }
 
-    // Normal execution: await result and then call handleResult
-    const result = await this.processExecutor.execute(tfPath, args, {
-      useShell: execOpts.useShell,
-      collectOutput: execOpts.collectOutput,
-      timeout: execOpts.timeoutMs,
-      handlers: {
-        onStart: () => {
-          const startedMessage = `AutoTFS command "${command.command}" in progress...`;
-
-          AutoTFSLogger.debug(`${startedMessage}. Args: ${args.join(' ')}`);
-
-          if (commandContext?.shouldNotify) {
-            AutoTFSNotification.info(startedMessage);
-          }
-        },
-        onStdOut: (d: string) =>
-          AutoTFSLogger.debug(
-            `AutoTFS command "${command.command}" [stdout] ${d}`
-          ),
-        onStdErr: (d: string) =>
-          AutoTFSLogger.debug(
-            `AutoTFS command "${command.command}" [stderr] ${d}`
-          ),
-        onError: (e: Error) =>
-          AutoTFSLogger.error(
-            `AutoTFS command "${command.command}" Execution error: ${e.message}`
-          ),
-      },
-    });
+    AutoTFSLogger.debug(
+      `AutoTFS command "${command.command}" starting...Args: ${args.join(' ')}`
+    );
 
     try {
-      await command.handleResult(result, files, commandContext);
-    } catch (e) {
+      const result = await this.startProcess(
+        tfPath,
+        args,
+        execOpts,
+        command,
+        commandContext
+      );
+
+      try {
+        await command.handleResult(result, files, commandContext);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          AutoTFSLogger.error(
+            `AutoTFS command "${command.command}" Error in handleResult: ${e.message}`
+          );
+        } else {
+          AutoTFSLogger.error(
+            `AutoTFS command "${command.command}" Error in handleResult: ${String(e)}`
+          );
+        }
+      }
+
+      return result;
+    } catch (e: unknown) {
       if (e instanceof Error) {
         AutoTFSLogger.error(
           `AutoTFS command "${command.command}" Error in handleResult: ${e.message}`
         );
+
+        if (e.cause === 'INVALID_CMD') {
+          this.notifyInvalidTFPathError(command);
+        }
       } else {
         AutoTFSLogger.error(
           `AutoTFS command "${command.command}" Error in handleResult: ${String(e)}`
         );
       }
-    }
 
-    return result;
+      return;
+    }
+  }
+
+  private async startProcess(
+    tfPath: string,
+    args: string[],
+    execOpts: {
+      useShell?: boolean;
+      detached?: boolean;
+      collectOutput?: boolean;
+      timeoutMs?: number;
+    },
+    command: ITFSCommand,
+    commandContext: CommandContext
+  ) {
+    return await this.processExecutor.execute(tfPath, args, {
+      useShell: execOpts.useShell,
+      collectOutput: execOpts.collectOutput,
+      timeout: execOpts.timeoutMs,
+      handlers: {
+        onStart: () => {
+          AutoTFSLogger.debug(
+            `AutoTFS command "${command.command}" started. Args: ${args.join(' ')}`
+          );
+
+          if (commandContext.shouldNotify) {
+            AutoTFSNotification.info(
+              `Auto TFS: Command "${command.command}" is in progress...`
+            );
+          }
+
+          command.onStart();
+        },
+        onStdOut: (d: string) => {
+          AutoTFSLogger.debug(
+            `AutoTFS command "${command.command}" [stdout] ${d}`
+          );
+
+          command.onCommandOutput(d);
+        },
+        onStdErr: (d: string) => {
+          AutoTFSLogger.debug(
+            `AutoTFS command "${command.command}" [stderr] ${d}`
+          );
+
+          command.onCommandError(d);
+        },
+        onError: (e: Error) => {
+          AutoTFSLogger.error(
+            `AutoTFS command "${command.command}" Execution error: ${e.message}`
+          );
+
+          if (commandContext.shouldNotify) {
+            AutoTFSNotification.error(
+              `Auto TFS: Command "${command.command}" failed. Error: ${e.message}`
+            );
+          }
+
+          command.onError(e);
+        },
+        onSuccess: (exitCode: number) => {
+          AutoTFSLogger.debug(`AutoTFS command "${command.command}" success`);
+
+          command.onSuccess(exitCode);
+        },
+        onComplete: () => {
+          command.onComplete();
+        },
+      },
+    });
+  }
+
+  private notifyInvalidTFPathError(command: ITFSCommand): void {
+    const message = `Auto TFS: Command "${command.command}" can't be found. Please, check the property auto-tfs.tf.path in VS Code settings`;
+
+    AutoTFSLogger.error(message);
+
+    AutoTFSNotification.error(message);
+  }
+
+  private startDetachedProcess(
+    tfPath: string,
+    args: string[],
+    execOpts: {
+      useShell?: boolean;
+      detached?: boolean;
+      collectOutput?: boolean;
+      timeoutMs?: number;
+    },
+    command: ITFSCommand,
+    commandContext: CommandContext
+  ): void {
+    this.processExecutor.executeFireAndForget(tfPath, args, {
+      useShell: execOpts.useShell,
+      detached: execOpts.detached,
+      collectOutput: execOpts.collectOutput,
+      timeout: execOpts.timeoutMs,
+      handlers: {
+        onStart: () => {
+          AutoTFSLogger.debug(
+            `AutoTFS command "${command.command}" Started detached. Args: ${args.join(' ')}`
+          );
+
+          if (commandContext.shouldNotify) {
+            AutoTFSNotification.info(
+              `Auto TFS: Command "${command.command}" started in detached mode.`
+            );
+          }
+
+          command.onStart();
+        },
+        onError: (err: Error) => {
+          AutoTFSLogger.error(
+            `AutoTFS command "${command.command}" Detached process error: ${err.message}`
+          );
+
+          if (commandContext.shouldNotify) {
+            AutoTFSNotification.error(
+              `Auto TFS: Command "${command.command}" failed to start in detached mode.`
+            );
+          }
+
+          command.onError(err);
+        },
+      },
+    });
   }
 }

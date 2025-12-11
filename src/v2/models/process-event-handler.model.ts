@@ -9,7 +9,7 @@ export interface ProcessEventHandlers {
   readonly onStdErr?: (data: string) => void;
 
   /** Called when the process exits */
-  readonly onExit?: (exitCode: number) => void;
+  readonly onSuccess?: (exitCode: number) => void;
 
   /** Called when the process encounters an error */
   readonly onError?: (error: Error) => void;

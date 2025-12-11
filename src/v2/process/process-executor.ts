@@ -36,6 +36,8 @@ export class ProcessExecutor {
         return;
       }
 
+      const handlers = options.handlers ?? {};
+
       if (options.detached) {
         try {
           const child = spawn(`"${command}"`, args, {
@@ -46,6 +48,8 @@ export class ProcessExecutor {
             shell: options.useShell ?? false,
             timeout: options.timeout,
           });
+
+          handlers.onStart?.();
 
           child.unref(); // Allow parent to exit independently
 
@@ -58,20 +62,27 @@ export class ProcessExecutor {
             args,
             duration: 0,
           });
-        } catch (error) {
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            handlers.onError?.(error);
+          } else {
+            handlers.onError?.(new Error('Unable to start detached process'));
+          }
+
           reject(this.createError(error, command, args));
         }
         return;
       }
 
-      // Reset state for fresh execution
-      // this.destroyed = false;
-      // this.startTime = Date.now();
-      const handlers = options.handlers ?? {};
-
       try {
         this.startProcess(command, args, options, handlers, resolve, reject);
-      } catch (error) {
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          handlers.onError?.(error);
+        } else {
+          handlers.onError?.(new Error('Unable to start process'));
+        }
+
         reject(this.createError(error, command, args));
       }
     });
@@ -133,16 +144,19 @@ export class ProcessExecutor {
       killSignal: this.SIGKILL,
     };
 
-    const childProcess: ChildProcess = spawn(
-      `"${command}"`,
-      args,
-      spawnOptions
-    );
+    const childProcess: ChildProcess = spawn(`${command}`, args, spawnOptions);
 
     const pid = childProcess.pid;
 
     if (!pid) {
-      reject(new Error('Failed to start process: PID not available'));
+      const error: Error = new Error(
+        'Failed to start process: PID not available',
+        {
+          cause: 'INVALID_CMD',
+        }
+      );
+
+      reject(error);
 
       return undefined;
     }
@@ -244,7 +258,7 @@ export class ProcessExecutor {
 
         const duration = Date.now() - processContext.startTime;
 
-        handlers.onExit?.(exitCode);
+        handlers.onSuccess?.(exitCode);
 
         handlers.onComplete?.();
 

@@ -144,7 +144,7 @@ export function activate(context: ExtensionContext) {
       if (!uri) {
         return;
       }
-      await new TFSService().history(uri);
+      //await new TFSService().history(uri);
     }
   );
 
@@ -291,9 +291,9 @@ export function activate(context: ExtensionContext) {
       if (autoCheckout !== 'On Save') {
         return;
       }
-      // tfs.checkOut([document.uri]);
+      tfs.checkOut([document.uri]);
 
-      await new TFSService().checkout([document.uri]);
+      //   await new TFSService().checkout([document.uri]);
     }
   );
 
