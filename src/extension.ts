@@ -22,6 +22,10 @@ import { SCM, SCMChange } from './core/scm';
 import { StatusBar } from './core/ui/status-bar';
 import { TFSService } from './v2/tfs/tfs-service';
 import { AutoTFSOutputChannel } from './v2/core/autotfs-output-channel';
+import { ProcessExecutor } from './v2/process/process-executor';
+import { TFSCommandExecutor } from './v2/tfs/tfs-command-executor';
+import { AutoTFSService } from './v2/tfs/auto-tfs.service';
+import { AutoTFSConfiguration } from './v2/core/autotfs-configuration';
 
 const tfs = new Tfs();
 const outputChannel = OutputChannel.init();
@@ -33,6 +37,16 @@ export function activate(context: ExtensionContext) {
   const getAllStatus = StatusBar.initGetAll();
   const sc = SCM.init(context);
 
+  const processExecutor: ProcessExecutor = new ProcessExecutor();
+
+  const commandExecutor: TFSCommandExecutor = new TFSCommandExecutor(
+    processExecutor
+  );
+
+  const tfsService: TFSService = new TFSService(commandExecutor);
+
+  const autoTfs: AutoTFSService = new AutoTFSService(tfsService);
+
   const checkoutCommand = commands.registerCommand(
     'auto-tfs.checkout',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
@@ -40,7 +54,9 @@ export function activate(context: ExtensionContext) {
       if (!files?.length) {
         return;
       }
-      tfs.checkOut(files);
+      // tfs.checkOut(files);
+
+      autoTfs.checkout(files);
     }
   );
 
@@ -51,7 +67,9 @@ export function activate(context: ExtensionContext) {
       if (!files?.length) {
         return;
       }
-      tfs.undo(files);
+      // tfs.undo(files);
+
+      autoTfs.undo(files);
     }
   );
 
@@ -275,25 +293,27 @@ export function activate(context: ExtensionContext) {
 
   const onChange = workspace.onDidChangeTextDocument(
     async (event: TextDocumentChangeEvent) => {
-      const configuration = new Configuration();
-      const autoCheckout = configuration.tfAutoCheckout();
-      if (autoCheckout !== 'On Change') {
+      // const configuration = new Configuration();
+      // const autoCheckout = configuration.tfAutoCheckout();
+      if (AutoTFSConfiguration.autoCheckoutMode !== 'On Change') {
         return;
       }
-      tfs.checkOut([event.document.uri]);
+      // tfs.checkOut([event.document.uri]);
+
+      autoTfs.checkout([event.document.uri]);
     }
   );
 
   const onSave = workspace.onDidSaveTextDocument(
     async (document: TextDocument) => {
-      const configuration = new Configuration();
-      const autoCheckout = configuration.tfAutoCheckout();
-      if (autoCheckout !== 'On Save') {
+      // const configuration = new Configuration();
+      // const autoCheckout = configuration.tfAutoCheckout();
+      if (AutoTFSConfiguration.autoCheckoutMode !== 'On Save') {
         return;
       }
-      tfs.checkOut([document.uri]);
+      //tfs.checkOut([document.uri]);
 
-      //   await new TFSService().checkout([document.uri]);
+      autoTfs.checkout([document.uri]);
     }
   );
 
@@ -303,34 +323,42 @@ export function activate(context: ExtensionContext) {
 
   const onCreate = workspace.onDidCreateFiles(
     async (event: FileCreateEvent) => {
-      const configuration = new Configuration();
-      const autoAdd = configuration.isTfAutoAdd();
-      if (!autoAdd) {
+      // const configuration = new Configuration();
+      // const autoAdd = configuration.isTfAutoAdd();
+      if (!AutoTFSConfiguration.isAutoAddEnabled) {
         return;
       }
-      tfs.add(event.files);
+      // tfs.add(event.files);
+
+      autoTfs.add(event.files);
     }
   );
 
   const onDelete = workspace.onDidDeleteFiles(
     async (event: FileDeleteEvent) => {
-      const configuration = new Configuration();
-      const autoDelete = configuration.isTfAutoDelete();
-      if (!autoDelete) {
+      // const configuration = new Configuration();
+      // const autoDelete = configuration.isTfAutoDelete();
+      // if (!autoDelete) {
+      //   return;
+      // }
+      // tfs.delete(event.files);
+
+      if (!AutoTFSConfiguration.isAutoDeleteEnabled) {
         return;
       }
-      tfs.delete(event.files);
+
+      autoTfs.delete(event.files);
     }
   );
 
   const tryRenameFiles = (event: FileWillRenameEvent): Thenable<void> => {
     try {
-      const configuration = new Configuration();
-      const autoRename = configuration.isTfAutoRename();
-      if (!autoRename) {
+      // const configuration = new Configuration();
+      // const autoRename = configuration.isTfAutoRename();
+      if (!AutoTFSConfiguration.isAutoRenameEnabled) {
         return Promise.resolve();
       }
-      return tfs.rename(event.files);
+      return autoTfs.rename(event.files);
     } catch {
       return Promise.resolve();
     }

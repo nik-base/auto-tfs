@@ -1,24 +1,24 @@
-import { window } from "vscode";
+import { window } from 'vscode';
 
 export class AutoTFSNotification {
-  public static info(
+  public static info<T extends string = string>(
     message: string,
-    ...items: string[]
-  ): Thenable<string | undefined> {
-    return window.showInformationMessage(message, ...items);
+    ...items: T[]
+  ): Thenable<T | undefined> {
+    return window.showInformationMessage<T>(message, ...items);
   }
 
-  public static warning(
+  public static warning<T extends string>(
     message: string,
-    ...items: string[]
-  ): Thenable<string | undefined> {
-    return window.showWarningMessage(message, ...items);
+    ...items: T[]
+  ): Thenable<T | undefined> {
+    return window.showWarningMessage<T>(message, ...items);
   }
 
-  public static error(
+  public static error<T extends string = string>(
     message: string,
-    ...items: string[]
-  ): Thenable<string | undefined> {
-    return window.showErrorMessage(message, ...items);
+    ...items: T[]
+  ): Thenable<T | undefined> {
+    return window.showErrorMessage<T>(message, ...items);
   }
 }

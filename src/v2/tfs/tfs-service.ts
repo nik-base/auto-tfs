@@ -13,6 +13,8 @@ import { TFSInfoCommand } from './commands/tfs-info.command';
 import { TFSShelveCommand } from './commands/tfs-shelve.command';
 import { TFSStatusCommand } from './commands/tfs-status.command';
 import { TFSViewCommand } from './commands/tfs-view.command';
+import { TFSWorkfoldCommand } from './commands/tfs-workflow.command';
+import { ProcessResult } from '../models';
 
 export class TFSService {
   private readonly commandExecutor: TFSCommandExecutor;
@@ -82,10 +84,10 @@ export class TFSService {
     await this.commandExecutor.run(command, files);
   }
 
-  async info(file: Uri): Promise<void> {
+  async info(file: Uri): Promise<ProcessResult | undefined> {
     const command = new TFSInfoCommand();
 
-    await this.commandExecutor.run(command, [file]);
+    return await this.commandExecutor.run(command, [file]);
   }
 
   async shelve(
@@ -106,6 +108,12 @@ export class TFSService {
 
   async view(file: Uri, sourceItemPath?: string): Promise<void> {
     const command = new TFSViewCommand(sourceItemPath);
+
+    await this.commandExecutor.run(command, [file]);
+  }
+
+  async workflow(file: Uri): Promise<void> {
+    const command = new TFSWorkfoldCommand();
 
     await this.commandExecutor.run(command, [file]);
   }

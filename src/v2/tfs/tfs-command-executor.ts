@@ -12,6 +12,11 @@ import { AutoTFSNotification } from '../core/autotfs-notifcation';
 export class TFSCommandExecutor {
   private readonly processExecutor: ProcessExecutor;
 
+  private readonly suppressedErrors: ReadonlyArray<string> = [
+    'local echo',
+    'Access denied',
+  ];
+
   constructor(processExecutor: ProcessExecutor) {
     this.processExecutor = processExecutor;
   }
@@ -184,7 +189,7 @@ export class TFSCommandExecutor {
             `AutoTFS command "${command.command}" Execution error: ${e.message}`
           );
 
-          if (commandContext.shouldNotify) {
+          if (commandContext.shouldNotify && !this.isSuppressedError(e)) {
             AutoTFSNotification.error(
               `Auto TFS: Command "${command.command}" failed. Error: ${e.message}`
             );
@@ -248,7 +253,7 @@ export class TFSCommandExecutor {
             `AutoTFS command "${command.command}" Detached process error: ${err.message}`
           );
 
-          if (commandContext.shouldNotify) {
+          if (commandContext.shouldNotify && !this.isSuppressedError(err)) {
             AutoTFSNotification.error(
               `Auto TFS: Command "${command.command}" failed to start in detached mode.`
             );
@@ -258,5 +263,13 @@ export class TFSCommandExecutor {
         },
       },
     });
+  }
+
+  private isSuppressedError(error: Error): boolean {
+    const errorMessage: string = error.toString();
+
+    return this.suppressedErrors.some(
+      (item: string): boolean => errorMessage.indexOf(item) > -1
+    );
   }
 }
