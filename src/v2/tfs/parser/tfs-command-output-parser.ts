@@ -1,6 +1,6 @@
 import { workspace } from 'vscode';
 import { AutoTFSLogger } from '../../core/autotfs-logger';
-import { SCMChange } from '../../models';
+import { SCMChange, TFSWorkfoldInfo } from '../../models';
 import { TFSLocaleConfiguration } from '../tfs-locale-configuration';
 import { SCMChangeType } from '../../types';
 
@@ -53,6 +53,20 @@ export class TFSCommandOutputParser {
 
       return null;
     }
+  }
+
+  static getWorkfoldInfo(data: string): TFSWorkfoldInfo | null {
+    const regex: RegExp = new RegExp(
+      `[\\n\\r]* *${TFSLocaleConfiguration.collectionRegex}*: *(.*)[\\n\\r]* *(\\$\\/(.*?)\\/.*?):`,
+      'i'
+    );
+    const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+
+    if (match && match?.length >= 4) {
+      return { baseUrl: match[1], projectName: match[3], path: match[2] };
+    }
+
+    return null;
   }
 
   static getChanges(data: string): SCMChange[] | null {

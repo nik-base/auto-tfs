@@ -20,9 +20,9 @@ export class TFSViewCommand extends TFSCommandBase {
     const uri = files[0];
 
     if (this.sourceItemPath) {
-      return [this.command, this.sourceItemPath];
+      return [this.command, this.sourceItemPath, '/console'];
     }
 
-    return [this.command, uri.fsPath];
+    return [this.command, uri.fsPath, '/console'];
   }
 }

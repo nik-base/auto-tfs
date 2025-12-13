@@ -6,10 +6,10 @@ export class TFSStatusCommand extends TFSCommandBase {
 
   private readonly shouldFindSourceItemPath: boolean;
 
-  constructor(shouldFindSourceItemPath: boolean) {
+  constructor(shouldFindSourceItemPath?: boolean) {
     super();
 
-    this.shouldFindSourceItemPath = shouldFindSourceItemPath;
+    this.shouldFindSourceItemPath = shouldFindSourceItemPath ?? false;
   }
 
   override buildArgs(files?: ReadonlyArray<Uri>): string[] {
