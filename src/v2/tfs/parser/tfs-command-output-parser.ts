@@ -55,6 +55,56 @@ export class TFSCommandOutputParser {
     }
   }
 
+  static getHistoryLastChangeItemServerPath(data: string): string | null {
+    try {
+      const regex: RegExp = new RegExp(
+        `${TFSLocaleConfiguration.itemsRegex}:[\\s\\S]*?(\\$\/.*\\S)`,
+        'i'
+      );
+
+      const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+
+      if (match && match.length >= 2) {
+        return match[1]?.toLocaleLowerCase();
+      }
+
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        AutoTFSLogger.error(error.message);
+      } else {
+        AutoTFSLogger.error(String(error));
+      }
+
+      return null;
+    }
+  }
+
+  static getServerPath(data: string): string | null {
+    try {
+      const regex: RegExp = new RegExp(
+        `[\\n\\r]*${TFSLocaleConfiguration.serverPathRegex} *: *(.*)[\\n\\r]`,
+        'i'
+      );
+
+      const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+
+      if (match && match.length >= 2) {
+        return match[1]?.toLocaleLowerCase();
+      }
+
+      return null;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        AutoTFSLogger.error(error.message);
+      } else {
+        AutoTFSLogger.error(String(error));
+      }
+
+      return null;
+    }
+  }
+
   static getWorkfoldInfo(data: string): TFSWorkfoldInfo | null {
     const regex: RegExp = new RegExp(
       `[\\n\\r]* *${TFSLocaleConfiguration.collectionRegex}*: *(.*)[\\n\\r]* *(\\$\\/(.*?)\\/.*?):`,
@@ -168,7 +218,25 @@ export class TFSCommandOutputParser {
     previousChangeType: SCMChangeType,
     changes: SCMChange[]
   ): void {
-    changes.push({ path, type: previousChangeType });
+    const existingChange: SCMChange | undefined = changes.find(
+      (item: SCMChange): boolean => item.path === path
+    );
+
+    if (!existingChange) {
+      changes.push({ path, type: previousChangeType });
+
+      return;
+    }
+
+    if (existingChange.type === 'Deleted') {
+      return;
+    }
+
+    if (previousChangeType === 'Deleted') {
+      existingChange.type = 'Deleted';
+
+      return;
+    }
   }
 
   private static tryProcessChangeLine(line: string): SCMChangeType | null {

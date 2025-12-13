@@ -11,6 +11,8 @@ export class TFSLocaleConfiguration {
     Rename: Record<string, string>;
     Edit: Record<string, string>;
     SourceItem: Record<string, string>;
+    Items: Record<string, string>;
+    ServerPath: Record<string, string>;
     Collection: Record<string, string>;
   } = {
     Change: {
@@ -37,9 +39,17 @@ export class TFSLocaleConfiguration {
       en: 'edit',
       es: 'editar',
     },
+    Items: {
+      en: 'Items',
+      es: 'Elementos',
+    },
     SourceItem: {
       en: 'Source item',
       es: 'Elemento de origen',
+    },
+    ServerPath: {
+      en: 'Server path',
+      es: 'Ruta de acceso del servidor',
     },
     Collection: {
       en: 'Collection',
@@ -56,9 +66,13 @@ export class TFSLocaleConfiguration {
 
   static readonly changeRegex = this.regexLocales.Change[this.locale];
 
+  static readonly itemsRegex = this.regexLocales.Items[this.locale];
+
   static readonly localItemRegex = this.regexLocales.LocalItem[this.locale];
 
   static readonly sourceItemRegex = this.regexLocales.SourceItem[this.locale];
+
+  static readonly serverPathRegex = this.regexLocales.ServerPath[this.locale];
 
   static readonly collectionRegex = this.regexLocales.Collection[this.locale];
 

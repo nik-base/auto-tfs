@@ -13,7 +13,7 @@ import { TFSInfoCommand } from './commands/tfs-info.command';
 import { TFSShelveCommand } from './commands/tfs-shelve.command';
 import { TFSStatusCommand } from './commands/tfs-status.command';
 import { TFSViewCommand } from './commands/tfs-view.command';
-import { TFSWorkfoldCommand } from './commands/tfs-workflow.command';
+import { TFSWorkfoldCommand } from './commands/tfs-workfold.command';
 import { ProcessResult } from '../models';
 
 export class TFSService {
@@ -23,10 +23,13 @@ export class TFSService {
     this.commandExecutor = commandExecutor;
   }
 
-  async history(file: Uri): Promise<void> {
-    const command = new TFSHistoryCommand();
+  async history(
+    file: Uri,
+    findLastChange?: boolean
+  ): Promise<ProcessResult | undefined> {
+    const command = new TFSHistoryCommand(findLastChange);
 
-    await this.commandExecutor.run(command, [file]);
+    return await this.commandExecutor.run(command, [file]);
   }
 
   async checkout(files: ReadonlyArray<Uri>): Promise<void> {
@@ -94,10 +97,10 @@ export class TFSService {
     files: ReadonlyArray<Uri>,
     shelveName: string,
     shouldReplaceShelve: boolean
-  ): Promise<void> {
+  ): Promise<ProcessResult | undefined> {
     const command = new TFSShelveCommand(shelveName, shouldReplaceShelve);
 
-    await this.commandExecutor.run(command, files);
+    return await this.commandExecutor.run(command, files);
   }
 
   async status(
@@ -107,6 +110,12 @@ export class TFSService {
     const command = new TFSStatusCommand(shouldFindSourceItemPath);
 
     return await this.commandExecutor.run(command, [file]);
+  }
+
+  async triggerLogin(): Promise<ProcessResult | undefined> {
+    const command = new TFSStatusCommand(false, true);
+
+    return await this.commandExecutor.run(command);
   }
 
   async view(

@@ -9,13 +9,15 @@ import {
   TextDocument,
   FileWillRenameEvent,
   FileCreateEvent,
-  FileDeleteEvent,
   SourceControlResourceState,
   SourceControlResourceGroup,
   SourceControl,
   StatusBarItem,
   OutputChannel,
   TextDocumentContentProvider,
+  EventEmitter,
+  Event,
+  FileWillDeleteEvent,
 } from 'vscode';
 import { TFSService } from './v2/tfs/tfs-service';
 import { AutoTFSOutputChannel } from './v2/core/autotfs-output-channel';
@@ -29,8 +31,11 @@ import { SCMChange, SCMContext } from './v2/models';
 import { AutoTFSNotification } from './v2/core/autotfs-notifcation';
 import { AutoTFSLogger } from './v2/core/autotfs-logger';
 import { TFSDocumentContentProvider } from './v2/tfs/tfs-document-content-provider';
+import { AutoTFSConfirmOption } from './v2/types';
 
 const outputChannel: OutputChannel = AutoTFSOutputChannel.init();
+
+export const unAuthorizedEvent = new EventEmitter<void>();
 
 export async function activate(context: ExtensionContext) {
   AutoTFSOutputChannel.log('Auto TFS started');
@@ -70,6 +75,25 @@ export async function activate(context: ExtensionContext) {
     'empty',
     emptyFileContentProvider
   );
+
+  const onUnAuthorizedEvent: Event<void> = unAuthorizedEvent.event;
+
+  const onUnAuthorizedEventSubscription = onUnAuthorizedEvent(async () => {
+    const selection: AutoTFSConfirmOption | undefined =
+      await AutoTFSNotification.warning(
+        'Auto TFS: You are not logged in to TFS server. Do you want to login?',
+        'Yes',
+        'No'
+      );
+
+    if (selection !== 'Yes') {
+      return;
+    }
+
+    AutoTFSNotification.info('Auto TFS: Starting status command to login...');
+
+    autoTfs.triggerLogin();
+  });
 
   const checkoutCommand = commands.registerCommand(
     'auto-tfs.checkout',
@@ -361,15 +385,23 @@ export async function activate(context: ExtensionContext) {
     }
   );
 
-  const onDelete = workspace.onDidDeleteFiles(
-    async (event: FileDeleteEvent) => {
+  const onWillDelete = workspace.onWillDeleteFiles(
+    async (event: FileWillDeleteEvent) => {
       if (!AutoTFSConfiguration.isAutoDeleteEnabled) {
         return;
       }
 
-      await autoTfs.delete(event.files);
+      event.waitUntil(autoTfs.delete(event.files));
     }
   );
+
+  const onDelete = workspace.onDidDeleteFiles(async () => {
+    if (!AutoTFSConfiguration.isAutoSyncEnabled) {
+      return;
+    }
+
+    await autoTfs.autoSync();
+  });
 
   const tryRenameFiles = async (event: FileWillRenameEvent): Promise<void> => {
     try {
@@ -441,6 +473,7 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     emptyFileProvider,
     tfsContentProvider,
+    onUnAuthorizedEventSubscription,
     checkoutCommand,
     undoCommand,
     addCommand,
@@ -452,6 +485,7 @@ export async function activate(context: ExtensionContext) {
     onRename,
     onSave,
     onCreate,
+    onWillDelete,
     onDelete,
     syncStatus,
     syncCommand,

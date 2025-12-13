@@ -38,6 +38,8 @@ export class AutoTFSService {
     }
 
     if (files.length === 1 && (await this.isCheckedout(files[0]))) {
+      await this.autoSync();
+
       return;
     }
 
@@ -85,9 +87,11 @@ export class AutoTFSService {
       return;
     }
 
-    await this.tfsService.delete(files);
-
-    await this.autoSync();
+    try {
+      await this.tfsService.delete(files);
+    } finally {
+      await this.autoSync();
+    }
   }
 
   async rename(
@@ -155,7 +159,7 @@ export class AutoTFSService {
   }
 
   async history(file: Uri): Promise<void> {
-    return await this.tfsService.history(file);
+    await this.tfsService.history(file);
   }
 
   async getAll(): Promise<void> {
@@ -219,6 +223,10 @@ export class AutoTFSService {
 
   async vsDiff(file: Uri): Promise<void> {
     return await this.tfsService.diff(file);
+  }
+
+  async triggerLogin(): Promise<void> {
+    await this.tfsService.triggerLogin();
   }
 
   async codeDiff(file: Uri): Promise<void> {
@@ -302,31 +310,38 @@ export class AutoTFSService {
       return;
     }
 
-    try {
-      await this.tfsService.shelve(changes, shelveName, false);
-    } catch (error: unknown) {
-      if (
-        !error?.toString().includes(shelveName) ||
-        !error?.toString().includes('already exists')
-      ) {
-        return;
-      }
+    const result: ProcessResult | undefined = await this.tfsService.shelve(
+      changes,
+      shelveName,
+      false
+    );
 
-      const selectedItem: AutoTFSConfirmOption | undefined =
-        await AutoTFSNotification.warning(
-          `Shelve '${shelveName}' already exists. Do you want to replace it?`,
-          'Yes',
-          'No'
-        );
-
-      if (!this.confirmed(selectedItem)) {
-        return;
-      }
-
-      await this.tfsService.shelve(changes, shelveName, true);
+    if (!result) {
+      return;
     }
 
-    await this.autoSync();
+    if (result.success) {
+      return;
+    }
+
+    const error: string | undefined = result.stderr?.toString();
+
+    if (!error?.includes(shelveName) || !error?.includes('already exists')) {
+      return;
+    }
+
+    const selectedItem: AutoTFSConfirmOption | undefined =
+      await AutoTFSNotification.warning(
+        `Shelve '${shelveName}' already exists. Do you want to replace it?`,
+        'Yes',
+        'No'
+      );
+
+    if (!this.confirmed(selectedItem)) {
+      return;
+    }
+
+    await this.tfsService.shelve(changes, shelveName, true);
   }
 
   async scmOpen(file: Uri, change: SCMChange): Promise<void> {
@@ -355,24 +370,6 @@ export class AutoTFSService {
   async scmView(file: Uri, change: SCMChange): Promise<void> {
     if (change.type !== 'Deleted') {
       this.openFile(file);
-
-      return;
-    }
-
-    const result: ProcessResult | undefined = await this.tfsService.info(file);
-
-    if (!result) {
-      AutoTFSNotification.error(`Auto TFS: Error opening file ${file.fsPath}}`);
-
-      return;
-    }
-
-    const sourceItem: string | null = TFSCommandOutputParser.getSourceItem(
-      result.stdout
-    );
-
-    if (!sourceItem) {
-      AutoTFSNotification.error(`Auto TFS: Error opening file ${file.fsPath}}`);
 
       return;
     }
@@ -531,31 +528,9 @@ export class AutoTFSService {
 
     const emptyFile: Uri = Uri.parse(`empty:${parsedPath.base}`);
 
-    const result: ProcessResult | undefined = await this.tfsService.info(file);
-
-    if (!result) {
-      AutoTFSNotification.error(
-        `Auto TFS: Error opening diff for file ${file.fsPath}}`
-      );
-
-      return;
-    }
-
-    const sourceItem: string | null = TFSCommandOutputParser.getSourceItem(
-      result.stdout
-    );
-
-    if (!sourceItem) {
-      AutoTFSNotification.error(
-        `Auto TFS: Error opening diff for file ${file.fsPath}}`
-      );
-
-      return;
-    }
-
     const sourceFile: Uri = Uri.from({
       scheme: 'tfvc',
-      path: sourceItem,
+      path: file.fsPath,
     });
 
     await this.codeDiffServerToLocal(
@@ -569,7 +544,10 @@ export class AutoTFSService {
   private async scmRenamedDiff(file: Uri): Promise<void> {
     const parsedPath: ParsedPath = parse(file.fsPath);
 
-    const result: ProcessResult | undefined = await this.tfsService.info(file);
+    const result: ProcessResult | undefined = await this.tfsService.history(
+      file,
+      true
+    );
 
     if (!result) {
       AutoTFSNotification.error(
@@ -579,11 +557,10 @@ export class AutoTFSService {
       return;
     }
 
-    const sourceItem: string | null = TFSCommandOutputParser.getSourceItem(
-      result.stdout
-    );
+    const serverPath: string | null =
+      TFSCommandOutputParser.getHistoryLastChangeItemServerPath(result.stdout);
 
-    if (!sourceItem) {
+    if (!serverPath) {
       AutoTFSNotification.error(
         `Auto TFS: Error opening diff for file ${file.fsPath}}`
       );
@@ -593,7 +570,7 @@ export class AutoTFSService {
 
     const sourceFile: Uri = Uri.from({
       scheme: 'tfvc',
-      path: sourceItem,
+      path: serverPath,
     });
 
     await this.codeDiffServerToLocal(sourceFile, file, parsedPath, file.fsPath);

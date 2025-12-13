@@ -5,6 +5,7 @@ import { Uri } from 'vscode';
 import { AutoTFSLogger } from '../core/autotfs-logger';
 import { CommandContext, ProcessResult } from '../models';
 import { AutoTFSNotification } from '../core/autotfs-notifcation';
+import { unAuthorizedEvent } from '../../extension';
 
 /**
  * Responsible for running ITFSCommand implementations using ProcessExecutor
@@ -177,10 +178,14 @@ export class TFSCommandExecutor {
 
           command.onCommandOutput(d);
         },
-        onStdErr: (d: string) => {
+        onStdErr: async (d: string) => {
           AutoTFSLogger.debug(
             `AutoTFS command "${command.command}" [stderr] ${d}`
           );
+
+          if (d.includes('TF30063')) {
+            unAuthorizedEvent.fire();
+          }
 
           command.onCommandError(d);
         },
