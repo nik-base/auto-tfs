@@ -50,6 +50,8 @@ export class AutoTFSService {
     }
 
     await this.tfsService.checkout(files);
+
+    await this.autoSync();
   }
 
   async add(files: ReadonlyArray<Uri>): Promise<void> {
@@ -66,6 +68,8 @@ export class AutoTFSService {
     }
 
     await this.tfsService.add(files);
+
+    await this.autoSync();
   }
 
   async delete(files: ReadonlyArray<Uri>): Promise<void> {
@@ -82,6 +86,8 @@ export class AutoTFSService {
     }
 
     await this.tfsService.delete(files);
+
+    await this.autoSync();
   }
 
   async rename(
@@ -105,6 +111,8 @@ export class AutoTFSService {
     for (const file of files) {
       await this.tfsService.rename(file.oldUri, file.newUri);
     }
+
+    await this.autoSync();
   }
 
   async get(files: ReadonlyArray<Uri>): Promise<void> {
@@ -121,6 +129,8 @@ export class AutoTFSService {
     }
 
     await this.tfsService.get(files);
+
+    await this.autoSync();
   }
 
   async undo(files: ReadonlyArray<Uri>): Promise<void> {
@@ -140,6 +150,8 @@ export class AutoTFSService {
     }
 
     await this.tfsService.undo(files);
+
+    await this.autoSync();
   }
 
   async history(file: Uri): Promise<void> {
@@ -170,6 +182,8 @@ export class AutoTFSService {
     AutoTFSStatusBar.stopGetAll();
 
     AutoTFSSCM.stopGetAll();
+
+    await this.autoSync();
   }
 
   async undoAll(): Promise<void> {
@@ -199,6 +213,8 @@ export class AutoTFSService {
     }
 
     await this.tfsService.undo(changes);
+
+    await this.autoSync();
   }
 
   async vsDiff(file: Uri): Promise<void> {
@@ -271,6 +287,8 @@ export class AutoTFSService {
       AutoTFSConfiguration.checkinMode === 'Without Prompt';
 
     await this.tfsService.checkin(changes, comment, shouldCheckinWithoutprompt);
+
+    await this.autoSync();
   }
 
   async shelve(sourceControl: SourceControl): Promise<void> {
@@ -307,6 +325,8 @@ export class AutoTFSService {
 
       await this.tfsService.shelve(changes, shelveName, true);
     }
+
+    await this.autoSync();
   }
 
   async scmOpen(file: Uri, change: SCMChange): Promise<void> {
@@ -416,6 +436,8 @@ export class AutoTFSService {
     );
 
     await this.undo(files);
+
+    await this.autoSync();
   }
 
   exclude(...resources: SourceControlResourceState[]): void {
@@ -497,17 +519,17 @@ export class AutoTFSService {
   }
 
   private async scmAddedDiff(file: Uri): Promise<void> {
-    const emptyFile: Uri = Uri.parse('data:text/plain,');
-
     const parsedPath: ParsedPath = parse(file.fsPath);
+
+    const emptyFile: Uri = Uri.parse(`empty:${parsedPath.base}`);
 
     await this.codeDiffServerToLocal(emptyFile, file, parsedPath, file.fsPath);
   }
 
   private async scmDeletedDiff(file: Uri): Promise<void> {
-    const emptyFile: Uri = Uri.parse('data:text/plain,');
-
     const parsedPath: ParsedPath = parse(file.fsPath);
+
+    const emptyFile: Uri = Uri.parse(`empty:${parsedPath.base}`);
 
     const result: ProcessResult | undefined = await this.tfsService.info(file);
 

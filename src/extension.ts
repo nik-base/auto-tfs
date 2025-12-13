@@ -15,6 +15,7 @@ import {
   SourceControl,
   StatusBarItem,
   OutputChannel,
+  TextDocumentContentProvider,
 } from 'vscode';
 import { TFSService } from './v2/tfs/tfs-service';
 import { AutoTFSOutputChannel } from './v2/core/autotfs-output-channel';
@@ -27,6 +28,7 @@ import { AutoTFSSCM } from './v2/scm/auto-tfs-scm';
 import { SCMChange, SCMContext } from './v2/models';
 import { AutoTFSNotification } from './v2/core/autotfs-notifcation';
 import { AutoTFSLogger } from './v2/core/autotfs-logger';
+import { TFSDocumentContentProvider } from './v2/tfs/tfs-document-content-provider';
 
 const outputChannel: OutputChannel = AutoTFSOutputChannel.init();
 
@@ -48,6 +50,26 @@ export async function activate(context: ExtensionContext) {
   const tfsService: TFSService = new TFSService(commandExecutor);
 
   const autoTfs: AutoTFSService = new AutoTFSService(tfsService);
+
+  const tfsDocumentContentProvider: TFSDocumentContentProvider =
+    new TFSDocumentContentProvider(tfsService);
+
+  const tfsContentProvider = workspace.registerTextDocumentContentProvider(
+    'tfvc',
+    tfsDocumentContentProvider
+  );
+
+  const emptyFileContentProvider =
+    new (class implements TextDocumentContentProvider {
+      provideTextDocumentContent(): string {
+        return '';
+      }
+    })();
+
+  const emptyFileProvider = workspace.registerTextDocumentContentProvider(
+    'empty',
+    emptyFileContentProvider
+  );
 
   const checkoutCommand = commands.registerCommand(
     'auto-tfs.checkout',
@@ -295,6 +317,14 @@ export async function activate(context: ExtensionContext) {
         return;
       }
 
+      if (event.document.uri.scheme !== 'file') {
+        return;
+      }
+
+      if (event.contentChanges.length === 0) {
+        return;
+      }
+
       await autoTfs.checkout([event.document.uri]);
     }
   );
@@ -302,6 +332,10 @@ export async function activate(context: ExtensionContext) {
   const onSave = workspace.onDidSaveTextDocument(
     async (document: TextDocument) => {
       if (AutoTFSConfiguration.autoCheckoutMode !== 'On Save') {
+        return;
+      }
+
+      if (document.uri.scheme !== 'file') {
         return;
       }
 
@@ -405,6 +439,8 @@ export async function activate(context: ExtensionContext) {
   await autoTfs.autoSync();
 
   context.subscriptions.push(
+    emptyFileProvider,
+    tfsContentProvider,
     checkoutCommand,
     undoCommand,
     addCommand,

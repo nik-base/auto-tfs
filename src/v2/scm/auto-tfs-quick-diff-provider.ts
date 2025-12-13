@@ -8,30 +8,14 @@ export class AutoTFSQuickDiffProvider {
     };
   }
 
-  private static getOriginalUri(uri: Uri): Thenable<Uri> {
-    return new Promise<Uri>((resolve, reject) => {
-      if (!AutoTFSConfiguration.isQuickDiffEnabled) {
-        reject();
-      }
+  private static getOriginalUri(uri: Uri): Uri | undefined {
+    if (!AutoTFSConfiguration.isQuickDiffEnabled) {
+      return;
+    }
 
-      reject();
-
-      //   const parsedFilePath: ParsedPath = parse(uri.fsPath);
-
-      //   const path: string = this.downloadFile(uri);
-
-      //   if (!path) {
-      //     reject();
-      //   }
-
-      //   const originalUri = Uri.file(path!);
-
-      //   resolve(originalUri);
+    return Uri.from({
+      scheme: 'tfvc',
+      path: uri.fsPath,
     });
-  }
-
-  private static downloadFile(file: Uri): string | null {
-    // TODO: Download file
-    return '';
   }
 }
