@@ -5,7 +5,7 @@ import { Uri } from 'vscode';
 import { AutoTFSLogger } from '../core/autotfs-logger';
 import { CommandContext, ProcessResult } from '../models';
 import { AutoTFSNotification } from '../core/autotfs-notifcation';
-import { unAuthorizedEvent } from '../../extension';
+import { unAuthorizedEvent } from '../extension';
 
 /**
  * Responsible for running ITFSCommand implementations using ProcessExecutor

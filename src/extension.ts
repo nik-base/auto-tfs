@@ -19,19 +19,19 @@ import {
   Event,
   FileWillDeleteEvent,
 } from 'vscode';
-import { TFSService } from './v2/tfs/tfs-service';
-import { AutoTFSOutputChannel } from './v2/core/autotfs-output-channel';
-import { ProcessExecutor } from './v2/process/process-executor';
-import { TFSCommandExecutor } from './v2/tfs/tfs-command-executor';
-import { AutoTFSService } from './v2/tfs/auto-tfs.service';
-import { AutoTFSConfiguration } from './v2/core/autotfs-configuration';
-import { AutoTFSStatusBar } from './v2/status-bar/auto-tfs-status-bar';
-import { AutoTFSSCM } from './v2/scm/auto-tfs-scm';
-import { SCMChange, SCMContext } from './v2/models';
-import { AutoTFSNotification } from './v2/core/autotfs-notifcation';
-import { AutoTFSLogger } from './v2/core/autotfs-logger';
-import { TFSDocumentContentProvider } from './v2/tfs/tfs-document-content-provider';
-import { AutoTFSConfirmOption } from './v2/types';
+import { TFSService } from './tfs/tfs-service';
+import { AutoTFSOutputChannel } from './core/autotfs-output-channel';
+import { ProcessExecutor } from './process/process-executor';
+import { TFSCommandExecutor } from './tfs/tfs-command-executor';
+import { AutoTFSService } from './tfs/auto-tfs.service';
+import { AutoTFSConfiguration } from './core/autotfs-configuration';
+import { AutoTFSStatusBar } from './status-bar/auto-tfs-status-bar';
+import { AutoTFSSCM } from './scm/auto-tfs-scm';
+import { SCMChange, SCMContext } from './models';
+import { AutoTFSNotification } from './core/autotfs-notifcation';
+import { AutoTFSLogger } from './core/autotfs-logger';
+import { TFSDocumentContentProvider } from './tfs/tfs-document-content-provider';
+import { AutoTFSConfirmOption } from './types';
 
 const outputChannel: OutputChannel = AutoTFSOutputChannel.init();
 
