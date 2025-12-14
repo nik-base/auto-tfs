@@ -628,7 +628,8 @@
     "lint:fix": "eslint . --fix",
     "clean": "rm -rf out",
     "type-check": "tsc --noEmit",
-    "package": "vsce package --no-git-tag-version"
+    "package": "vsce package --no-git-tag-version",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
