@@ -566,8 +566,8 @@
           ],
           "enumDescriptions": [
             "Don't checkout file(s)",
-            "Checkout file(s) on save",
-            "Checkout file(s) on change"
+            "Checkout file(s) on  (Recommended)",
+            "Checkout file(s) on change (Not Recommended)"
           ],
           "description": "Specifies when should file(s) checked out"
         },
@@ -594,7 +594,7 @@
         "auto-tfs.tfs.quickDiff": {
           "type": "boolean",
           "default": false,
-          "description": "View quick diff in editor. Recommended to disable due to current issue of continous file download for quick diff."
+          "description": "View quick diff in editor. Recommended to disable if it slows down your editor."
         },
         "auto-tfs.tfs.checkin": {
           "type": "string",
@@ -606,8 +606,8 @@
           ],
           "enumDescriptions": [
             "Disable checkin",
-            "Checkin allowed with Visual Studio Checkin Prompt",
-            "Checkout allowed without Visual Studio Checkin Prompt"
+            "Checkin allowed with Visual Studio Checkin Prompt (Recommended)",
+            "Checkout allowed without Visual Studio Checkin Prompt (Not Recommended)"
           ],
           "description": "Specifies checkin mode (Warning: Doesn't support code review)"
         },

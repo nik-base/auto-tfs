@@ -44,10 +44,10 @@ export class TFSService {
     await this.commandExecutor.run(command, files);
   }
 
-  async delete(files: ReadonlyArray<Uri>): Promise<void> {
+  async delete(files: ReadonlyArray<Uri>): Promise<ProcessResult | undefined> {
     const command = new TFSDeleteCommand();
 
-    await this.commandExecutor.run(command, files);
+    return await this.commandExecutor.run(command, files);
   }
 
   async rename(oldFile: Uri, newFile: Uri): Promise<void> {

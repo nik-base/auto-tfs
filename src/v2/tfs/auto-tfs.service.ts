@@ -87,11 +87,36 @@ export class AutoTFSService {
       return;
     }
 
-    try {
+    const result: ProcessResult | undefined =
       await this.tfsService.delete(files);
-    } finally {
+
+    if (!result) {
       await this.autoSync();
+
+      return;
     }
+
+    if (result.success) {
+      await this.autoSync();
+
+      return;
+    }
+
+    if (!result.stderr.includes('TF203069')) {
+      await this.autoSync();
+
+      return;
+    }
+
+    AutoTFSNotification.info(
+      'There are pending changes on item. The file will be first reverted to original state and then deleted from source control.'
+    );
+
+    await this.tfsService.undo(files);
+
+    await this.tfsService.delete(files);
+
+    await this.autoSync();
   }
 
   async rename(
@@ -408,17 +433,8 @@ export class AutoTFSService {
       return;
     }
 
-    const changes: SCMChange[] | null = TFSCommandOutputParser.getChanges(
-      result.stdout
-    );
-
-    if (!changes?.length) {
-      AutoTFSStatusBar.stopSync();
-
-      AutoTFSSCM.stopSync();
-
-      return;
-    }
+    const changes: SCMChange[] =
+      TFSCommandOutputParser.getChanges(result.stdout) ?? [];
 
     AutoTFSSCM.sync(changes);
 
