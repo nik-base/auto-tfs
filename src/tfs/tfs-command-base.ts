@@ -3,7 +3,7 @@ import { ITFSCommand } from './itfs-command';
 import { lstatSync } from 'fs';
 import { CommandContext, ProcessResult } from '../models';
 import { AutoTFSLogger } from '../core/autotfs-logger';
-import { AutoTFSNotification } from '../core/autotfs-notifcation';
+import { AutoTFSNotification } from '../core/autotfs-notification';
 
 export abstract class TFSCommandBase implements ITFSCommand {
   abstract readonly command: string;

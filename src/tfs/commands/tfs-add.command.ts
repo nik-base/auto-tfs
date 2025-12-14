@@ -1,5 +1,5 @@
 import { AutoTFSLogger } from '../../core/autotfs-logger';
-import { AutoTFSNotification } from '../../core/autotfs-notifcation';
+import { AutoTFSNotification } from '../../core/autotfs-notification';
 import { CommandContext } from '../../models';
 import { TFSCommandBase } from '../tfs-command-base';
 

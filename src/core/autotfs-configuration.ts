@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { workspace, WorkspaceConfiguration } from 'vscode';
 import {
   AutoTFSCheckinMode,
@@ -6,6 +7,22 @@ import {
 } from '../types';
 
 export class AutoTFSConfiguration {
+  private static cachedConfig: WorkspaceConfiguration | undefined;
+
+  private static get config(): WorkspaceConfiguration {
+    if (this.cachedConfig) {
+      return this.cachedConfig;
+    }
+
+    this.cachedConfig = workspace.getConfiguration('auto-tfs');
+
+    return this.cachedConfig;
+  }
+
+  public static refresh(): void {
+    this.cachedConfig = workspace.getConfiguration('auto-tfs');
+  }
+
   public static get tfPath(): string | undefined {
     return this.config.get('tf.path');
   }
@@ -48,9 +65,5 @@ export class AutoTFSConfiguration {
 
   public static get isDebugEnabled(): boolean {
     return this.config.get('tfs.debug') ?? false;
-  }
-
-  private static get config(): WorkspaceConfiguration {
-    return workspace.getConfiguration('auto-tfs');
   }
 }

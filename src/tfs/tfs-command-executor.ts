@@ -4,7 +4,7 @@ import { AutoTFSConfiguration } from '../core/autotfs-configuration';
 import { Uri } from 'vscode';
 import { AutoTFSLogger } from '../core/autotfs-logger';
 import { CommandContext, ProcessResult } from '../models';
-import { AutoTFSNotification } from '../core/autotfs-notifcation';
+import { AutoTFSNotification } from '../core/autotfs-notification';
 import { unAuthorizedEvent } from '../extension';
 
 /**

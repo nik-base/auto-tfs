@@ -2,7 +2,7 @@ import { EventEmitter, TextDocumentContentProvider, Uri } from 'vscode';
 import { TFSService } from './tfs-service';
 import { ProcessResult } from '../models';
 import { AutoTFSLogger } from '../core/autotfs-logger';
-import { AutoTFSNotification } from '../core/autotfs-notifcation';
+import { AutoTFSNotification } from '../core/autotfs-notification';
 
 export class TFSDocumentContentProvider implements TextDocumentContentProvider {
   private readonly onDidChangeEmitter = new EventEmitter<Uri>();

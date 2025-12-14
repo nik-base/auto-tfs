@@ -18,6 +18,7 @@ import {
   EventEmitter,
   Event,
   FileWillDeleteEvent,
+  ConfigurationChangeEvent,
 } from 'vscode';
 import { TFSService } from './tfs/tfs-service';
 import { AutoTFSOutputChannel } from './core/autotfs-output-channel';
@@ -28,7 +29,7 @@ import { AutoTFSConfiguration } from './core/autotfs-configuration';
 import { AutoTFSStatusBar } from './status-bar/auto-tfs-status-bar';
 import { AutoTFSSCM } from './scm/auto-tfs-scm';
 import { SCMChange, SCMContext } from './models';
-import { AutoTFSNotification } from './core/autotfs-notifcation';
+import { AutoTFSNotification } from './core/autotfs-notification';
 import { AutoTFSLogger } from './core/autotfs-logger';
 import { TFSDocumentContentProvider } from './tfs/tfs-document-content-provider';
 import { AutoTFSConfirmOption } from './types';
@@ -39,6 +40,8 @@ export const unAuthorizedEvent = new EventEmitter<void>();
 
 export async function activate(context: ExtensionContext) {
   AutoTFSOutputChannel.log('Auto TFS started');
+
+  let debounceTimer: NodeJS.Timeout | undefined;
 
   const syncStatus: StatusBarItem = AutoTFSStatusBar.initSync();
 
@@ -76,333 +79,409 @@ export async function activate(context: ExtensionContext) {
     emptyFileContentProvider
   );
 
-  const onUnAuthorizedEvent: Event<void> = unAuthorizedEvent.event;
-
-  const onUnAuthorizedEventSubscription = onUnAuthorizedEvent(async () => {
-    const selection: AutoTFSConfirmOption | undefined =
-      await AutoTFSNotification.warning(
-        'Auto TFS: You are not logged in to TFS server. Do you want to login?',
-        'Yes',
-        'No'
-      );
-
-    if (selection !== 'Yes') {
-      return;
-    }
-
-    AutoTFSNotification.info('Auto TFS: Starting status command to login...');
-
-    await autoTfs.triggerLogin();
-  });
-
-  const checkoutCommand = commands.registerCommand(
-    'auto-tfs.checkout',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.checkout(files);
-    }
-  );
-
-  const undoCommand = commands.registerCommand(
-    'auto-tfs.undo',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.undo(files);
-    }
-  );
-
-  const addCommand = commands.registerCommand(
-    'auto-tfs.add',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.add(files);
-    }
-  );
-
-  const deleteCommand = commands.registerCommand(
-    'auto-tfs.delete',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.delete(files);
-    }
-  );
-
-  const getCommand = commands.registerCommand(
-    'auto-tfs.get',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.get(files);
-    }
-  );
-
-  const vsDiffCommand = commands.registerCommand(
-    'auto-tfs.vsdiff',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.vsDiff(files[0]);
-    }
-  );
-
-  const codeDiffCommand = commands.registerCommand(
-    'auto-tfs.codediff',
-    async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
-
-      await autoTfs.codeDiff(files[0]);
-    }
-  );
-
-  const openOnServerCommand = commands.registerCommand(
-    'auto-tfs.openonserver',
-    async (item: Uri | SourceControlResourceState | null) => {
-      const uri: Uri | undefined =
-        item instanceof Uri ? item : item?.resourceUri;
-
-      if (!uri) {
-        return;
+  const onDidChangeConfiguration = workspace.onDidChangeConfiguration(
+    (event: ConfigurationChangeEvent) => {
+      if (event.affectsConfiguration('auto-tfs')) {
+        AutoTFSConfiguration.refresh();
       }
-
-      await autoTfs.openOnServer(uri);
     }
   );
 
-  const historyCommand = commands.registerCommand(
-    'auto-tfs.history',
-    async (item: Uri | SourceControlResourceState | null) => {
-      const uri: Uri | undefined =
-        item instanceof Uri ? item : item?.resourceUri;
+  const registerTFSCommands = () => {
+    const checkoutCommand = commands.registerCommand(
+      'auto-tfs.checkout',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-      if (!uri) {
-        return;
+        await autoTfs.checkout(files);
       }
+    );
 
-      await autoTfs.history(uri);
-    }
-  );
+    const undoCommand = commands.registerCommand(
+      'auto-tfs.undo',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-  const syncCommand = commands.registerCommand(
-    'auto-tfs.sync',
-    async (): Promise<void> => {
-      await autoTfs.sync();
-    }
-  );
-
-  const getAllCommand = commands.registerCommand(
-    'auto-tfs.getall',
-    async () => {
-      await autoTfs.getAll();
-    }
-  );
-
-  const scmOpenCommand = commands.registerCommand(
-    'auto-tfs.scmview',
-    async (clickedFile: Uri | null, change: SCMChange) => {
-      if (!clickedFile) {
-        return;
+        await autoTfs.undo(files);
       }
+    );
 
-      await autoTfs.scmView(clickedFile, change);
-    }
-  );
+    const addCommand = commands.registerCommand(
+      'auto-tfs.add',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-  const scmViewCommand = commands.registerCommand(
-    'auto-tfs.scmopen',
-    async (resourceState: SourceControlResourceState | null) => {
-      const uri: Uri | undefined = resourceState?.resourceUri;
-
-      const args: readonly unknown[] | undefined =
-        resourceState?.command?.arguments;
-
-      if (!uri || !args || args.length < 2) {
-        return;
+        await autoTfs.add(files);
       }
+    );
 
-      const change: SCMChange | null = args[1] as SCMChange | null;
+    const deleteCommand = commands.registerCommand(
+      'auto-tfs.delete',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-      if (!change) {
-        return;
+        await autoTfs.delete(files);
       }
+    );
 
-      await autoTfs.scmOpen(uri, change);
-    }
-  );
+    const getCommand = commands.registerCommand(
+      'auto-tfs.get',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-  const revertGroupCommand = commands.registerCommand(
-    'auto-tfs.revertgroup',
-    async (resourceGroup: SourceControlResourceGroup) => {
-      await autoTfs.undoGroup(resourceGroup);
-    }
-  );
-
-  const revertSelectedCommand = commands.registerCommand(
-    'auto-tfs.revert',
-    async (...resourceStates: SourceControlResourceState[]) => {
-      if (!resourceStates.length) {
-        return;
+        await autoTfs.get(files);
       }
+    );
 
-      const files: Uri[] = resourceStates.map(
-        (item: SourceControlResourceState): Uri => item.resourceUri
-      );
+    const vsDiffCommand = commands.registerCommand(
+      'auto-tfs.vsdiff',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-      await autoTfs.undo(files);
-    }
-  );
-
-  const revertAllCommand = commands.registerCommand(
-    'auto-tfs.revertall',
-    async () => {
-      await autoTfs.undoAll();
-    }
-  );
-
-  const excludeCommand = commands.registerCommand(
-    'auto-tfs.exclude',
-    (...resourceStates: SourceControlResourceState[]) => {
-      if (!resourceStates.length) {
-        return;
+        await autoTfs.vsDiff(files[0]);
       }
+    );
 
-      autoTfs.exclude(...resourceStates);
-    }
-  );
+    const codeDiffCommand = commands.registerCommand(
+      'auto-tfs.codediff',
+      async (clickedFile: Uri, selectedFiles: Uri[]) => {
+        const files: readonly Uri[] = getSelectedFiles(
+          clickedFile,
+          selectedFiles
+        );
 
-  const excludeAllCommand = commands.registerCommand(
-    'auto-tfs.excludeall',
-    () => autoTfs.excludeAll()
-  );
-
-  const includeCommand = commands.registerCommand(
-    'auto-tfs.include',
-    (...resourceStates: SourceControlResourceState[]) => {
-      if (!resourceStates.length) {
-        return;
+        await autoTfs.codeDiff(files[0]);
       }
+    );
 
-      autoTfs.include(...resourceStates);
-    }
-  );
+    const openOnServerCommand = commands.registerCommand(
+      'auto-tfs.openonserver',
+      async (item: Uri | SourceControlResourceState | null) => {
+        const uri: Uri | undefined =
+          item instanceof Uri ? item : item?.resourceUri;
 
-  const includeAllCommand = commands.registerCommand(
-    'auto-tfs.includeall',
-    () => autoTfs.includeAll()
-  );
+        if (!uri) {
+          return;
+        }
 
-  const shelveCommand = commands.registerCommand(
-    'auto-tfs.shelve',
-    async (sourceControl: SourceControl | null) => {
-      if (!sourceControl) {
-        return;
+        await autoTfs.openOnServer(uri);
       }
+    );
 
-      await autoTfs.shelve(sourceControl);
-    }
-  );
+    const historyCommand = commands.registerCommand(
+      'auto-tfs.history',
+      async (item: Uri | SourceControlResourceState | null) => {
+        const uri: Uri | undefined =
+          item instanceof Uri ? item : item?.resourceUri;
 
-  const checkinCommand = commands.registerCommand(
-    'auto-tfs.checkin',
-    async (sourceControl: SourceControl | null) => {
-      if (!sourceControl) {
-        return;
+        if (!uri) {
+          return;
+        }
+
+        await autoTfs.history(uri);
       }
+    );
 
-      if (AutoTFSConfiguration.checkinMode === 'Disabled') {
-        return;
+    const syncCommand = commands.registerCommand(
+      'auto-tfs.sync',
+      async (): Promise<void> => {
+        await autoTfs.sync();
       }
+    );
 
-      await autoTfs.checkin(sourceControl);
-    }
-  );
-
-  const onChange = workspace.onDidChangeTextDocument(
-    async (event: TextDocumentChangeEvent) => {
-      if (AutoTFSConfiguration.autoCheckoutMode !== 'On Change') {
-        return;
+    const getAllCommand = commands.registerCommand(
+      'auto-tfs.getall',
+      async () => {
+        await autoTfs.getAll();
       }
+    );
 
-      if (event.document.uri.scheme !== 'file') {
-        return;
-      }
-
-      if (event.contentChanges.length === 0) {
-        return;
-      }
-
-      await autoTfs.checkout([event.document.uri]);
-    }
-  );
-
-  const onSave = workspace.onDidSaveTextDocument(
-    async (document: TextDocument) => {
-      if (AutoTFSConfiguration.autoCheckoutMode !== 'On Save') {
-        return;
-      }
-
-      if (document.uri.scheme !== 'file') {
-        return;
-      }
-
-      await autoTfs.checkout([document.uri]);
-    }
-  );
-
-  const onRename = workspace.onWillRenameFiles((event: FileWillRenameEvent) => {
-    if (!AutoTFSConfiguration.isAutoRenameEnabled) {
-      return;
-    }
-
-    return event.waitUntil(tryRenameFiles(event));
-  });
-
-  const onCreate = workspace.onDidCreateFiles(
-    async (event: FileCreateEvent) => {
-      if (!AutoTFSConfiguration.isAutoAddEnabled) {
-        return;
-      }
-
-      await autoTfs.add(event.files);
-    }
-  );
-
-  const onWillDelete = workspace.onWillDeleteFiles(
-    (event: FileWillDeleteEvent) => {
-      if (!AutoTFSConfiguration.isAutoDeleteEnabled) {
-        return;
-      }
-
-      event.waitUntil(autoTfs.delete(event.files));
-    }
-  );
-
-  const onDelete = workspace.onDidDeleteFiles(async () => {
-    if (!AutoTFSConfiguration.isAutoSyncEnabled) {
-      return;
-    }
-
-    await autoTfs.autoSync();
-  });
-
-  const tryRenameFiles = async (event: FileWillRenameEvent): Promise<void> => {
-    try {
-      if (!AutoTFSConfiguration.isAutoRenameEnabled) {
-        return await Promise.resolve();
-      }
-
-      return await autoTfs.rename(event.files);
-    } catch {
-      return await Promise.resolve();
-    }
+    context.subscriptions.push(
+      checkoutCommand,
+      undoCommand,
+      addCommand,
+      deleteCommand,
+      getCommand,
+      vsDiffCommand,
+      codeDiffCommand,
+      syncCommand,
+      getAllCommand,
+      openOnServerCommand,
+      historyCommand
+    );
   };
 
-  const getFiles = (clickedFile: Uri, selectedFiles: Uri[]): readonly Uri[] => {
-    return getSelectedFiles(clickedFile, selectedFiles);
+  const registerTFSAutoCommands = () => {
+    const onUnAuthorizedEvent: Event<void> = unAuthorizedEvent.event;
+
+    const onUnAuthorizedEventSubscription = onUnAuthorizedEvent(async () => {
+      const selection: AutoTFSConfirmOption | undefined =
+        await AutoTFSNotification.warning(
+          'Auto TFS: You are not logged in to TFS server. Do you want to login?',
+          'Yes',
+          'No'
+        );
+
+      if (selection !== 'Yes') {
+        return;
+      }
+
+      AutoTFSNotification.info('Auto TFS: Starting status command to login...');
+
+      await autoTfs.triggerLogin();
+    });
+
+    const onChange = workspace.onDidChangeTextDocument(
+      (event: TextDocumentChangeEvent) => {
+        if (AutoTFSConfiguration.autoCheckoutMode !== 'On Change') {
+          return;
+        }
+
+        if (event.document.uri.scheme !== 'file') {
+          return;
+        }
+
+        if (event.contentChanges.length === 0) {
+          return;
+        }
+
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
+        }
+
+        const delay = 800;
+
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        debounceTimer = setTimeout(async () => {
+          debounceTimer = undefined;
+
+          await autoTfs.checkout([event.document.uri]);
+        }, delay);
+      }
+    );
+
+    const onSave = workspace.onDidSaveTextDocument(
+      async (document: TextDocument) => {
+        if (AutoTFSConfiguration.autoCheckoutMode !== 'On Save') {
+          return;
+        }
+
+        if (document.uri.scheme !== 'file') {
+          return;
+        }
+
+        await autoTfs.checkout([document.uri]);
+      }
+    );
+
+    const onRename = workspace.onWillRenameFiles(
+      (event: FileWillRenameEvent) => {
+        if (!AutoTFSConfiguration.isAutoRenameEnabled) {
+          return;
+        }
+
+        return event.waitUntil(autoTfs.rename(event.files));
+      }
+    );
+
+    const onCreate = workspace.onDidCreateFiles(
+      async (event: FileCreateEvent) => {
+        if (!AutoTFSConfiguration.isAutoAddEnabled) {
+          return;
+        }
+
+        await autoTfs.add(event.files);
+      }
+    );
+
+    const onWillDelete = workspace.onWillDeleteFiles(
+      (event: FileWillDeleteEvent) => {
+        if (!AutoTFSConfiguration.isAutoDeleteEnabled) {
+          return;
+        }
+
+        event.waitUntil(autoTfs.delete(event.files));
+      }
+    );
+
+    const onDelete = workspace.onDidDeleteFiles(async () => {
+      if (!AutoTFSConfiguration.isAutoSyncEnabled) {
+        return;
+      }
+
+      await autoTfs.autoSync();
+    });
+
+    return context.subscriptions.push(
+      onUnAuthorizedEventSubscription,
+      onChange,
+      onRename,
+      onSave,
+      onCreate,
+      onWillDelete,
+      onDelete
+    );
   };
+
+  const registerSCMCommands = () => {
+    const scmOpenCommand = commands.registerCommand(
+      'auto-tfs.scmview',
+      async (clickedFile: Uri | null, change: SCMChange) => {
+        if (!clickedFile) {
+          return;
+        }
+
+        await autoTfs.scmView(clickedFile, change);
+      }
+    );
+
+    const scmViewCommand = commands.registerCommand(
+      'auto-tfs.scmopen',
+      async (resourceState: SourceControlResourceState | null) => {
+        const uri: Uri | undefined = resourceState?.resourceUri;
+
+        const args: readonly unknown[] | undefined =
+          resourceState?.command?.arguments;
+
+        if (!uri || !args || args.length < 2) {
+          return;
+        }
+
+        const change: SCMChange | null = args[1] as SCMChange | null;
+
+        if (!change) {
+          return;
+        }
+
+        await autoTfs.scmOpen(uri, change);
+      }
+    );
+
+    const revertGroupCommand = commands.registerCommand(
+      'auto-tfs.revertgroup',
+      async (resourceGroup: SourceControlResourceGroup) => {
+        await autoTfs.undoGroup(resourceGroup);
+      }
+    );
+
+    const revertSelectedCommand = commands.registerCommand(
+      'auto-tfs.revert',
+      async (...resourceStates: SourceControlResourceState[]) => {
+        if (!resourceStates.length) {
+          return;
+        }
+
+        const files: Uri[] = resourceStates.map(
+          (item: SourceControlResourceState): Uri => item.resourceUri
+        );
+
+        await autoTfs.undo(files);
+      }
+    );
+
+    const revertAllCommand = commands.registerCommand(
+      'auto-tfs.revertall',
+      async () => {
+        await autoTfs.undoAll();
+      }
+    );
+
+    const excludeCommand = commands.registerCommand(
+      'auto-tfs.exclude',
+      (...resourceStates: SourceControlResourceState[]) => {
+        if (!resourceStates.length) {
+          return;
+        }
+
+        autoTfs.exclude(...resourceStates);
+      }
+    );
+
+    const excludeAllCommand = commands.registerCommand(
+      'auto-tfs.excludeall',
+      () => autoTfs.excludeAll()
+    );
+
+    const includeCommand = commands.registerCommand(
+      'auto-tfs.include',
+      (...resourceStates: SourceControlResourceState[]) => {
+        if (!resourceStates.length) {
+          return;
+        }
+
+        autoTfs.include(...resourceStates);
+      }
+    );
+
+    const includeAllCommand = commands.registerCommand(
+      'auto-tfs.includeall',
+      () => autoTfs.includeAll()
+    );
+
+    const shelveCommand = commands.registerCommand(
+      'auto-tfs.shelve',
+      async (sourceControl: SourceControl | null) => {
+        if (!sourceControl) {
+          return;
+        }
+
+        await autoTfs.shelve(sourceControl);
+      }
+    );
+
+    const checkinCommand = commands.registerCommand(
+      'auto-tfs.checkin',
+      async (sourceControl: SourceControl | null) => {
+        if (!sourceControl) {
+          return;
+        }
+
+        if (AutoTFSConfiguration.checkinMode === 'Disabled') {
+          return;
+        }
+
+        await autoTfs.checkin(sourceControl);
+      }
+    );
+
+    context.subscriptions.push(
+      scmOpenCommand,
+      scmViewCommand,
+      revertGroupCommand,
+      revertSelectedCommand,
+      revertAllCommand,
+      excludeAllCommand,
+      excludeCommand,
+      includeAllCommand,
+      includeCommand,
+      shelveCommand,
+      checkinCommand
+    );
+  };
+
+  registerTFSCommands();
+
+  registerTFSAutoCommands();
+
+  registerSCMCommands();
 
   const getSelectedFiles = (
     clickedFile: Uri | null,
@@ -455,41 +534,14 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(
     emptyFileProvider,
     tfsContentProvider,
-    onUnAuthorizedEventSubscription,
-    checkoutCommand,
-    undoCommand,
-    addCommand,
-    deleteCommand,
-    getCommand,
-    vsDiffCommand,
-    codeDiffCommand,
-    onChange,
-    onRename,
-    onSave,
-    onCreate,
-    onWillDelete,
-    onDelete,
+    unAuthorizedEvent,
+    onDidChangeConfiguration,
     syncStatus,
-    syncCommand,
-    getAllCommand,
     getAllStatus,
     outputChannel,
     scm.sourceControl,
     scm.changes.included,
-    scm.changes.excluded,
-    scmOpenCommand,
-    scmViewCommand,
-    revertGroupCommand,
-    revertSelectedCommand,
-    revertAllCommand,
-    openOnServerCommand,
-    excludeAllCommand,
-    excludeCommand,
-    includeAllCommand,
-    includeCommand,
-    shelveCommand,
-    historyCommand,
-    checkinCommand
+    scm.changes.excluded
   );
 }
 

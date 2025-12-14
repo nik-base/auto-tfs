@@ -16,7 +16,7 @@ import {
 } from 'vscode';
 import { TFSService } from './tfs-service';
 import { AutoTFSConfiguration } from '../core/autotfs-configuration';
-import { AutoTFSNotification } from '../core/autotfs-notifcation';
+import { AutoTFSNotification } from '../core/autotfs-notification';
 import { AutoTFSConfirmOption } from '../types';
 import { ProcessResult, SCMChange, TFSWorkfoldInfo } from '../models';
 import { TFSCommandOutputParser } from './parser/tfs-command-output-parser';
