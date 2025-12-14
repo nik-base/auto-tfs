@@ -32,19 +32,19 @@ export class TFSService {
     return await this.commandExecutor.run(command, [file]);
   }
 
-  async checkout(files: ReadonlyArray<Uri>): Promise<void> {
+  async checkout(files: readonly Uri[]): Promise<void> {
     const command = new TFSCheckoutCommand();
 
     await this.commandExecutor.run(command, files);
   }
 
-  async add(files: ReadonlyArray<Uri>): Promise<void> {
+  async add(files: readonly Uri[]): Promise<void> {
     const command = new TFSAddCommand();
 
     await this.commandExecutor.run(command, files);
   }
 
-  async delete(files: ReadonlyArray<Uri>): Promise<ProcessResult | undefined> {
+  async delete(files: readonly Uri[]): Promise<ProcessResult | undefined> {
     const command = new TFSDeleteCommand();
 
     return await this.commandExecutor.run(command, files);
@@ -56,14 +56,14 @@ export class TFSService {
     await this.commandExecutor.run(command, [oldFile, newFile]);
   }
 
-  async undo(files: ReadonlyArray<Uri>): Promise<void> {
+  async undo(files: readonly Uri[]): Promise<void> {
     const command = new TFSUndoCommand();
 
     await this.commandExecutor.run(command, files);
   }
 
   async checkin(
-    files: ReadonlyArray<Uri>,
+    files: readonly Uri[],
     checkinComment: string,
     shouldCheckinWithoutPrompt: boolean
   ): Promise<void> {
@@ -81,7 +81,7 @@ export class TFSService {
     await this.commandExecutor.run(command, [file]);
   }
 
-  async get(files: ReadonlyArray<Uri>): Promise<void> {
+  async get(files: readonly Uri[]): Promise<void> {
     const command = new TFSGetCommand();
 
     await this.commandExecutor.run(command, files);
@@ -94,7 +94,7 @@ export class TFSService {
   }
 
   async shelve(
-    files: ReadonlyArray<Uri>,
+    files: readonly Uri[],
     shelveName: string,
     shouldReplaceShelve: boolean
   ): Promise<ProcessResult | undefined> {

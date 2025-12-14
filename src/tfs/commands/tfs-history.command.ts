@@ -7,10 +7,6 @@ export class TFSHistoryCommand extends TFSCommandBase {
 
   readonly executionOptions = { useShell: true, detached: true };
 
-  override get context(): CommandContext {
-    return { ...super.context, shouldNotify: true };
-  }
-
   private readonly findLastChange?: boolean;
 
   constructor(findLastChange?: boolean) {
@@ -27,7 +23,11 @@ export class TFSHistoryCommand extends TFSCommandBase {
     }
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override get context(): CommandContext {
+    return { ...super.context, shouldNotify: true };
+  }
+
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }

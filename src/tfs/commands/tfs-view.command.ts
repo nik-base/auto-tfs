@@ -12,7 +12,7 @@ export class TFSViewCommand extends TFSCommandBase {
     this.sourceItemPath = sourceItemPath;
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }

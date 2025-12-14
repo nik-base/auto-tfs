@@ -9,12 +9,12 @@ export class TFSUndoCommand extends TFSCommandBase {
     return { ...super.context, shouldNotify: true };
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }
 
-    const paths: ReadonlyArray<string> = files.map(
+    const paths: readonly string[] = files.map(
       (file: Uri): string => file.fsPath
     );
 

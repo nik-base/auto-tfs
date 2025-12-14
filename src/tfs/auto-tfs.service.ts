@@ -32,7 +32,7 @@ export class AutoTFSService {
     this.tfsService = tfsService;
   }
 
-  async checkout(files: ReadonlyArray<Uri>): Promise<void> {
+  async checkout(files: readonly Uri[]): Promise<void> {
     if (!files.length) {
       return;
     }
@@ -56,7 +56,7 @@ export class AutoTFSService {
     await this.autoSync();
   }
 
-  async add(files: ReadonlyArray<Uri>): Promise<void> {
+  async add(files: readonly Uri[]): Promise<void> {
     if (!files.length) {
       return;
     }
@@ -74,7 +74,7 @@ export class AutoTFSService {
     await this.autoSync();
   }
 
-  async delete(files: ReadonlyArray<Uri>): Promise<void> {
+  async delete(files: readonly Uri[]): Promise<void> {
     if (!files.length) {
       return;
     }
@@ -144,7 +144,7 @@ export class AutoTFSService {
     await this.autoSync();
   }
 
-  async get(files: ReadonlyArray<Uri>): Promise<void> {
+  async get(files: readonly Uri[]): Promise<void> {
     if (!files.length) {
       return;
     }
@@ -162,7 +162,7 @@ export class AutoTFSService {
     await this.autoSync();
   }
 
-  async undo(files: ReadonlyArray<Uri>): Promise<void> {
+  async undo(files: readonly Uri[]): Promise<void> {
     if (!files.length) {
       return;
     }
@@ -222,7 +222,7 @@ export class AutoTFSService {
 
     const allChanges: SourceControlResourceState[] = [...included, ...excluded];
 
-    if (!allChanges?.length) {
+    if (!allChanges.length) {
       return;
     }
 
@@ -288,7 +288,7 @@ export class AutoTFSService {
       return;
     }
 
-    const url: string = `${workfoldInfo.baseUrl}/${workfoldInfo.projectName}/_versionControl?path=${workfoldInfo.path}`;
+    const url = `${workfoldInfo.baseUrl}/${workfoldInfo.projectName}/_versionControl?path=${workfoldInfo.path}`;
 
     await env.openExternal(Uri.parse(url));
   }
@@ -300,9 +300,9 @@ export class AutoTFSService {
 
     const changes: Uri[] = this.getIncludedChanges();
 
-    const comment: string | undefined = sourceControl?.inputBox?.value;
+    const comment: string = sourceControl.inputBox.value;
 
-    if (!comment?.trim()) {
+    if (!comment.trim()) {
       AutoTFSNotification.error('Please provide a comment for this checkin');
 
       return;
@@ -327,9 +327,9 @@ export class AutoTFSService {
   async shelve(sourceControl: SourceControl): Promise<void> {
     const changes: Uri[] = this.getIncludedChanges();
 
-    const shelveName: string | undefined = sourceControl?.inputBox?.value;
+    const shelveName: string = sourceControl.inputBox.value;
 
-    if (!shelveName?.trim()) {
+    if (!shelveName.trim()) {
       AutoTFSNotification.error('Please provide a name for this shelve');
 
       return;
@@ -349,9 +349,9 @@ export class AutoTFSService {
       return;
     }
 
-    const error: string | undefined = result.stderr?.toString();
+    const error: string = result.stderr;
 
-    if (!error?.includes(shelveName) || !error?.includes('already exists')) {
+    if (!error.includes(shelveName) || !error.includes('already exists')) {
       return;
     }
 
@@ -394,7 +394,7 @@ export class AutoTFSService {
 
   async scmView(file: Uri, change: SCMChange): Promise<void> {
     if (change.type !== 'Deleted') {
-      this.openFile(file);
+      await this.openFile(file);
 
       return;
     }
@@ -504,7 +504,7 @@ export class AutoTFSService {
       // preserve not only selection but also visible range
       opts.selection = activeTextEditor.selection;
 
-      const previousVisibleRanges: ReadonlyArray<Range> =
+      const previousVisibleRanges: readonly Range[] =
         activeTextEditor.visibleRanges;
 
       const editor: TextEditor = await window.showTextDocument(document, opts);
@@ -521,7 +521,7 @@ export class AutoTFSService {
   ): Promise<TextDocument | null> {
     try {
       return await workspace.openTextDocument(file);
-    } catch (error: unknown) {
+    } catch {
       await commands.executeCommand('vscode.open', file, {
         ...opts,
         override: false,
@@ -611,7 +611,7 @@ export class AutoTFSService {
         }
       )
       .then(undefined, (error: Error) => {
-        const message: string = `Auto TFS: Error opening diff for file ${path}}`;
+        const message = `Auto TFS: Error opening diff for file ${path}}`;
 
         AutoTFSLogger.error(message);
 
@@ -622,7 +622,7 @@ export class AutoTFSService {
   }
 
   private getRootUri(): Uri | null {
-    const workspaceFolders: ReadonlyArray<WorkspaceFolder> | undefined =
+    const workspaceFolders: readonly WorkspaceFolder[] | undefined =
       workspace.workspaceFolders;
 
     if (!workspaceFolders?.length) {

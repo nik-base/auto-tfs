@@ -10,7 +10,6 @@ export class TFSAddCommand extends TFSCommandBase {
     return { ...super.context, shouldNotify: true };
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   override onCommandError(): void {
     const message =
       'Auto TFS: Command "add" failed. Please, save the file first and check TFS workspace settings / mappings';

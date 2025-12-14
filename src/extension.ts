@@ -92,13 +92,13 @@ export async function activate(context: ExtensionContext) {
 
     AutoTFSNotification.info('Auto TFS: Starting status command to login...');
 
-    autoTfs.triggerLogin();
+    await autoTfs.triggerLogin();
   });
 
   const checkoutCommand = commands.registerCommand(
     'auto-tfs.checkout',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.checkout(files);
     }
@@ -107,7 +107,7 @@ export async function activate(context: ExtensionContext) {
   const undoCommand = commands.registerCommand(
     'auto-tfs.undo',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.undo(files);
     }
@@ -116,7 +116,7 @@ export async function activate(context: ExtensionContext) {
   const addCommand = commands.registerCommand(
     'auto-tfs.add',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.add(files);
     }
@@ -125,7 +125,7 @@ export async function activate(context: ExtensionContext) {
   const deleteCommand = commands.registerCommand(
     'auto-tfs.delete',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.delete(files);
     }
@@ -134,7 +134,7 @@ export async function activate(context: ExtensionContext) {
   const getCommand = commands.registerCommand(
     'auto-tfs.get',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.get(files);
     }
@@ -143,7 +143,7 @@ export async function activate(context: ExtensionContext) {
   const vsDiffCommand = commands.registerCommand(
     'auto-tfs.vsdiff',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.vsDiff(files[0]);
     }
@@ -152,7 +152,7 @@ export async function activate(context: ExtensionContext) {
   const codeDiffCommand = commands.registerCommand(
     'auto-tfs.codediff',
     async (clickedFile: Uri, selectedFiles: Uri[]) => {
-      const files: ReadonlyArray<Uri> = getFiles(clickedFile, selectedFiles);
+      const files: readonly Uri[] = getFiles(clickedFile, selectedFiles);
 
       await autoTfs.codeDiff(files[0]);
     }
@@ -160,13 +160,9 @@ export async function activate(context: ExtensionContext) {
 
   const openOnServerCommand = commands.registerCommand(
     'auto-tfs.openonserver',
-    async (item: Uri | SourceControlResourceState) => {
-      if (!item) {
-        return;
-      }
-
+    async (item: Uri | SourceControlResourceState | null) => {
       const uri: Uri | undefined =
-        item instanceof Uri ? item : item.resourceUri;
+        item instanceof Uri ? item : item?.resourceUri;
 
       if (!uri) {
         return;
@@ -178,13 +174,9 @@ export async function activate(context: ExtensionContext) {
 
   const historyCommand = commands.registerCommand(
     'auto-tfs.history',
-    async (item: Uri | SourceControlResourceState) => {
-      if (!item) {
-        return;
-      }
-
+    async (item: Uri | SourceControlResourceState | null) => {
       const uri: Uri | undefined =
-        item instanceof Uri ? item : item.resourceUri;
+        item instanceof Uri ? item : item?.resourceUri;
 
       if (!uri) {
         return;
@@ -210,7 +202,7 @@ export async function activate(context: ExtensionContext) {
 
   const scmOpenCommand = commands.registerCommand(
     'auto-tfs.scmview',
-    async (clickedFile: Uri, change: SCMChange) => {
+    async (clickedFile: Uri | null, change: SCMChange) => {
       if (!clickedFile) {
         return;
       }
@@ -221,7 +213,7 @@ export async function activate(context: ExtensionContext) {
 
   const scmViewCommand = commands.registerCommand(
     'auto-tfs.scmopen',
-    async (resourceState: SourceControlResourceState) => {
+    async (resourceState: SourceControlResourceState | null) => {
       const uri: Uri | undefined = resourceState?.resourceUri;
 
       const args: readonly unknown[] | undefined =
@@ -231,7 +223,7 @@ export async function activate(context: ExtensionContext) {
         return;
       }
 
-      const change: SCMChange = args[1] as SCMChange;
+      const change: SCMChange | null = args[1] as SCMChange | null;
 
       if (!change) {
         return;
@@ -272,8 +264,8 @@ export async function activate(context: ExtensionContext) {
 
   const excludeCommand = commands.registerCommand(
     'auto-tfs.exclude',
-    async (...resourceStates: SourceControlResourceState[]) => {
-      if (!resourceStates?.length) {
+    (...resourceStates: SourceControlResourceState[]) => {
+      if (!resourceStates.length) {
         return;
       }
 
@@ -283,15 +275,13 @@ export async function activate(context: ExtensionContext) {
 
   const excludeAllCommand = commands.registerCommand(
     'auto-tfs.excludeall',
-    async () => {
-      autoTfs.excludeAll();
-    }
+    () => autoTfs.excludeAll()
   );
 
   const includeCommand = commands.registerCommand(
     'auto-tfs.include',
-    async (...resourceStates: SourceControlResourceState[]) => {
-      if (!resourceStates?.length) {
+    (...resourceStates: SourceControlResourceState[]) => {
+      if (!resourceStates.length) {
         return;
       }
 
@@ -301,14 +291,12 @@ export async function activate(context: ExtensionContext) {
 
   const includeAllCommand = commands.registerCommand(
     'auto-tfs.includeall',
-    async () => {
-      autoTfs.includeAll();
-    }
+    () => autoTfs.includeAll()
   );
 
   const shelveCommand = commands.registerCommand(
     'auto-tfs.shelve',
-    async (sourceControl: SourceControl) => {
+    async (sourceControl: SourceControl | null) => {
       if (!sourceControl) {
         return;
       }
@@ -319,15 +307,12 @@ export async function activate(context: ExtensionContext) {
 
   const checkinCommand = commands.registerCommand(
     'auto-tfs.checkin',
-    async (sourceControl: SourceControl) => {
+    async (sourceControl: SourceControl | null) => {
       if (!sourceControl) {
         return;
       }
 
-      if (
-        !AutoTFSConfiguration.checkinMode ||
-        AutoTFSConfiguration.checkinMode === 'Disabled'
-      ) {
+      if (AutoTFSConfiguration.checkinMode === 'Disabled') {
         return;
       }
 
@@ -386,7 +371,7 @@ export async function activate(context: ExtensionContext) {
   );
 
   const onWillDelete = workspace.onWillDeleteFiles(
-    async (event: FileWillDeleteEvent) => {
+    (event: FileWillDeleteEvent) => {
       if (!AutoTFSConfiguration.isAutoDeleteEnabled) {
         return;
       }
@@ -415,17 +400,14 @@ export async function activate(context: ExtensionContext) {
     }
   };
 
-  const getFiles = (
-    clickedFile: Uri,
-    selectedFiles: Uri[]
-  ): ReadonlyArray<Uri> => {
+  const getFiles = (clickedFile: Uri, selectedFiles: Uri[]): readonly Uri[] => {
     return getSelectedFiles(clickedFile, selectedFiles);
   };
 
   const getSelectedFiles = (
-    clickedFile: Uri,
-    selectedFiles: Uri[]
-  ): ReadonlyArray<Uri> => {
+    clickedFile: Uri | null,
+    selectedFiles: Uri[] | null
+  ): readonly Uri[] => {
     const files: Uri[] = [];
 
     if (selectedFiles?.length) {
@@ -456,7 +438,7 @@ export async function activate(context: ExtensionContext) {
 
   const getActiveEditor = (): TextEditor | null => {
     if (!window.activeTextEditor) {
-      const message: string = 'Auto TFS: No active document';
+      const message = 'Auto TFS: No active document';
 
       AutoTFSLogger.log(message);
 

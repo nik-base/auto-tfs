@@ -11,7 +11,7 @@ export class TFSDiffCommand extends TFSCommandBase {
     return { ...super.context, shouldNotify: true };
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }

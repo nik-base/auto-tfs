@@ -5,10 +5,6 @@ import { TFSCommandBase } from '../tfs-command-base';
 export class TFSShelveCommand extends TFSCommandBase {
   override readonly command = 'shelve';
 
-  override get context(): CommandContext {
-    return { ...super.context, shouldNotify: true };
-  }
-
   private readonly shelveName: string;
 
   private readonly shouldReplaceShelve: boolean;
@@ -20,7 +16,11 @@ export class TFSShelveCommand extends TFSCommandBase {
     this.shouldReplaceShelve = shouldReplaceShelve;
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override get context(): CommandContext {
+    return { ...super.context, shouldNotify: true };
+  }
+
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }

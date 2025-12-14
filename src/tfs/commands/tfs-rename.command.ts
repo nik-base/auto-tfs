@@ -9,7 +9,7 @@ export class TFSRenameCommand extends TFSCommandBase {
     return { ...super.context, shouldNotify: true };
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length || files.length < 2) {
       return [];
     }

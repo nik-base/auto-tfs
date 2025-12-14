@@ -13,7 +13,7 @@ import { unAuthorizedEvent } from '../extension';
 export class TFSCommandExecutor {
   private readonly processExecutor: ProcessExecutor;
 
-  private readonly suppressedErrors: ReadonlyArray<string> = [
+  private readonly suppressedErrors: readonly string[] = [
     'local echo',
     'Access denied',
   ];
@@ -31,7 +31,7 @@ export class TFSCommandExecutor {
    */
   async run(
     command: ITFSCommand,
-    files?: ReadonlyArray<Uri>,
+    files?: readonly Uri[],
     context?: CommandContext
   ): Promise<ProcessResult | undefined> {
     const tfPath = AutoTFSConfiguration.tfPath;
@@ -178,7 +178,7 @@ export class TFSCommandExecutor {
 
           command.onCommandOutput(d);
         },
-        onStdErr: async (d: string) => {
+        onStdErr: (d: string) => {
           AutoTFSLogger.debug(
             `AutoTFS command "${command.command}" [stderr] ${d}`
           );

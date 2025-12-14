@@ -7,6 +7,7 @@ import { AutoTFSNotification } from '../core/autotfs-notifcation';
 export class TFSDocumentContentProvider implements TextDocumentContentProvider {
   private readonly onDidChangeEmitter = new EventEmitter<Uri>();
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly onDidChange = this.onDidChangeEmitter.event;
 
   private readonly tfsService: TFSService;
@@ -22,7 +23,7 @@ export class TFSDocumentContentProvider implements TextDocumentContentProvider {
     );
 
     if (!result) {
-      const message: string = `Auto TFS: Cannot view file ${uri.fsPath}`;
+      const message = `Auto TFS: Cannot view file ${uri.fsPath}`;
 
       AutoTFSLogger.error(message);
 

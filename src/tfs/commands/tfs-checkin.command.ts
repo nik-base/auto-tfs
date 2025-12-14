@@ -5,10 +5,6 @@ import { TFSCommandBase } from '../tfs-command-base';
 export class TFSCheckinCommand extends TFSCommandBase {
   override readonly command = 'checkin';
 
-  override get context(): CommandContext {
-    return { ...super.context, shouldNotify: true };
-  }
-
   readonly executionOptions = {};
 
   private readonly checkinComment: string;
@@ -30,7 +26,11 @@ export class TFSCheckinCommand extends TFSCommandBase {
     }
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override get context(): CommandContext {
+    return { ...super.context, shouldNotify: true };
+  }
+
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }

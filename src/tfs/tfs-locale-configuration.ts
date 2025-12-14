@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { AutoTFSConfiguration } from '../core/autotfs-configuration';
 
 export class TFSLocaleConfiguration {

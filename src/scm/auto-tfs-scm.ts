@@ -102,19 +102,7 @@ export class AutoTFSSCM {
     }, 700);
   }
 
-  private static updateStatusBarCommand(index: number, command: Command): void {
-    const existingCommands: Command[] = this.getStatusBarCommands();
-
-    const existingCommand: Command = existingCommands[index];
-
-    existingCommand.command = command.command;
-    existingCommand.title = command.title;
-    existingCommand.tooltip = command.tooltip;
-
-    this.sourceControl.statusBarCommands = existingCommands;
-  }
-
-  static async sync(changeList: readonly SCMChange[]): Promise<void> {
+  static sync(changeList: readonly SCMChange[]): void {
     this.fileDecorators.clear();
 
     this.fileDecorationProvider.dispose();
@@ -204,6 +192,18 @@ export class AutoTFSSCM {
     this.updateWorkspaceExcluded();
   }
 
+  private static updateStatusBarCommand(index: number, command: Command): void {
+    const existingCommands: Command[] = this.getStatusBarCommands();
+
+    const existingCommand: Command = existingCommands[index];
+
+    existingCommand.command = command.command;
+    existingCommand.title = command.title;
+    existingCommand.tooltip = command.tooltip;
+
+    this.sourceControl.statusBarCommands = existingCommands;
+  }
+
   private static getStatusBarCommands(): Command[] {
     const getAllCommand: Command = AutoTFSStatusBar.getGetAllCommand();
 
@@ -279,10 +279,9 @@ export class AutoTFSSCM {
 
   private static updateCountBadge(): void {
     const count =
-      this.included?.resourceStates?.length +
-      this.excluded?.resourceStates?.length;
+      this.included.resourceStates.length + this.excluded.resourceStates.length;
 
-    this.sourceControl.count = count ?? 0;
+    this.sourceControl.count = count;
   }
 
   private static processChange(

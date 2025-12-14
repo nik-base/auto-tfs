@@ -26,7 +26,7 @@ export class ProcessExecutor {
    */
   async execute(
     command: string,
-    args: ReadonlyArray<string>,
+    args: readonly string[],
     options: ProcessExecutionOptions = {}
   ): Promise<ProcessResult> {
     return new Promise((resolve, reject) => {
@@ -97,7 +97,7 @@ export class ProcessExecutor {
    */
   executeFireAndForget(
     command: string,
-    args: ReadonlyArray<string>,
+    args: readonly string[],
     options: ProcessExecutionOptions = {}
   ): void {
     this.execute(command, args, options).catch((err: Error) => {
@@ -127,7 +127,7 @@ export class ProcessExecutor {
 
   private startProcess(
     command: string,
-    args: ReadonlyArray<string>,
+    args: readonly string[],
     options: ProcessExecutionOptions,
     handlers: ProcessEventHandlers,
     resolve: (result: ProcessResult) => void,
@@ -246,7 +246,7 @@ export class ProcessExecutor {
     stdoutBuffer: string[],
     stderrBuffer: string[],
     command: string,
-    args: ReadonlyArray<string>,
+    args: readonly string[],
     resolve: (result: ProcessResult) => void
   ) {
     childProcess.on(
@@ -331,7 +331,7 @@ export class ProcessExecutor {
   private createError(
     error: unknown,
     command: string,
-    args: ReadonlyArray<string>
+    args: readonly string[]
   ): Error {
     if (error instanceof Error) {
       return error;

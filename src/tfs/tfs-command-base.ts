@@ -14,23 +14,23 @@ export abstract class TFSCommandBase implements ITFSCommand {
     };
   }
 
-  buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }
 
     if (
-      files?.length === 1 &&
+      files.length === 1 &&
       files[0]?.fsPath &&
       lstatSync(files[0]?.fsPath).isDirectory()
     ) {
       return [this.command, '/recursive', files[0].fsPath];
     }
     const paths = files
-      ?.filter((file) => file.fsPath && !lstatSync(file.fsPath).isDirectory())
-      ?.map((file) => file.fsPath);
+      .filter((file) => file.fsPath && !lstatSync(file.fsPath).isDirectory())
+      .map((file) => file.fsPath);
 
-    if (!paths?.length) {
+    if (!paths.length) {
       return [];
     }
 
@@ -40,7 +40,7 @@ export abstract class TFSCommandBase implements ITFSCommand {
   // eslint-disable-next-line @typescript-eslint/require-await
   async handleResult(
     result: ProcessResult,
-    _: ReadonlyArray<Uri>,
+    _: readonly Uri[],
     ctx: CommandContext
   ): Promise<void> {
     if (result.success) {

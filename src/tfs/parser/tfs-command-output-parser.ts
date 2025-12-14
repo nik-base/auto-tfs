@@ -5,14 +5,16 @@ import { TFSLocaleConfiguration } from '../tfs-locale-configuration';
 import { SCMChangeType } from '../../types';
 
 export class TFSCommandOutputParser {
-  static getSourceItem(data: string): string | null {
+  static getSourceItem(data: string | undefined): string | null {
     try {
-      const regex: RegExp = new RegExp(
+      const regex = new RegExp(
         `[\\n\\r]*${TFSLocaleConfiguration.sourceItemRegex} *: *(.*)[\\n\\r]`,
         'i'
       );
 
-      const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+      const match: RegExpMatchArray | null | undefined = data
+        ?.toString()
+        .match(regex);
 
       if (match && match.length >= 2) {
         return match[1];
@@ -30,17 +32,19 @@ export class TFSCommandOutputParser {
     }
   }
 
-  static getChangeType(data: string): string | null {
+  static getChangeType(data: string | undefined): string | null {
     try {
-      const regex: RegExp = new RegExp(
+      const regex = new RegExp(
         `[\\n\\r]*${TFSLocaleConfiguration.changeRegex} *: *(.*)[\\n\\r]`,
         'i'
       );
 
-      const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+      const match: RegExpMatchArray | null | undefined = data
+        ?.toString()
+        .match(regex);
 
       if (match && match.length >= 2) {
-        return match[1]?.toLocaleLowerCase();
+        return match[1].toLocaleLowerCase();
       }
 
       return null;
@@ -55,17 +59,21 @@ export class TFSCommandOutputParser {
     }
   }
 
-  static getHistoryLastChangeItemServerPath(data: string): string | null {
+  static getHistoryLastChangeItemServerPath(
+    data: string | undefined
+  ): string | null {
     try {
-      const regex: RegExp = new RegExp(
-        `${TFSLocaleConfiguration.itemsRegex}:[\\s\\S]*?(\\$\/.*\\S)`,
+      const regex = new RegExp(
+        `${TFSLocaleConfiguration.itemsRegex}:[\\s\\S]*?(\\$/.*\\S)`,
         'i'
       );
 
-      const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+      const match: RegExpMatchArray | null | undefined = data
+        ?.toString()
+        .match(regex);
 
       if (match && match.length >= 2) {
-        return match[1]?.toLocaleLowerCase();
+        return match[1];
       }
 
       return null;
@@ -80,17 +88,19 @@ export class TFSCommandOutputParser {
     }
   }
 
-  static getServerPath(data: string): string | null {
+  static getServerPath(data: string | undefined): string | null {
     try {
-      const regex: RegExp = new RegExp(
+      const regex = new RegExp(
         `[\\n\\r]*${TFSLocaleConfiguration.serverPathRegex} *: *(.*)[\\n\\r]`,
         'i'
       );
 
-      const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+      const match: RegExpMatchArray | null | undefined = data
+        ?.toString()
+        .match(regex);
 
       if (match && match.length >= 2) {
-        return match[1]?.toLocaleLowerCase();
+        return match[1].toLocaleLowerCase();
       }
 
       return null;
@@ -105,14 +115,16 @@ export class TFSCommandOutputParser {
     }
   }
 
-  static getWorkfoldInfo(data: string): TFSWorkfoldInfo | null {
-    const regex: RegExp = new RegExp(
+  static getWorkfoldInfo(data: string | undefined): TFSWorkfoldInfo | null {
+    const regex = new RegExp(
       `[\\n\\r]* *${TFSLocaleConfiguration.collectionRegex}*: *(.*)[\\n\\r]* *(\\$\\/(.*?)\\/.*?):`,
       'i'
     );
-    const match: RegExpMatchArray | null = data?.toString()?.match(regex);
+    const match: RegExpMatchArray | null | undefined = data
+      ?.toString()
+      .match(regex);
 
-    if (match && match?.length >= 4) {
+    if (match && match.length >= 4) {
       return { baseUrl: match[1], projectName: match[3], path: match[2] };
     }
 
@@ -125,7 +137,14 @@ export class TFSCommandOutputParser {
 
       const changes: SCMChange[] = [];
 
-      const root = workspace.workspaceFolders![0].uri.fsPath;
+      if (
+        !workspace.workspaceFolders ||
+        workspace.workspaceFolders.length < 1
+      ) {
+        return null;
+      }
+
+      const root = workspace.workspaceFolders[0].uri.fsPath;
 
       let previousChangeType: SCMChangeType = 'Pristine';
 
@@ -173,7 +192,7 @@ export class TFSCommandOutputParser {
     previousChangeType: SCMChangeType,
     changes: SCMChange[]
   ): void {
-    const localItemRegex: RegExp = new RegExp(
+    const localItemRegex = new RegExp(
       ` *${TFSLocaleConfiguration.localItemRegex} *: *(.*) *`,
       'i'
     );
@@ -240,7 +259,7 @@ export class TFSCommandOutputParser {
   }
 
   private static tryProcessChangeLine(line: string): SCMChangeType | null {
-    const changeRegex: RegExp = new RegExp(
+    const changeRegex = new RegExp(
       ` *${TFSLocaleConfiguration.changeRegex} *: *(.*) *`,
       'i'
     );

@@ -18,7 +18,7 @@ export interface ProcessResult {
   readonly command: string;
 
   /** Arguments passed to command */
-  readonly args: ReadonlyArray<string>;
+  readonly args: readonly string[];
 
   /** Total execution time in milliseconds */
   readonly duration: number;

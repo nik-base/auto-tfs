@@ -26,7 +26,7 @@ export class TFSStatusCommand extends TFSCommandBase {
     }
   }
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (this.triggerLogin) {
       return [this.command];
     }

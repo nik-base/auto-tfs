@@ -4,7 +4,7 @@ import { TFSCommandBase } from '../tfs-command-base';
 export class TFSWorkfoldCommand extends TFSCommandBase {
   override readonly command = 'workfold';
 
-  override buildArgs(files?: ReadonlyArray<Uri>): string[] {
+  override buildArgs(files?: readonly Uri[]): string[] {
     if (!files?.length) {
       return [];
     }

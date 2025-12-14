@@ -26,8 +26,8 @@ export class SCMFileDecorator implements FileDecorationProvider {
   }
 
   dispose(): void {
-    this.disposables.forEach((disposable: Disposable): void =>
-      disposable.dispose()
-    );
+    this.disposables.forEach((disposable: Disposable): void => {
+      disposable.dispose();
+    });
   }
 }
