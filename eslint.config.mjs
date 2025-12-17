@@ -18,11 +18,10 @@ export default [
       ...js.configs.recommended.rules,
     },
   },
-  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
-    ...config,
-    files: ['**/*.ts', '**/*.tsx'],
-  })),
-  ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+  ...[
+    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
+  ].map((config) => ({
     ...config,
     files: ['**/*.ts', '**/*.tsx'],
   })),

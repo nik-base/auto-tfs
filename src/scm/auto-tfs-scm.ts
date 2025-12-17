@@ -23,6 +23,61 @@ function getIconUri(iconName: string, theme: string): Uri {
   return Uri.file(pathJoin(iconsRootPath, theme, `${iconName}.svg`));
 }
 
+const addedFileDecoration = {
+  faded: false,
+  strikeThrough: false,
+  tooltip: 'Added',
+  color: new ThemeColor('tfsStatus.added'),
+  badge: 'A',
+  propagate: true,
+  light: getIconUri('status-added', 'light'),
+  dark: getIconUri('status-added', 'dark'),
+} as const;
+
+const deletedFileDecoration = {
+  faded: true,
+  strikeThrough: true,
+  tooltip: 'Deleted',
+  color: new ThemeColor('tfsStatus.deleted'),
+  badge: 'D',
+  propagate: true,
+  light: getIconUri('status-deleted', 'light'),
+  dark: getIconUri('status-deleted', 'dark'),
+} as const;
+
+const renamedFileDecoration = {
+  faded: false,
+  strikeThrough: false,
+  tooltip: 'Renamed',
+  color: new ThemeColor('tfsStatus.renamed'),
+  badge: 'R',
+  propagate: true,
+  light: getIconUri('status-renamed', 'light'),
+  dark: getIconUri('status-renamed', 'dark'),
+} as const;
+
+const renamedModifiedFileDecoration = {
+  faded: false,
+  strikeThrough: false,
+  tooltip: 'Renamed & Modified',
+  color: new ThemeColor('tfsStatus.renamedModified'),
+  badge: 'RM',
+  propagate: true,
+  light: getIconUri('status-renamed', 'light'),
+  dark: getIconUri('status-renamed', 'dark'),
+} as const;
+
+const modifiedFileDecoration = {
+  faded: false,
+  strikeThrough: false,
+  tooltip: 'Modified',
+  color: new ThemeColor('tfsStatus.modified'),
+  badge: 'M',
+  propagate: true,
+  light: getIconUri('status-modified', 'light'),
+  dark: getIconUri('status-modified', 'dark'),
+} as const;
+
 export class AutoTFSSCM {
   static fileDecorators = new Map<string, FileDecoration>();
 
@@ -345,64 +400,19 @@ export class AutoTFSSCM {
   private static getDecorator(type: SCMChangeType): FileDecoration | null {
     switch (type) {
       case 'Added':
-        return {
-          faded: false,
-          strikeThrough: false,
-          tooltip: 'Added',
-          color: new ThemeColor('tfsStatus.added'),
-          badge: 'A',
-          propagate: true,
-          light: getIconUri('status-added', 'light'),
-          dark: getIconUri('status-added', 'dark'),
-        } as FileDecoration;
+        return addedFileDecoration;
 
       case 'Deleted':
-        return {
-          faded: true,
-          strikeThrough: true,
-          tooltip: 'Deleted',
-          color: new ThemeColor('tfsStatus.deleted'),
-          badge: 'D',
-          propagate: true,
-          light: getIconUri('status-deleted', 'light'),
-          dark: getIconUri('status-deleted', 'dark'),
-        } as FileDecoration;
+        return deletedFileDecoration;
 
       case 'RenamedModified':
-        return {
-          faded: false,
-          strikeThrough: false,
-          tooltip: 'Renamed & Modified',
-          color: new ThemeColor('tfsStatus.renamedModified'),
-          badge: 'RM',
-          propagate: true,
-          light: getIconUri('status-renamed', 'light'),
-          dark: getIconUri('status-renamed', 'dark'),
-        } as FileDecoration;
+        return renamedModifiedFileDecoration;
 
       case 'Renamed':
-        return {
-          faded: false,
-          strikeThrough: false,
-          tooltip: 'Renamed',
-          color: new ThemeColor('tfsStatus.renamed'),
-          badge: 'R',
-          propagate: true,
-          light: getIconUri('status-renamed', 'light'),
-          dark: getIconUri('status-renamed', 'dark'),
-        } as FileDecoration;
+        return renamedFileDecoration;
 
       case 'Modified':
-        return {
-          faded: false,
-          strikeThrough: false,
-          tooltip: 'Modified',
-          color: new ThemeColor('tfsStatus.modified'),
-          badge: 'M',
-          propagate: true,
-          light: getIconUri('status-modified', 'light'),
-          dark: getIconUri('status-modified', 'dark'),
-        } as FileDecoration;
+        return modifiedFileDecoration;
 
       default:
         return null;
