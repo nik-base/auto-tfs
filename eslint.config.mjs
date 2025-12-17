@@ -18,17 +18,12 @@ export default [
       ...js.configs.recommended.rules,
     },
   },
-  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+  ...[
+    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
+  ].map((config) => ({
     ...config,
     files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      ...config.languageOptions,
-      parserOptions: {
-        ...config.languageOptions?.parserOptions,
-        project: ['./tsconfig.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
   })),
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -41,6 +36,7 @@ export default [
     },
     rules: {
       // TypeScript ESLint - Type checking rules
+      '@typescript-eslint/only-throw-error': 'error',
       '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
@@ -113,34 +109,14 @@ export default [
       'no-console': [
         'error',
         {
-          allow: [
-            'log',
-            'debug',
-            'warn',
-            'dir',
-            'timeLog',
-            'assert',
-            'clear',
-            'count',
-            'countReset',
-            'group',
-            'groupEnd',
-            'table',
-            'dirxml',
-            'error',
-            'groupCollapsed',
-            'profile',
-            'profileEnd',
-            'timeStamp',
-            'context',
-          ],
+          allow: ['log', 'debug', 'warn', 'error'],
         },
       ],
       'no-debugger': 'error',
       'no-eval': 'error',
       'no-fallthrough': 'error',
       'no-new-wrappers': 'error',
-      'no-redeclare': 'error',
+      'no-redeclare': 'off',
       'no-throw-literal': 'off',
       'no-underscore-dangle': 'off',
       'no-unused-labels': 'error',

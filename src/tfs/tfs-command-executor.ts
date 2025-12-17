@@ -276,8 +276,8 @@ export class TFSCommandExecutor {
   private isSuppressedError(error: Error): boolean {
     const errorMessage: string = error.toString();
 
-    return this.suppressedErrors.some(
-      (item: string): boolean => errorMessage.indexOf(item) > -1
+    return this.suppressedErrors.some((item: string): boolean =>
+      errorMessage.includes(item)
     );
   }
 }
