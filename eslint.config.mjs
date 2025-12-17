@@ -24,6 +24,14 @@ export default [
   ].map((config) => ({
     ...config,
     files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      ...config.languageOptions,
+      parserOptions: {
+        ...config.languageOptions?.parserOptions,
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   })),
   {
     files: ['**/*.ts', '**/*.tsx'],
