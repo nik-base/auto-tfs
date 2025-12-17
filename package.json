@@ -25,7 +25,7 @@
   },
   "readmeFilename": "README.md",
   "engines": {
-    "vscode": "^1.106.1"
+    "vscode": "^1.95.0"
   },
   "categories": [
     "SCM Providers",
@@ -634,7 +634,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
-    "@types/vscode": "^1.106.1",
+    "@types/vscode": "^1.95.0",
     "eslint": "^9.39.1",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",
