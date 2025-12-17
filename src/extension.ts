@@ -38,6 +38,8 @@ const outputChannel: OutputChannel = AutoTFSOutputChannel.init();
 
 export const unAuthorizedEvent = new EventEmitter<void>();
 
+const processExecutor: ProcessExecutor = new ProcessExecutor();
+
 export async function activate(context: ExtensionContext) {
   AutoTFSOutputChannel.log('Auto TFS started');
 
@@ -48,8 +50,6 @@ export async function activate(context: ExtensionContext) {
   const getAllStatus: StatusBarItem = AutoTFSStatusBar.initGetAll();
 
   const scm: SCMContext = AutoTFSSCM.init(context);
-
-  const processExecutor: ProcessExecutor = new ProcessExecutor();
 
   const commandExecutor: TFSCommandExecutor = new TFSCommandExecutor(
     processExecutor
@@ -547,5 +547,7 @@ export async function activate(context: ExtensionContext) {
 }
 
 export function deactivate() {
+  processExecutor.destroy();
+
   AutoTFSOutputChannel.log('Auto TFS stopped');
 }
