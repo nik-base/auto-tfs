@@ -269,11 +269,12 @@ export async function activate(context: ExtensionContext) {
 
         const delay = 800;
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        debounceTimer = setTimeout(async () => {
+        debounceTimer = setTimeout(() => {
           debounceTimer = undefined;
 
-          await autoTfs.checkout([event.document.uri]);
+          autoTfs.checkout([event.document.uri]).catch((error: unknown) => {
+            AutoTFSLogger.error(`Debounced checkout failed: ${String(error)}`);
+          });
         }, delay);
       }
     );

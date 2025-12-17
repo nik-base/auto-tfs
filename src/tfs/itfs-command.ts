@@ -26,7 +26,10 @@ export interface ITFSCommand {
   /**
    * Build CLI arguments for TF executable
    */
-  buildArgs(files?: readonly Uri[], ctx?: CommandContext): string[];
+  buildArgs(
+    files?: readonly Uri[],
+    ctx?: CommandContext
+  ): Promise<readonly string[]>;
 
   /**
    * Handle process result (stdout/stderr/exit). Commands should be resilient

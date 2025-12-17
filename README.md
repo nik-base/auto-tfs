@@ -8,14 +8,15 @@
 [![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot&style=flat-square)](https://dependabot.com/)
 
 ## Prerequisites
+
 1. This extension operates with TF API provided by Microsoft. So, you need either  
-    a. Have Visual Studio IDE installed with TFS capabilities (i.e. TF.exe installed).  
-              OR  
-    b. TeamExplorerEverywhere installed (https://github.com/Microsoft/team-explorer-everywhere)
-    > **Note:** Possibly, some other 3rd party tools would also work, if they provide the same output and receives the same commands / args  
-    > **Note (for TeamExplorerEverywhere):** Possibly, works under Linux-based systems and MacOS, but I have no ability to test it
-2. Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).  
-3. Visual Studio Code - Minimum version required for extension is 1.58.2.  
+   a. Have Visual Studio IDE installed with TFS capabilities (i.e. TF.exe installed).  
+    OR  
+   b. TeamExplorerEverywhere installed (https://github.com/Microsoft/team-explorer-everywhere)
+   > **Note:** Possibly, some other 3rd party tools would also work, if they provide the same output and receives the same commands / args  
+   > **Note (for TeamExplorerEverywhere):** Possibly, works under Linux-based systems and MacOS, but I have no ability to test it
+2. Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).
+3. Visual Studio Code - Minimum version required for extension is 1.95.0.
 
 ## Installation
 
@@ -35,22 +36,24 @@ The following entry is needed:
 ```
     "auto-tfs.tf.path": "<path-to-tf-command-line>"
 ```
+
 If your installed language in TFS is other than English, Please set the installed language using below configuration
 
 ```
     "auto-tfs.tf.language": "<installed-tfs-language>"
 ```
-> This is not the langauge of the extension, but language of the TFS itself, it is needed because this extension relies on TFS command output 
+
+> This is not the langauge of the extension, but language of the TFS itself, it is needed because this extension relies on TFS command output
 
 > Current only English and Spanish is supported
 
 If you are going to use the `tf.exe` tool embedded into Visual Studio IDE, the value to specify will be similar to -  
-`C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\TF.exe`  
+`C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\TF.exe`
 
 Recent versions of Visual Studio has changed this path, here is a sample of Visual Studio 2019 (Professional) -  
-`C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe`  
+`C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe`
 
-For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf.cmd`  
+For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf.cmd`
 
 Above TF path is mandatory for the extension to function.
 Apart from above configuration, the extension also allows configuarations such as automatic checkout/add/delete/rename, confirmation prompts, etc.
@@ -72,21 +75,21 @@ Apart from above configuration, the extension also allows configuarations such a
 
 ## Authorization
 
-* Authorization process, if needed. This is performed by command bar. If necessary, you will be prompted to enter the credentials for your TFS account, where the current workspace is mapped to. Otherwise, a command will be executed silently.
+- Authorization process, if needed you will be prompted to enter the credentials for your TFS account, where the current workspace is mapped to. Otherwise, a command will be executed silently.
 
 ## Available commands
 
-* Add (a file should be saved first in the folder, which is included into mappings in TFS)
-* Checkout
-* Undo
-* Delete
-* Get Latest
-* Get All Latest
-* Sync
-* Open on server
-* Compare in Visual Studio
-* Compare in Code
-* View History in Visual Studio Prompt
+- Add (a file should be saved first in the folder, which is included into mappings in TFS)
+- Checkout
+- Undo
+- Delete
+- Get Latest
+- Get All Latest
+- Sync
+- Open on server
+- Compare in Visual Studio
+- Compare in Code
+- View History in Visual Studio Prompt
 
 ## About the repository
 

@@ -1,6 +1,6 @@
 import { Uri } from 'vscode';
 import { ITFSCommand } from './itfs-command';
-import { lstatSync } from 'fs';
+import { promises as fs } from 'fs';
 import { CommandContext, ProcessResult } from '../models';
 import { AutoTFSLogger } from '../core/autotfs-logger';
 import { AutoTFSNotification } from '../core/autotfs-notification';
@@ -14,7 +14,7 @@ export abstract class TFSCommandBase implements ITFSCommand {
     };
   }
 
-  buildArgs(files?: readonly Uri[]): string[] {
+  async buildArgs(files?: readonly Uri[]): Promise<readonly string[]> {
     if (!files?.length) {
       return [];
     }
@@ -22,13 +22,18 @@ export abstract class TFSCommandBase implements ITFSCommand {
     if (
       files.length === 1 &&
       files[0]?.fsPath &&
-      lstatSync(files[0]?.fsPath).isDirectory()
+      (await fs.lstat(files[0].fsPath)).isDirectory()
     ) {
       return [this.command, '/recursive', files[0].fsPath];
     }
-    const paths = files
-      .filter((file) => file.fsPath && !lstatSync(file.fsPath).isDirectory())
-      .map((file) => file.fsPath);
+
+    const paths: string[] = [];
+
+    for (const file of files) {
+      if (file.fsPath && !(await fs.lstat(file.fsPath)).isDirectory()) {
+        paths.push(file.fsPath);
+      }
+    }
 
     if (!paths.length) {
       return [];

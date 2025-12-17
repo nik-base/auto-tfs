@@ -11,7 +11,8 @@ export class TFSDiffCommand extends TFSCommandBase {
     return { ...super.context, shouldNotify: true };
   }
 
-  override buildArgs(files?: readonly Uri[]): string[] {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  override async buildArgs(files?: readonly Uri[]): Promise<readonly string[]> {
     if (!files?.length) {
       return [];
     }

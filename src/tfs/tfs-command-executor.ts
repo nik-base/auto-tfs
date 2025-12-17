@@ -52,7 +52,10 @@ export class TFSCommandExecutor {
       ...context,
     };
 
-    const args = command.buildArgs(files, commandContext);
+    const args: readonly string[] = await command.buildArgs(
+      files,
+      commandContext
+    );
 
     if (args.length === 0) {
       const tfPathError = `AutoTFS command "${command.command}" produced no arguments to execute`;
@@ -143,7 +146,7 @@ export class TFSCommandExecutor {
 
   private async startProcess(
     tfPath: string,
-    args: string[],
+    args: readonly string[],
     execOpts: {
       useShell?: boolean;
       detached?: boolean;
@@ -224,7 +227,7 @@ export class TFSCommandExecutor {
 
   private startDetachedProcess(
     tfPath: string,
-    args: string[],
+    args: readonly string[],
     execOpts: {
       useShell?: boolean;
       detached?: boolean;

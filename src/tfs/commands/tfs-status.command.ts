@@ -26,7 +26,8 @@ export class TFSStatusCommand extends TFSCommandBase {
     }
   }
 
-  override buildArgs(files?: readonly Uri[]): string[] {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  override async buildArgs(files?: readonly Uri[]): Promise<readonly string[]> {
     if (this.triggerLogin) {
       return [this.command];
     }
