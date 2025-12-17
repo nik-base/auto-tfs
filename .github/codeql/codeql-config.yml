@@ -1,0 +1,17 @@
+name: 'CodeQL Config'
+
+queries:
+  - uses: security-extended # More security checks
+  - uses: security-and-quality # Add code quality checks
+
+paths-ignore:
+  - node_modules
+  - out
+  - dist
+  - resources
+  - coverage
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
+
+paths:
+  - src
