@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/github/v/release/nik-base/auto-tfs?include_prereleases&style=flat-square)](https://github.com/nik-base/auto-tfs/releases)
 [![GitHub](https://img.shields.io/github/license/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
-[![Build](https://img.shields.io/github/actions/workflow/status/nik-base/auto-tfs/.github/workflows/webpack.yml?style=flat-square)](https://github.com/nik-base/auto-tfs/actions/workflows/webpack.yml)
+[![Build](https://img.shields.io/github/actions/workflow/status/nik-base/auto-tfs/.github/workflows/ci.yml?style=flat-square)](https://github.com/nik-base/auto-tfs/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml)
 [![GitHub](https://img.shields.io/github/issues/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs/issues)
 [![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot&style=flat-square)](https://dependabot.com/)
