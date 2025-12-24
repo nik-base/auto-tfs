@@ -6,6 +6,7 @@
 [![CodeQL](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml)
 [![GitHub](https://img.shields.io/github/issues/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs/issues)
 [![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot&style=flat-square)](https://dependabot.com/)
+[![Sponsor](https://img.shields.io/badge/Sponsor-auto--tfs-blue?logo=github-sponsors)](https://github.com/sponsors/nik-base)
 
 ## Prerequisites
 

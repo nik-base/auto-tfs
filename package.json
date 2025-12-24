@@ -2,7 +2,7 @@
   "name": "auto-tfs",
   "displayName": "Auto TFS",
   "description": "TFS integration for Visual Studio Code",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publisher": "nikhil-patil",
   "license": "MIT",
   "author": {
@@ -12,6 +12,9 @@
   "repository": {
     "url": "https://github.com/nik-base/auto-tfs",
     "type": "git"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/nik-base"
   },
   "homepage": "https://github.com/nik-base/auto-tfs#readme",
   "bugs": {
