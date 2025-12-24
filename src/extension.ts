@@ -19,6 +19,7 @@ import {
   Event,
   FileWillDeleteEvent,
   ConfigurationChangeEvent,
+  env,
 } from 'vscode';
 import { TFSService } from './tfs/tfs-service';
 import { AutoTFSOutputChannel } from './core/autotfs-output-channel';
@@ -544,6 +545,36 @@ export async function activate(context: ExtensionContext) {
     scm.changes.included,
     scm.changes.excluded
   );
+
+  const showWelcomeMessage = async () => {
+    const selection = await window.showInformationMessage(
+      'Thanks for installing Auto TFS! Check out the README to see how to use it.',
+      'Open README',
+      'Support Development'
+    );
+
+    if (selection === 'Open README') {
+      env.openExternal(Uri.parse('https://github.com/nik-base/auto-tfs'));
+    } else if (selection === 'Support Development') {
+      env.openExternal(Uri.parse('https://github.com/sponsors/nik-base'));
+    }
+  };
+
+  const currentVersion: string = (
+    context.extension.packageJSON as { version: string }
+  ).version;
+
+  const stateKey = 'autoTFSVersion';
+
+  const previousVersion = context.globalState.get<string>(stateKey);
+
+  if (!previousVersion) {
+    await showWelcomeMessage();
+
+    context.globalState.update(stateKey, currentVersion);
+  } else if (previousVersion !== currentVersion) {
+    context.globalState.update(stateKey, currentVersion);
+  }
 }
 
 export function deactivate() {
