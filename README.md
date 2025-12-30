@@ -6,7 +6,8 @@
 [![CodeQL](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml)
 [![GitHub](https://img.shields.io/github/issues/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs/issues)
 [![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot&style=flat-square)](https://dependabot.com/)
-[![Sponsor](https://img.shields.io/badge/Sponsor-auto--tfs-blue?logo=github-sponsors)](https://github.com/sponsors/nik-base)
+[![Sponsor](https://img.shields.io/badge/Sponsor-auto--tfs-deeppink?logo=github-sponsors)](https://github.com/sponsors/nik-base)
+[![Ko-fi](https://img.shields.io/badge/Support%20me-on%20Ko--fi-orange?logo=ko-fi)](https://ko-fi.com/nikhil2203)
 
 ## Prerequisites
 
@@ -100,3 +101,4 @@ This repository is inspired from [niberius/z-tf-utils](https://github.com/niberi
 
 - [AutoTFS extension on GitHub](https://github.com/nik-base/auto-tfs)
 - [MIT License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
+
