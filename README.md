@@ -134,5 +134,4 @@ or contact via GitHub.
 
 - [AutoTFS extension on GitHub](https://github.com/nik-base/auto-tfs)
 - [MIT License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
-
 - [Commercial License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE_COMMERCIAL)
