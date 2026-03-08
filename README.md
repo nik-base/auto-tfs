@@ -96,7 +96,41 @@ Apart from above configuration, the extension also allows configuarations such a
 
 This repository is inspired from [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
 
+---
+
+## Privacy & Security
+
+AutoTFS is completely telemetry-free. No data, code, file contents, or usage
+information ever leaves your machine. It operates entirely locally using your
+existing TF tooling — no external servers, no analytics, no tracking of any kind.
+Safe for use in secure, regulated, and air-gapped environments.
+
+## License
+
+AutoTFS is dual-licensed:
+
+- **Personal & Non-Commercial Use** — Free under the [MIT License](LICENSE).
+  This covers individual developers, students, and open source projects.
+
+- **Commercial Use** — Requires a [Commercial License](LICENSE_COMMERCIAL).
+  This applies to any use within a company, organization, or government body,
+  regardless of team size.
+
+### Purchase a Commercial License
+
+If you are using AutoTFS at work, a commercial license is required.
+
+[**Buy a Commercial License — $49 one-time →**](https://buy.polar.sh/polar_cl_WWDVnLbBj9wFheMFLaKDmZocYP5huTqMxtLVG1peJ69)
+
+A single one-time purchase covers your entire organization, permanently.
+No renewals. No recurring charges. You will receive a receipt upon purchase
+suitable for expense reimbursement.
+
+For licensing questions, open a [discussion](https://github.com/nik-base/auto-tfs/discussions)
+or contact via GitHub.
+
 ## Links
 
 - [AutoTFS extension on GitHub](https://github.com/nik-base/auto-tfs)
 - [MIT License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
+- [Commercial License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE_COMMERCIAL)
