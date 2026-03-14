@@ -16,13 +16,14 @@ Full TFS/TFVC source control integration for Visual Studio Code — with auto-ch
 
 ## Screenshots
 
-## ![Auto TFS demo](resources/screenshots/auto-tfs-demo.gif)
+![Auto TFS demo](resources/screenshots/auto-tfs-demo.gif)
 
-## ![SCM view showing color-coded changes](resources/screenshots/scm-view.png)
+![SCM view showing color-coded changes](resources/screenshots/scm-view.png)
 
-## ![Explorer view showing color-coded changes](resources/screenshots/explorer-view.png)
+![Explorer view showing color-coded changes](resources/screenshots/explorer-view.png)
 
 ![Compare changes against server version](resources/screenshots/compare.png)
+
 ![Quick diff](resources/screenshots/quick-diff.png)
 
 ---
