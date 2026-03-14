@@ -1,6 +1,5 @@
 # TFS integration for Visual Studio Code
 
-[![GitHub](https://img.shields.io/github/v/release/nik-base/auto-tfs?include_prereleases&style=flat-square)](https://github.com/nik-base/auto-tfs/releases)
 [![GitHub](https://img.shields.io/github/license/nik-base/auto-tfs?style=flat-square)](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
 [![Build](https://img.shields.io/github/actions/workflow/status/nik-base/auto-tfs/.github/workflows/ci.yml?style=flat-square)](https://github.com/nik-base/auto-tfs/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nik-base/auto-tfs/actions/workflows/codeql-analysis.yml)
@@ -9,129 +8,160 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-auto--tfs-deeppink?logo=github-sponsors)](https://github.com/sponsors/nik-base)
 [![Ko-fi](https://img.shields.io/badge/Support%20me-on%20Ko--fi-orange?logo=ko-fi)](https://ko-fi.com/nikhil2203)
 
-## Prerequisites
+Full TFS/TFVC source control integration for Visual Studio Code — with auto-checkout, SCM view, shelving, check-in, diff, and more.
 
-1. This extension operates with TF API provided by Microsoft. So, you need either  
-   a. Have Visual Studio IDE installed with TFS capabilities (i.e. TF.exe installed).  
-    OR  
-   b. TeamExplorerEverywhere installed (https://github.com/Microsoft/team-explorer-everywhere)
-   > **Note:** Possibly, some other 3rd party tools would also work, if they provide the same output and receives the same commands / args  
-   > **Note (for TeamExplorerEverywhere):** Possibly, works under Linux-based systems and MacOS, but I have no ability to test it
-2. Extension would only work for a workspace already mapped on TFS (Preferably mapped as Server workspace).
-3. Visual Studio Code - Minimum version required for extension is 1.95.0.
+> **Using AutoTFS at work?** A one-time commercial license covers your entire organization permanently. [**Buy now — $49 →**](https://buy.polar.sh/polar_cl_WWDVnLbBj9wFheMFLaKDmZocYP5huTqMxtLVG1peJ69)
 
-## Installation
+---
 
-1. Open up VS Code
-2. Type **`F1`**
-3. Type `ext` in command palette.
-4. Select `Extensions: Install Extension` and hit **`ENTER`**
-5. Type `auto-tfs`
-6. Select **`Auto TFS`** extension and hit **`ENTER`**
+## Screenshots
 
-## Configuration
+<!-- TODO: Add GIF or screenshot of SCM view showing color-coded changes -->
+<!-- TODO: Add GIF of auto-checkout on save -->
+<!-- TODO: Add screenshot of context menu in Explorer -->
 
-A full path to TF tool should be specified in Settings (**File > Preferences > Settings**).  
-(Recommended configuring in Workspace settings if only used for limited workspaces to avoid conflicts with git workspaces)  
-The following entry is needed:
-
-```
-    "auto-tfs.tf.path": "<path-to-tf-command-line>"
-```
-
-If your installed language in TFS is other than English, Please set the installed language using below configuration
-
-```
-    "auto-tfs.tf.language": "<installed-tfs-language>"
-```
-
-> This is not the langauge of the extension, but language of the TFS itself, it is needed because this extension relies on TFS command output
-
-> Current only English and Spanish is supported
-
-If you are going to use the `tf.exe` tool embedded into Visual Studio IDE, the value to specify will be similar to -  
-`C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\TF.exe`
-
-Recent versions of Visual Studio has changed this path, here is a sample of Visual Studio 2019 (Professional) -  
-`C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe`
-
-For TEE, it will be like this: `C:\Program Files (x86)\TeamExplorerEverywhere\tf.cmd`
-
-Above TF path is mandatory for the extension to function.
-Apart from above configuration, the extension also allows configuarations such as automatic checkout/add/delete/rename, confirmation prompts, etc.
+---
 
 ## Features
 
-- Configurable automatic checkout, add, delete, rename files on source control.
-- Ability to checkout, add, delete, rename files on source control via context menu available in Explorer, Editor, Editor Title.
-- Get latest of entire workspace, one or more items from context menus, status bar and SCM view.
-- Compare files with latest server version (In Visual Studio Code or Visual Studio)
-- In file Quick diff of a checked out file
-- Check-In files with or without Visual Studio prompt (Warning: Code review not supported)
-- Shelve / Replace shelvesets
-- Color coded (along with badges) visualization from changes to a workspace (Same as provided in Git) and also ability to automatically / manually sync (refresh) these changes.
-- View all changes in SCM View of Code, with ability to compare, revert, shelve (and much more..) changes along with option to include and exclude items.
-- View changes in source control with badges
-- Open file on server (browser).
-- View history of a work item (Visual Studio Prompt).
+- Configurable automatic checkout, add, delete, and rename on source control
+- Checkout, add, delete, rename via context menus in Explorer, Editor, and Editor Title
+- Get latest of entire workspace or individual items from context menus, status bar, and SCM view
+- Compare files with the latest server version in Visual Studio Code or Visual Studio
+- In-file quick diff for checked-out files
+- Check in files with or without a Visual Studio prompt
+- Shelve and replace shelvesets
+- Color-coded SCM view with badges showing workspace changes — same as Git
+- Automatically or manually sync (refresh) workspace changes
+- View all changes in the SCM view, with options to compare, revert, shelve, include, and exclude
+- Open files on the server in a browser
+- View item history via Visual Studio prompt
+- TFS language support: **English and Spanish**
+
+---
+
+## Prerequisites
+
+1. This extension requires access to the TF command-line tool provided by Microsoft. You need either:
+   - **Visual Studio IDE** with TFS capabilities (i.e. `TF.exe` installed), or
+   - **Team Explorer Everywhere** — [github.com/Microsoft/team-explorer-everywhere](https://github.com/Microsoft/team-explorer-everywhere)
+
+   > **Note:** Other third-party tools may also work if they accept the same commands and produce compatible output.
+   > **Note (Team Explorer Everywhere):** May work on Linux and macOS, but this has not been tested.
+
+2. The extension requires a workspace already mapped in TFS (preferably as a Server workspace).
+
+3. Minimum Visual Studio Code version: **1.95.0**
+
+---
+
+## Installation
+
+1. Open VS Code
+2. Press `F1`
+3. Type `ext` and select **Extensions: Install Extension**
+4. Search for `auto-tfs`
+5. Select **Auto TFS** and press `Enter`
+
+---
+
+## Configuration
+
+Set the full path to your TF tool in VS Code Settings (**File > Preferences > Settings**).
+
+> Recommended: Configure in Workspace settings if AutoTFS is only used for specific workspaces, to avoid conflicts with Git workspaces.
+
+```json
+"auto-tfs.tf.path": "<path-to-tf-command-line>"
+```
+
+If your TFS installation uses a language other than English, set it here:
+
+```json
+"auto-tfs.tf.language": "<installed-tfs-language>"
+```
+
+> This is the language of TFS itself, not the extension UI. Currently supported: **English** and **Spanish**.
+
+**Example paths:**
+
+Visual Studio 2015 and earlier:
+
+```
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\TF.exe
+```
+
+Visual Studio 2019 (Professional):
+
+```
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe
+```
+
+Team Explorer Everywhere:
+
+```
+C:\Program Files (x86)\TeamExplorerEverywhere\tf.cmd
+```
+
+---
 
 ## Authorization
 
-- Authorization process, if needed you will be prompted to enter the credentials for your TFS account, where the current workspace is mapped to. Otherwise, a command will be executed silently.
+If credentials are required, you will be prompted to enter them for the TFS account your workspace is mapped to. Otherwise, commands execute silently.
 
-## Available commands
+---
 
-- Add (a file should be saved first in the folder, which is included into mappings in TFS)
-- Checkout
-- Undo
-- Delete
-- Get Latest
-- Get All Latest
-- Sync
-- Open on server
-- Compare in Visual Studio
-- Compare in Code
-- View History in Visual Studio Prompt
+## Available Commands
 
-## About the repository
-
-This repository is inspired from [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils).
+| Command                  | Description                                    |
+| ------------------------ | ---------------------------------------------- |
+| Checkout                 | Check out a file for editing                   |
+| Add                      | Add a new file to source control               |
+| Undo                     | Undo pending changes                           |
+| Delete                   | Delete a file from source control              |
+| Get Latest               | Get the latest version of a file or folder     |
+| Get All Latest           | Get the latest version of the entire workspace |
+| Sync                     | Refresh change badges and SCM view             |
+| Compare Here             | Diff against server version in VS Code         |
+| Compare in Visual Studio | Diff against server version in Visual Studio   |
+| View History             | Open item history in Visual Studio             |
+| Open on Server           | Open the file on the TFS server in a browser   |
 
 ---
 
 ## Privacy & Security
 
-AutoTFS is completely telemetry-free. No data, code, file contents, or usage
-information ever leaves your machine. It operates entirely locally using your
-existing TF tooling — no external servers, no analytics, no tracking of any kind.
-Safe for use in secure, regulated, and air-gapped environments.
+AutoTFS is completely telemetry-free. No data, code, file contents, or usage information ever leaves your machine. It operates entirely locally using your existing TF tooling — no external servers, no analytics, no tracking of any kind. Safe for use in secure, regulated, and air-gapped environments.
+
+---
 
 ## License
 
 AutoTFS is dual-licensed:
 
 - **Personal & Non-Commercial Use** — Free under the [MIT License](LICENSE).
-  This covers individual developers, students, and open source projects.
+  Covers individual developers, students, and open source projects.
 
-- **Commercial Use** — Requires a [Commercial License](LICENSE_COMMERCIAL).
-  This applies to any use within a company, organization, or government body,
-  regardless of team size.
+- **Commercial Use** — A one-time commercial license is available for use within companies, organizations, and government bodies, regardless of team size.
 
-### Purchase a Commercial License
+### Commercial License
 
-If you are using AutoTFS at work, a commercial license is required.
+If you use AutoTFS as part of your work, a commercial license supports continued development and ensures you have a clear, compliant relationship with the software.
+
+A single purchase covers your **entire organization**, permanently. No renewals, no recurring charges. A receipt is provided upon purchase, suitable for expense reimbursement.
 
 [**Buy a Commercial License — $49 one-time →**](https://buy.polar.sh/polar_cl_WWDVnLbBj9wFheMFLaKDmZocYP5huTqMxtLVG1peJ69)
 
-A single one-time purchase covers your entire organization, permanently.
-No renewals. No recurring charges. You will receive a receipt upon purchase
-suitable for expense reimbursement.
+For licensing questions, open a [discussion](https://github.com/nik-base/auto-tfs/discussions) or contact via GitHub.
 
-For licensing questions, open a [discussion](https://github.com/nik-base/auto-tfs/discussions)
-or contact via GitHub.
+---
 
 ## Links
 
-- [AutoTFS extension on GitHub](https://github.com/nik-base/auto-tfs)
+- [AutoTFS on GitHub](https://github.com/nik-base/auto-tfs)
 - [MIT License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
 - [Commercial License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE_COMMERCIAL)
+
+---
+
+_Inspired by [niberius/z-tf-utils](https://github.com/niberius/z-tf-utils)_

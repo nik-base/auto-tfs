@@ -2,7 +2,7 @@
   "name": "auto-tfs",
   "displayName": "Auto TFS",
   "description": "TFS/TFVC integration for Visual Studio Code — Free for personal use, commercial license available",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "publisher": "nikhil-patil",
   "license": "MIT",
   "author": {
@@ -23,9 +23,12 @@
   },
   "icon": "resources/icons/auto-tfs.png",
   "galleryBanner": {
-    "color": "#000000",
+    "color": "#1a2a4a",
     "theme": "dark"
   },
+  "extensionKind": [
+    "workspace"
+  ],
   "readmeFilename": "README.md",
   "engines": {
     "vscode": "^1.95.0"
@@ -39,16 +42,15 @@
   ],
   "keywords": [
     "tfs",
-    "team",
-    "foundation",
-    "server",
-    "tf",
+    "team foundation server",
     "tfvc",
+    "azure devops",
     "vsts",
-    "azure",
-    "microsoft",
-    "auto",
+    "tf",
     "auto-tfs",
+    "source control",
+    "scm",
+    "microsoft",
     "checkout"
   ],
   "main": "./out/extension.js",
