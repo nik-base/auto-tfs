@@ -2,7 +2,7 @@
   "name": "auto-tfs",
   "displayName": "Auto TFS",
   "description": "TFS/TFVC integration for Visual Studio Code — Free for personal use, commercial license available",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "publisher": "nikhil-patil",
   "license": "MIT",
   "author": {
@@ -635,12 +635,12 @@
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@types/node": "^24.10.1",
-    "@types/vscode": "^1.95.0",
-    "eslint": "^9.39.1",
-    "prettier": "^3.7.4",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
+    "@types/vscode": "^1.110.0",
+    "eslint": "^10.0.3",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.1"
+    "typescript-eslint": "^8.57.0"
   }
 }
