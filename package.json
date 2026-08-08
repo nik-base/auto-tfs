@@ -1,8 +1,8 @@
 {
   "name": "auto-tfs",
   "displayName": "Auto TFS",
-  "description": "TFS/TFVC integration for Visual Studio Code — Free for personal use, commercial license available",
-  "version": "1.4.6",
+  "description": "TFS/TFVC integration for Visual Studio Code",
+  "version": "1.4.7",
   "publisher": "nikhil-patil",
   "license": "MIT",
   "author": {

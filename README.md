@@ -10,8 +10,6 @@
 
 Full TFS/TFVC source control integration for Visual Studio Code — with auto-checkout, SCM view, shelving, check-in, diff, and more.
 
-> **Using AutoTFS at work?** A one-time commercial license covers your entire organization permanently. [**Buy now — $49 →**](https://buy.polar.sh/polar_cl_WWDVnLbBj9wFheMFLaKDmZocYP5huTqMxtLVG1peJ69)
-
 ---
 
 ## Screenshots
@@ -145,22 +143,7 @@ AutoTFS is completely telemetry-free. No data, code, file contents, or usage inf
 
 ## License
 
-AutoTFS is dual-licensed:
-
-- **Personal & Non-Commercial Use** — Free under the [MIT License](LICENSE).
-  Covers individual developers, students, and open source projects.
-
-- **Commercial Use** — A one-time commercial license is available for use within companies, organizations, and government bodies, regardless of team size.
-
-### Commercial License
-
-If you use AutoTFS as part of your work, a commercial license supports continued development and ensures you have a clear, compliant relationship with the software.
-
-A single purchase covers your **entire organization**, permanently. No renewals, no recurring charges. A receipt is provided upon purchase, suitable for expense reimbursement.
-
-[**Buy a Commercial License — $49 one-time →**](https://buy.polar.sh/polar_cl_WWDVnLbBj9wFheMFLaKDmZocYP5huTqMxtLVG1peJ69)
-
-For licensing questions, open a [discussion](https://github.com/nik-base/auto-tfs/discussions) or contact via GitHub.
+AutoTFS is licensed under the [MIT License](LICENSE) — free for personal, commercial, and open source use.
 
 ---
 
@@ -168,7 +151,6 @@ For licensing questions, open a [discussion](https://github.com/nik-base/auto-tf
 
 - [AutoTFS on GitHub](https://github.com/nik-base/auto-tfs)
 - [MIT License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE)
-- [Commercial License](https://github.com/nik-base/auto-tfs/blob/master/LICENSE_COMMERCIAL)
 
 ---
 

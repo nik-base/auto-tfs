@@ -12,17 +12,13 @@ agree to the following terms:**
 
 1. You grant Nikhil Patil (the project maintainer) a perpetual, worldwide,
    non-exclusive, royalty-free license to use, reproduce, modify, distribute,
-   and sublicense your contribution as part of this project, including under
-   any commercial license terms the maintainer may apply now or in the future.
+   and sublicense your contribution as part of this project under any license
+   the maintainer may apply now or in the future.
 
 2. You confirm that you are the original author of your contribution and that
    you have the right to grant the above license.
 
-3. You understand that this project is dual-licensed: the MIT License applies
-   to personal and non-commercial use, and a separate Commercial License applies
-   to commercial use. Your contribution may be included under both licenses.
-
-4. You understand that you retain copyright of your contribution — this agreement
+3. You understand that you retain full copyright of your contribution — this agreement
    only grants the maintainer the right to include and relicense it as part of
    this project.
 
